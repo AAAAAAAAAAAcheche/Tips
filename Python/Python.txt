@@ -1,0 +1,192 @@
+---------------------------
+os模块是python自带的模块 主要用于与操作系统进行交互 例如文件 目录 进程等
+
+常见用途：
+	•	处理文件和目录
+	•	运行系统命令
+	•	管理环境变量
+
+典型应用：
+	•	自动化文件处理
+	•	批量重命名、移动文件
+	•	运行系统命令
+
+import os
+
+eg:
+import os
+
+# 获取当前工作目录
+print(os.getcwd())
+
+# 列出当前目录下的文件
+print(os.listdir("."))
+
+# 创建和删除目录
+os.mkdir("test_folder")
+os.rmdir("test_folder")
+
+# 执行系统命令
+os.system("ls")  # Linux/macOS
+os.system("dir")  # Windows
+---------------------------------
+sys模块 python的内置模块
+功能：
+	•	主要用于与 Python 解释器 交互，获取或控制 Python 运行时的信息。
+
+常见用途：
+	•	处理命令行参数
+	•	控制脚本的退出
+	•	修改模块搜索路径
+
+eg:
+import sys
+
+# 获取命令行参数
+print(sys.argv)
+
+# 退出程序
+sys.exit(0)
+
+# 获取 Python 版本
+print(sys.version)
+
+# 修改模块搜索路径
+sys.path.append("/my/custom/path")
+print(sys.path)
+-----------------------------
+在 Python 中，严格意义上没有“数组”这个数据类型，但有几个类似的结构可以实现类似的功能，比如 列表（list）、元组（tuple）、数组（array 模块）、NumPy 数组（numpy.ndarray） 等。
+
+ 1. 列表（list）
+	•	定义： 使用方括号 [] 创建，可以存储不同类型的元素。
+	•	特点：
+	•	支持修改（可变 mutable）
+	•	支持添加、删除、排序等操作
+	•	允许不同数据类型混合存储
+
+my_list = [1, 2, 3, "hello", True]
+my_list[0] = 100  # 修改元素
+my_list.append(5)  # 添加元素
+
+优点： 灵活，支持动态修改。
+缺点： 比较占内存，速度不如真正的数组。
+
+2. 元组（tuple）
+	•	定义： 使用小括号 () 创建，元素一旦定义无法更改。
+	•	特点：
+	•	不可变 (immutable)
+	•	访问速度快，适合存储不需要更改的数据
+	•	支持不同数据类型
+
+my_tuple = (1, 2, 3, "hello", True)
+# my_tuple[0] = 100  # 会报错：TypeError
+
+优点： 访问速度快，占用内存小。
+缺点： 不能修改内容。
+
+3. 数组（array 模块）
+	•	定义： 使用 array 模块创建，存储相同数据类型的元素。
+	•	特点：
+	•	元素类型必须相同（效率更高）
+	•	速度比列表快
+
+from array import array
+
+# 创建一个整数数组
+my_array = array("i", [1, 2, 3, 4, 5])
+my_array[0] = 10  # 修改元素
+my_array.append(6)  # 添加元素
+
+优点： 速度比列表快，适合大数据操作。
+缺点： 只支持一种数据类型，不如列表灵活。
+
+4. NumPy 数组（numpy.ndarray）
+	•	定义： 使用 numpy 模块创建的多维数组，性能比 list 高很多。
+	•	特点：
+	•	支持多维数组
+	•	高效的矩阵运算
+	•	只存储相同数据类型
+
+import numpy as np
+
+my_array = np.array([1, 2, 3, 4, 5])
+my_array[0] = 10  # 修改元素
+
+优点： 适合大规模数据和科学计算。
+缺点： 需要额外安装 numpy 模块。
+--------------------------------
+pip 是 Python 的包管理工具，用来安装、更新和卸载 Python 包。
+pip 是 Python 的包管理工具，专门用来下载和安装 Python 相关的包和模块。
+pip 只能下载和管理 Python 生态系统中的包。
+
+常用命令：
+	•	查看版本：pip --version
+	•	安装包：pip install <包名>
+	•	更新包：pip install --upgrade <包名>
+	•	卸载包：pip uninstall <包名>
+	•	查看已安装的包：pip list
+	•	查看某个包的详细信息：pip show <包名>
+
+如果用的是 Miniconda，建议用 conda 来管理包，但 pip 也可以与 conda 配合使用。
+
+如果你需要从 GitHub 上下载一个 Python 项目然后安装，可以用 git clone 再配合 pip
+git clone https://github.com/user/repo.git
+cd repo
+pip install .
+或者直接用 pip 安装 Git 仓库
+pip install git+https://github.com/user/repo.git
+--------------------------------------------------
+python -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+python -m pip
+	•	-m 表示 module，让 Python 以模块的形式运行 pip。
+	•	直接用 pip install 也可以，但 python -m pip 更安全！
+	•	推荐使用 python -m pip，因为可以确保用的是当前 Python 版本对应的 pip。
+	•	如果你有多个 Python 版本，直接运行 pip 可能用错版本。
+
+install
+	这是 pip 的安装命令，用于安装指定的 Python 包。
+
+-r requirements.txt
+	•	-r 表示 requirements file，用来指定一个文件（requirements.txt）。
+	•	requirements.txt 文件中列出了所有你想安装的 Python 包及其版本。
+
+示例：requirements.txt 文件内容
+	Django==3.2
+	requests>=2.25.1
+	numpy<1.22
+	•	这表示：
+	•	安装 Django 的 3.2 版本
+	•	安装 requests 的 2.25.1 版本或更新版本
+	•	安装 numpy 但版本必须小于 1.22
+
+-i https://pypi.tuna.tsinghua.edu.cn/simple
+	•	-i 表示 index URL，指定一个 Python 包的下载源（镜像）。
+	•	这里是使用 清华源 (https://pypi.tuna.tsinghua.edu.cn/simple) 作为 PyPI 镜像。
+
+PyPI（Python Package Index）是官方的 Python 包仓库，默认地址是
+	https://pypi.org/simple
+
+常用的国内PyPi镜像
+镜像站点		网址
+清华镜像		https://pypi.tuna.tsinghua.edu.cn/simple
+阿里云镜像		https://mirrors.aliyun.com/pypi/simple
+豆瓣镜像		https://pypi.douban.com/simple
+华为镜像		https://mirrors.huaweicloud.com/repository/pypi/simple/
+
+执行时的实际流程
+	1.	运行 python -m pip 以调用当前 Python 环境的 pip。
+	2.	读取 requirements.txt 文件，逐行解析包名称和版本。
+	3.	使用 https://pypi.tuna.tsinghua.edu.cn/simple 作为镜像下载源。
+	4.	依次下载并安装 requirements.txt 中指定的所有包及版本。
+
+pip 版本太低导致无法下载
+	python -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+更新指定包
+	python -m pip install --upgrade requests
+-----------------------------------------------
+
+
+
+

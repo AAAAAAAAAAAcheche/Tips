@@ -1,0 +1,545 @@
+写方法的黄金原则
+
+1 一个方法只做一件事	判断就是判断，处理就是处理，返回就是返回
+2 方法尽量短小			控制在5～20行内，太长的一定要拆掉
+3 名字能一眼看懂		比如checkValidData(),sortArray()等
+4 复用逻辑独立成方法	如果逻辑会复用（比如校验），单独提出来
+5 流程香写故事一样清晰	读一遍代码就像顺着故事剧情走
+
+方法要短小
+ └─ 每个方法干一件事
+      └─ 方法命名清晰
+           └─ 逻辑像讲故事
+                └─ 可读性爆表
+
+	•	团队协作时，别人能一眼看懂你的逻辑
+	•	出 bug 时，能快速定位问题
+	•	维护代码时，加功能、改功能不会炸
+	•	自动测试时，可以单独测每个小方法
+	•	代码评审（Code Review）时，大佬们直接给你点赞
+
+eg:
+public int[] processArray(int[] arr) {
+    if (isNullOrTooShort(arr)) {
+        return arr;
+    }
+    
+    if (!isAllPositive(arr)) {
+        return arr;
+    }
+    
+    sortArray(arr);
+
+    return arr;
+}
+
+private boolean isNullOrTooShort(int[] arr) {
+    return arr == null || arr.length <= 1;
+}
+
+private boolean isAllPositive(int[] arr) {
+    for (int num : arr) {
+        if (num <= 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+private void sortArray(int[] arr) {
+    Arrays.sort(arr);
+}
+___________________
+
+规范注释
+
+/**
+ * 方法的简要说明（第一行写重点）
+ *
+ * 详细描述（可选，补充细节）
+ *
+ * @param 参数名 参数的意义
+ * @return 返回值的意义
+ * @throws 异常类型 什么时候会抛异常（可选）
+ */
+
+eg: 上一段写的代码
+/**
+ * 判断数组中的所有元素是否为正数。
+ *
+ * 遍历数组，如果存在小于等于0的元素，返回false，否则返回true。
+ *
+ * @param arr 需要检查的整数数组
+ * @return 如果全部为正数返回true，否则返回false
+ */
+private boolean isAllPositive(int[] arr) {
+    for (int num : arr) {
+        if (num <= 0) {
+            return false;
+        }
+    }
+    return true;
+}
+__________________
+
+Java节省内存+提升速度的准则
+
+1  用基本类型					节省大量对象开销		int,long,boolean代替Integer,Long,Boolean
+2  少new对象,能复用就复用		减少GC压力				比如对象池，常量池思想
+3  局部变量尽量小范围声明		提高CPU缓存命中率		在用的时候才声明
+4  避免不必要的集合初始化		少浪费内存				new ArrayList<>(1000) 不乱写
+5  字符串处理用StringBuilder	减少内存碎片			特别是循环里字符串拼接
+6  用合适的数据结构				让程序跑得快又省		比如用HashMap,ArrayList,而不是Vector那种慢的
+7  尽量避免异常作为流程控制		抛异常很慢很浪费内存	用正常if判断，不靠try-catch来跑逻辑
+8  方法小而纯净(无副作用)		JVM更容易优化			纯方法JVM可以JIT内联提速
+9  使用懒加载(Lazy Load)		只在需要时创建对象		比如只在第一次用到时new
+10 近可能使用final修饰			帮助编译器优化			final变量可以被提前优化，防止意外修改 
+
+int比Integer省内存+快超多！（省去了拆装箱过程）
+Integer a = 1;  // 会产生对象（堆）
+int b = 1;      // 是值（栈）
+
+___________________
+
+static适合的情况
+
+1 方法跟对象无关		不依赖实例字段/实例方法			工具类方法
+2 常量					值不变							public static final int MAX_SIZE = 100;
+3 工具类/工具方法		单纯逻辑处理，不需要状态		Collections.sort(List<T> list)
+4 共享资源				类级别的共享(要注意线程安全)	比如全局缓存池
+5 像减少对象开销		static变量只加载一次,减少内存浪费
+
+___________________
+
+Java所有整数类型大小都是固定的，不管平台
+
+byte	8
+short	16
+int 	32
+long	64
+___________________
+
+打印整数32位
+
+public static void print(int num){
+	for(int i = 31; i >= 0; i --){
+		System.out.print((num & (1 << i)) == 0 ? "0" : "1")
+	System.out.println();
+	}
+}
+
+public static void main(String[] args){
+	int num = 4;
+	print(num);
+}
+
+Output
+00000000000000000000000000000100
+
+计算机运算整数时都是转化为32位运算的
+所以 int a = 4 是转化为 00000000000000000000000000000100 运算的
+那么 for(int i = 31; i >= 0; i --){
+			(num & (1 << i)) == 1 ? "1" : "0"
+		}
+	将1左移31位到最左(因为都是32位 10000000000000000000000000000000)判断 1与num的32位的第31位是否相等（从0位到31位 一共32位数）相同则输出1 相反则是0 ，然后i -- 移动到30位 ，反复循环 确认所有位数
+任何一个数字左移1都是数字乘2的结果
+	eg:  
+		num = 4
+			num << 1 	== 8
+		----------------
+			num * 2^1  	== 8
+
+			num << 2 	== 16
+		----------------
+			num * 2^2 	== 16
+向右反之
+___________________
+
+反码跟补码
+
+在计算机中：
+	正数 的二进制是直接表示的（原码）。
+	负数 使用 补码 表示。
+
+补码：一个数的补码 = 取反 + 1
+
+那为什么一定要 取反 +1？
+	因为这种方式能让加法器统一处理加减法。
+	5 + (-5) = 0
+
+	  00000101   // +5             	满 2 进 1
+	+ 11111011   // -5（补码）	   	1 + 1 = 2 进1，1 + 0 + 1（进1）= 2 进1 反复循环到最后一位
+	-----------
+  	  00000000   // 结果是 0，完美
+
+	作用是：让减法变成加法来处理
+
+负数的绝对值数量 永远比整数绝对值数量多1
+每个正数都有相应的负数
+但是最小的负数取反+1的数是它本身: 10000000000000000000000000000000 取反+1 10000000000000000000000000000000
+
+取反符号 ~
+一般取反是32位全部取反
+int b = 10;
+int c = ~b;
+
+Output:
+10
+-11
+
+int a = 5
+-a可以写成
+int b = (~a + 1)
+输出：5 -5
+
+同理int a = -5
+-a可以写成
+int b = (~a +1)
+输出：-5 5
+
+31位不看，30位到0位取反 最后+1
+
++ - / % * 都是转化为位运数来实现的
+
+int a = Integer.MAX_VALUE;
+System.out.println(a);
+print_32(a);
+
+Output:
+2147483647
+01111111111111111111111111111111
+
+其中第一位不是1
+真正表示的数是0到30位 31位表示正负
+第一位表示的是正负号 0为正 1为负
+范围是-2^31 到 2^31
+
+无符号整数则是没有正负概念
+32位数全部都用于表示整数
+
+int b = -1;
+print_32(b);
+
+Output:
+11111111111111111111111111111111
+
+其中第31位为1 所以是负数
+30位到0位取反 为100000000000000000000000000000000
+这样去掉31位的1 我们就知道数是 2^0 = 1
+那么-2就是
+11111111111111111111111111111110
+同理
+10000000000000000000000000000001
+2^1 = 2 31位是1 所以取负
+
+int a = Integer.MIN_VALUE;
+print_32(a)
+
+Output:
+10000000000000000000000000000000
+___________________
+
+位运算
+
+int a = 60; // 0011 1100
+int b = 13; // 0000 1101
+
+向右移动用符号位补 符号位是0则补0 符号位是1则补1
+10000000000000000000000000000000
+11000000000000000000000000000000
+
+01000000000000000000000000000000
+00100000000000000000000000000000
+
+运算符		名称		 实例		二进制结果 结果			说明
+&		按位与(AND)		a & b		0000 1100	12		只有两边都为1才为1
+`		按位或(OR)		a ` b		0011 1101	61		有1则1，无1则0
+^		按位异或(XOR)	a ^ b		0011 0001	49		相同为0，不同为1
+~		按位取反(NOT)	~ a			1100 0011   -61		a的按位取反
+<<		左移(带符号)	a << 2		1111 0000	240		左移两位，相当于乘2^2
+>>		右移(带符号)	a >> 2		0000 1111	15		右移动，同理
+但是java好像没有无符号类型c c++ 有
+>>>		无符号右移		a >>> 2		0000 1111	15		
+<<<		无符号左移		a <<< 2		1111 0000	240		
+___________________
+
+算法
+
+对一个问题做的流程设计
+
+1 有具体的问题
+2 有设计解决问题的具体流程
+3 有评价处理流程的可量化指标
+
+算法分类 计算器 != 计算机
+1 明确知道怎么算的流程（负数就是取反+1，3+4）加快计算的速度
+2 明确知道怎么尝试的流程（不知道一个数的因子 但是能把所有的因子都试出来）计算机科学
+	计算机祖师爷-->图灵  为了破解德军密码--->不知道怎么算出密码，但有许多的分支可以尝试破解密码
+		图灵机-->不知道怎么算但知道怎么试的东西变成理论
+___________________
+
+输出整数的32位
+
+public void print_32(){
+        for(int i = 31; i >= 0; i --){
+            System.out.print((this.i & (1 << i)) == 0 ? "0" : "1");
+        }
+        System.out.println();
+    }
+___________________
+
+阶层总合
+
+法1:
+public int getAll_Class_sum2(int N){
+        int ans = 0;
+        int cur = 1;
+        for(int i = 1; i <= N; i ++){
+            cur *= i;
+            ans += cur;
+        }
+        return ans;
+    }
+
+法2:
+public int ALL_CLASS(int num){
+
+        this.num = num;
+        int all_Class_sum = 0;
+
+        for(int i = num; i > 0; i--){
+
+            int count = i;
+
+//            System.out.println(count);
+
+            for(int j = i - 1; j > 0; j--){
+
+//                System.out.println(j);
+
+                count *= j;
+
+            }
+
+            all_Class_sum += count;
+
+        }
+
+        return all_Class_sum;
+    }
+___________________
+
+选择排序（从小到大排序 正向从index=0 开始比较最小 比到最后一位）
+跟冒泡排序的区别就是 冒泡排序是永远跟相邻的两个数交换位置
+选择排序是0位跟任意位的交换位置 直到结束
+
+法1
+public int[] f2(){
+        int[] target = this.arr;
+        int N = target.length;
+
+        if(target == null || N <= 1){
+            return target;
+        }
+
+        for(int i = 0; i < N; i ++){
+            int minValueIndex = i;
+
+            for(int j = i + 1; j < N; j ++){
+                minValueIndex = arr[j] < arr[minValueIndex] ? j : minValueIndex;
+            }
+            swap(arr, i, minValueIndex);
+        }
+
+        return target;
+    }
+
+    public void swap(int[] arr, int i, int j){
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+法2
+public int[] selectionSort(){
+        int[] target = this.arr;
+        if(arr == null || arr.length <= 1){
+            return target;
+        }
+        int N = arr.length;
+        for(int i = 0; i < N; i ++){
+            for(int j = i + 1; j < N; j ++){
+                if(arr[i] > arr[j]){
+                    int temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+                }
+            }
+        }
+//        for(int i = 0; i < target.length; i ++){
+//            System.out.print(target[i] + " ");
+//        }
+        this.arr = target;
+        return target;
+    }
+___________________
+
+冒泡函数(跟选择排序差不多 但是是确定最后一位（最大的数） 然后不断向前排)
+
+public static int[] BubbleSort(int[] arr){
+
+        if(isNullOrTooShort(arr)){
+            return arr;
+        }
+
+        outPut(arr);
+
+        bubbleSort(arr);
+
+        outPut(arr);
+
+        overLine();
+
+        return arr;
+
+    }
+
+    // 判断是否为空或者太短
+    private static boolean isNullOrTooShort(int[] arr){
+        return (arr == null || arr.length <=1) ? true : false;
+    }
+
+    // 主方法
+    private static int[] bubbleSort(int[] arr){
+        int N = arr.length;
+        for(int end = N - 1; end >= 0; end --) {
+            for (int start = 1; start <= end; start++) {
+                if (arr[start] < arr[start - 1]) {
+                    moveMaxIndex(arr, start, start - 1);
+                }
+            }
+        }
+        return arr;
+    }
+
+    // 移动最大数的索引
+    private static void moveMaxIndex(int[] arr, int maxIndex, int j){
+        int tmp = arr[maxIndex];
+        arr[maxIndex] = arr[j];
+        arr[j] = tmp;
+    }
+
+    //
+    private static void goOn(){}
+
+    // 输出数组
+    private static void outPut(int[] arr){
+        for(int i = 0; i < arr.length; i ++){
+            System.out.print(arr[i] + " ");
+        }
+        System.out.println();
+    }
+
+    // 结束行
+    private static void overLine(){
+        System.out.println("\n---" + PackageName + "---");
+    }
+___________________
+
+插入排序
+
+/**
+ * 插入排序
+ * 永远跟前一个对比 比前面小就换位
+ * 具体方法在GO中有注释
+ *
+ * @param arr 需要排序的数组
+ * @return 导入的不为空且长度大于1的数组 返回排序完成的函数
+ */
+
+import java.io.LineNumberReader;
+
+public class insertSort {
+
+    private static String PackageName = insertSort.class.getName();
+
+    public static int[] insertSort(int[] arr) {
+        if(isNullOrTooShort(arr)){
+            return arr;
+        }
+
+        printArray(arr);
+
+        GoPlus(arr);
+
+        printArray(arr);
+
+        over();
+
+        return arr;
+    }
+
+    private static boolean isNullOrTooShort(int[] arr) {
+        return (arr == null || arr.length <= 1) ? true: false;
+    }
+
+
+
+    private static void printArray(int[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            System.out.print(arr[i] + " ");
+        }
+        System.out.println();
+    }
+
+    private static void over(){
+        System.out.println("\n---" + PackageName + "---\n");
+    }
+
+    // i是表示范围的 count和count - 1来表示前一位和后一位
+    // 然后在范围内前一位和后一位比较小的向前挪，然后跟下一位比较如果还小就再次前挪直到比前一位大，或者最前
+    private static int[] Go(int[] arr){
+        for(int i = 1; i < arr.length; i ++){
+            int count = i;
+            while(count - 1 >= 0 && arr[count - 1] > arr[count]){
+                swap(arr, count - 1, count);
+                count --;
+            }
+        }
+        return arr;
+    }
+
+    // 进阶版
+    // pre-- 是每次循环结束以后执行的
+    private static int[] GoPlus(int[] arr){
+        for(int i = 1; i < arr.length; i ++){
+            for(int pre = i - 1; pre >= 0 && arr[pre] > arr[pre + 1]; pre --){
+                swap(arr, pre, pre + 1);
+            }
+        }
+        return arr;
+    }
+
+    private static void swap(int[] arr, int i, int j){
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+}
+__________________
+
+
+__________________
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,267 @@
+
+Hadoop介绍
+
+Hadoop是由Apache基本会
+
+Hadoop狭义解释
+Hadoop HDFS			分布式文件存储系统，解决海量数据存储问题
+Hadoop Yarn			集群资源管理和任务调度框架，解决资源任务调度问题
+Hadoop MapReduce	分布式计算框架，解决海量数据计算问题
+
+Hadoop广义解释
+Hadoop通常是指围绕Hadoop打造的大数据生态圈
+
+ _______________________________________________________________________
+|								Ambari									|
+|		                     安装部署工具						  		|
+|_______________________________________________________________________|
+|			 |			|												|
+|			 |			|				Oozie							|
+|			 |			|				作业流调度						|
+|			 |			|												|
+| zookeeper  |			|_______________________________________________|
+|	分布式   |			|			|			|		   |			|
+|	协调系统 |			|	Hive	|	pig		|  Mahout  |			|
+|			 |	HBase	|	数据	|	工作流	|	数据   |	sqoop	|
+|			 |	分布式	|	仓库	|	引擎	|	挖掘   |	ETL工具	|
+|			 |	存储	|			|			|	       |			|
+|			 |			|___________|___________|__________|			|
+|			 |			|								   |			|
+|			 |			|								   |____________|
+|			 |			|		MapReduce				   |			|
+|			 |			|		分布式计算框架			   |			|
+|			 |			|								   |	Fluem	|
+|			 |__________|__________________________________|	日志	|
+|			 |											   |	收集	|
+|			 |					HDFS					   |			|
+|			 |				分布式文件存储系统			   |			|
+|____________|_____________________________________________|____________|
+
+Hadoop优势特点
+
+1 低成本
+	Hadoop可以由多台廉价普通机器组成，支持TB和PB级别的数据存储，不需要在昂贵可靠的机器上运行
+
+2 高可靠，容错性
+	HDFS中数据存储有多副本支持数据可靠性，即使一些副本出现故障也能保障数据可使用
+
+3 高扩展性
+	Hadoop集群可以扩展到上千个节点以支持数据存储和计算，节点多支持数据量大，支持更大并行度的并行计算
+
+4 高效性
+	Hadoop可以并行在节点之间动态移动数据，保证各个节点数据动态平衡；基于MapReduce进行数据处理计算时，可以并行处理数据，效率极高
+______________________
+
+HDFS有如下特点：
+	1 HDFS适合处理大规模数据 （可以处理百万规模与上的数据文件）
+	2 HDFS将文件线性按字节分成多个block块进行存储，每个block块默认128M
+	3 每个block块默认有3个副本，提高容错性，如果一个副本丢失不可用，后续可以自动恢复
+	4 HDFS适合大文件写入，不适合大量小文件写入，因为小文件多NameNode要使用更多内存来维护存储文件
+	5 HDFS不支持并发写入数据，一个文件只能有一个写，不能多个线程同时写
+	6 HDFS数据写入后不支持修改，只支持append追加
+_____________________
+
+大数据解决了海量数据分析挖掘问题（GB TB PB EB）
+______________________
+
+HDFS，全称是 Hadoop Distributed File System（Hadoop 分布式文件系统），是 Hadoop 框架中的核心组件之一，用于在大规模集群上存储海量数据。
+
+它的设计理念是高容错、高吞吐量、适合存储大文件，不适合低延迟访问的小文件。
+
+HDFS是一个主从架构(Master/Slaves)，由一个NameNode和一些DataNode组成
+
+			HDFS <------------> NameNode	<---->	SecondaryNameNode
+		   client				   | 
+			 |					   |
+			 |					   |
+-------------|---------------------|-------------
+|			 |       |          |               |
+|			 |       |          |  				|
+| -----------|-------+----------+---------------+---
+| | 			   | |			|   |			|  |	
+| |   			   | |			|   | 			|  |
+DataNode		DataNode		DataNode		DataNode
+   |			   |       		    |			    |
+   |			   |       		    |			    |
+   |			   |       		    |			    |
+   V               V				V				V
+DataBase		DataBase		DataBase		DataBase
+___________________________
+
+NameNode
+
+HDFS中数据文件分布式存储在各个DateNode节点，NameNode维护和管理文件系统元数据(空间目录树结构、文件、Block信息、访问权限)，存储文件增多，NameNode上存储的信息越来越多。NameNode主要通过两个组件实现元数据管理：fsimage(命名空间镜像文件), editslog(编辑日志)
+
+fsimage
+HDFS文件系统元数据的镜像文件，其中包含HDFS文件系统的所有目录和文件相关的元素。fsimage在启动HDFS集群的时候就加载到内存的，为了方便HDFS操作，保证高效率、低延迟。存储包括文件名称、路径、权限关系、副本、修改、访问时间等，但是不急了每个block所在的DataNode信息,block信息会HDFS启动时从DataNode重建，之后DataNode会周期性的通过心跳向NameNode报告block信息
+
+editslog
+用户操作HDFS的编辑日志文件，存放HDFS文件系统的所有操作时间,editslog存放在磁盘里，防止集群突然当机
+
+HDFS出现中断之后，重新启动之后，fsimage加载到内存中，再重放editslog，来恢复到集群中断之前保证数据不丢失
+	
+总结：
+1	完全基于内存存储文件元数据、目录结构、文件block的映射信息
+2	提供文件元数据持久化/管理方案
+3	提供副本放置策略
+4	处理客户端读写请求
+
+fsimage和editslog合并过程
+
+_________________________________________________________
+[Primary NameNode]      |   [Secondary NameNode]		|
+						|								|
+edits_improgress_1		|   fsimage_0					|
+	    |   \			|   		|					|
+		|	 \			|		    |					|
+		|	  \			|	  		|					|
+		|	   \		|	    	|					|
+		|		\		|			|					|
+		|	 edits_1-19	|			|					|
+		|			\	|			|					|
+		|			 \	|			|					|
+		|			  \	|			|					|
+		|			   \|			|					|
+		|               \			 \					|
+		|  				|\			  \					|
+		|				| \			   \				|
+		|				|  \			\				|
+		|			    |	\			 \				|
+		|				|	 \			  \				|
+		|				|	  |			  |				|
+		|				|	  V			  V				|
+		|				|	edits_1-10   fsimage_0		|
+		|          		|		\			/			|
+		|			  	|		 \		   /			|
+		|			 	|		  \		  /				|
+		|			  	|		   \	 /				|
+		|			   	|			\   /				|
+		|  			    |			 \ /				|
+		V				|  			  |					|
+	edits_improgress_20 |    		  |					|
+						|  			  |					|
+						|  			  V					|
+						|		fsimage_19.ckpt			|
+						|		/						|
+						|	   /						|
+						|	  /							|
+						|	 /							|
+						|	/							|
+   fsimage_19.ckpt  <---+- /							|
+			|			|								|
+			|			|								|
+			V			|								|
+		fsimage_19		|								|
+						|								|
+------------------------+--------------------------------
+
+
+fsimage和editslog合并时机
+默认情况下，SecondaryNameNode每隔1个小时执行合并，通过参数"dfs.namenode.checkpoint.period"进行控制，默认参数为3600s
+HDFS还会每分钟进行NameNode操作事务数检查,如果一小时以内editslog存储的事务(操作数)到达1,000,000个也会进行合并,控制参数为"dfs.namenode.checkpoint.txns",默认1,000,000
+
+安全模式
+NameNode安全模式(safemode)下，操作HDFS有一下特点：
+1 对文件系统元数据进行只读操作
+2 当前文件的所有block信息具备的情况下，对文件进行只读操作。不允许进行文件修改、写入、删除、重命名
+
+安全模式工作流程
+1 启动NameNode，NameNode加载fsimage到内存，对内存数据执行editslog日志的事务操作
+2 文件系统元数据内存镜像加载完毕，进行fsimage和editslog日志的合并，并创建新的fsimage文件和一个空的editslog日志文件
+3 NameNode等DataNode上传block列表信息，直到副本数满足最小副本条件，这个过程中NameNode处于安全模式，最小的副本条件指整个文件系统中有99.9%的block达到最小副本数(默认是1，可设置)
+4 当满足了最小副本条件，再过30秒，NameNode就会退出安全模式
+
+注意事项
+1 NameNode不会持久化block位置信息，DataNode保有各自存储的block列表信息。正常操作时，NameNode在内存中有一个blocks位置的映射信息（所有文件的所有文件块的位置映射信息）
+2 NameNode在安全模式，DataNode需要上传block列表信息到NameNode
+3 安全模式NameNode不会要求DataNode复制或删除block
+4 新格式化的HDFS不进入安全模式，因为DataNode压根就没有block
+
+配置信息
+	属性名称						类型	默认值			描述	
+dfs.namenode.replication.min 		int		1			写文件成功的最小副本数
+dfs.namenode.safemode.thresholdpct	float	0.999		系统中block达到了最小副本的比例，之后NameNode会退出安全模式
+dfs.namenode.safenmode.extension	int	    30,000ms	当 HDFS 满足退出安全模式的条件（如达到最小块复制比例）后，NameNode 不会立即退出安全模式，而是会继续保持在安全模式一段时间，这段时间就是由该参数指定的。(默认30s = 30,000ms)
+
+_____________________________
+
+SecondaryNameNode
+
+如果中断，重新启动，editslog要重放一遍，editslog越大恢复的时间越久
+NameNode会定期的将fsimage和editslog拉取到SecondaryNameNode进行合并，SecondaryNameNode再推送一个新的fsimage和editslog来代替NameNode里的主键
+
+总结：
+SecondaryNameNode是辅助NameNode定期合并fsimage和editslog
+_____________________________
+
+HDFS Client
+
+  操作HDFS
+      |
+  ----+-----
+  |		   |
+client    API
+(命令行)
+
+与DataNode来读写信息
+与NameNode来获取block信息、元数据等
+_____________________________
+
+命令操作
+
+等待安全模式退出
+hdfs dfsadmin -safemode wait
+
+查看NameNode是否处于安全模式
+hdfs dfsadmin -safemode get
+
+进入安全模式
+hdfs dfsadmin -safemode enter
+
+离开安全模式
+hdfs dfsadmin -safemode leave
+_____________________________
+
+Block
+HDFS存储文件数据时会将文件切分成块，block大小由dfs.blocksize决定,在Hadoop1.x中block大小默认为64M,在Hadoop2.x/3.x中每个block默认大小为128M
+在HDFS中平均查找block的寻址时间为10ms,经过测试,block文件寻址时间为block传输时间的1%时，机器性能最佳,即block传输时机为1s(10ms/0.01 = 1000mx = 1s)时,机器性能最佳
+如果磁盘传输速率为200MB/s时 block一般设置256M （2^8 与200最近）
+同理 400MB/s就是512M
+____________________
+
+block副本存放策略
+
+第一个副本：放置在上传文件的DataNode，也就是Client所在节点上；如果时集群外提交，则随机挑选一台磁盘不太满，cpu不太忙的节点
+第二个副本：放置在与第一个副本不同的机架的节点上
+第三个副本：与第二个副本相同机架的随机节点上
+更多副本：随机节点存放
+____________________
+
+HDFS写文件流程
+
+客户端(HDFS client)会创建DistributedFileSystem对象,DistributeFileSystem会发起对namenode的一个RPC连接,请求创建一个文件,不包含关于block块的请求 namenode会执行各种各样的检查,确保要创建的文件不存在,并且客户端有创建文件的权限 检查通过后,namenode会创建一个文件(在edits中,同时更新内存状态),否则创建失败,客户端抛出异常IOException
+
+1 HDFS client创建DistributedFileSystem
+2 DistributedFileSystem创建NameNode文件,创建完成后返回给HDFS client 可以开始上传文件块
+3 DistributedFileSystem返回一个FSDataOutputStream对象给客户端用于写数据 FSDataOutputStream封装了一个DFSOutputStream对象负责客户端跟datanode以及namenode的通信
+4 客户端中的FSDataOutputStream对象将数据切分为小的packet数据包,并写入到一个内部队列,DataStream会读取其中内,并请求namenode返回一个datanode列表来存储当前block副本 列表中的datanode会形成管线,DataStreamer将数据包发送给管线中的第一个datanode,第一个datanode将接收到的数据发送给第二个datanode，第二个发送给第三个,以此类推
+5 FSDataOutputStream维护着一个数据包的队列,这的数据包是需要写入到datanode中的,该队列称为确认队列 当一个数据包在管线中所有datanode中写入完成,就从ack队列中移除该数据包
+_________________________
+
+HDFS读文件流程
+
+客户端通过FileSystem对象的open方法打开希望读取的文件,DistributedFileSystem对象通过RPC调用namenode,以确保文件起始位置,namenode会根据他们与客户端的距离来排序
+_____________________
+
+
+
+
+
+
+
+
+
+
+
+
+

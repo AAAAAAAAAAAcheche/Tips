@@ -1,0 +1,258 @@
+-----------------
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.itheima.one</groupId>
+    <artifactId>spweb</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>spweb</name>
+    <description>spweb</description>
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spring-boot.version>2.6.13</spring-boot.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <configuration>
+                    <mainClass>com.itheima.one.spweb.SpwebApplication</mainClass>
+                    <skip>true</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>repackage</id>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+
+===Maven项目配置文件，用于构建和管理一个基于Spring Boot的Java Web项目
+pom.xml
+
+===XML声明
+
+这是 XML 文件的声明部分，表示该文件遵循 XML 1.0 标准，并使用 UTF-8 编码
+<?xml version="1.0" encoding="UTF-8"?>
+
+===项目根元素
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+<project>: 这是 Maven POM 文件的根元素。
+
+xmlns: 定义了 XML 命名空间，指定了 Maven POM 文件的规范版本（4.0.0）。
+
+xmlns:xsi: 定义了 XML Schema 实例的命名空间。
+
+xsi:schemaLocation: 指定了 XML Schema 的位置，用于验证 POM 文件的结构是否符合规范。
+
+===项目基本信息：
+
+项目的组织或公司标识符，通常采用反向域名格式
+groupID:com.itheima.one
+
+项目的唯一标识符，通常是项目名称
+artifactId:spweb
+
+项目的版本号，SNAPSHOT 表示这是一个开发中的版本
+version:0.0.1-SNAPSHOT
+
+项目的名称
+name:spweb
+
+项目的描述信息
+description:spweb
+
+===属性配置
+
+<properties>
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <spring-boot.version>2.6.13</spring-boot.version>
+</properties>
+
+<properties>: 定义了一些全局属性，可以在 POM 文件中重复使用。
+
+java.version: 指定项目使用的 Java 版本为 1.8（即 JDK 8）。
+
+project.build.sourceEncoding: 指定源代码的编码格式为 UTF-8。
+
+project.reporting.outputEncoding: 指定报告输出的编码格式为 UTF-8。
+
+spring-boot.version: 指定 Spring Boot 的版本为 2.6.13。
+
+===属性配置:
+
+java.version: 1.8
+指定项目使用的 Java 版本为 1.8（即 JDK 8）。
+
+project.build.sourceEncoding: UTF-8
+指定源代码的编码格式为 UTF-8。
+
+project.reporting.outputEncoding: UTF-8
+指定报告输出的编码格式为 UTF-8。
+
+spring-boot.version: 2.6.13
+指定 Spring Boot 的版本为 2.6.13。
+
+===依赖管理
+
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+
+<dependencies>: 定义了项目所需的依赖项。
+
+spring-boot-starter-web: Spring Boot 提供的 Web 开发依赖，包含 Spring MVC、Tomcat 等。
+
+spring-boot-starter-test: Spring Boot 提供的测试依赖，用于单元测试和集成测试。
+
+<scope>test</scope>: 表示该依赖仅在测试阶段使用，不会打包到最终的构建结果中。
+
+===依赖版本管理
+
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>${spring-boot.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+
+<dependencyManagement>: 用于统一管理依赖版本。
+
+spring-boot-dependencies: 通过 import 方式引入 Spring Boot 的依赖管理，确保所有 Spring Boot 相关依赖的版本一致。
+
+<version>${spring-boot.version}</version>: 使用之前定义的 spring-boot.version 属性（即 2.6.13）。
+
+<type>pom</type>: 表示这是一个 POM 类型的依赖。
+
+<scope>import</scope>: 表示将该依赖的依赖管理导入当前项目。
+
+===构建配置
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+                <encoding>UTF-8</encoding>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <version>${spring-boot.version}</version>
+            <configuration>
+                <mainClass>com.itheima.one.spweb.SpwebApplication</mainClass>
+                <skip>true</skip>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>repackage</id>
+                    <goals>
+                        <goal>repackage</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+
+<build>: 定义了项目的构建配置。
+
+<plugins>: 配置 Maven 插件。
+
+maven-compiler-plugin: 配置 Maven 编译器插件。
+
+<source>: 指定源代码的 Java 版本为 1.8。
+
+<target>: 指定编译后的字节码版本为 1.8。
+
+<encoding>: 指定编译时的编码为 UTF-8。
+
+spring-boot-maven-plugin: Spring Boot 提供的 Maven 插件，用于打包和运行 Spring Boot 应用。
+
+<mainClass>: 指定项目的主启动类（如 com.itheima.one.spweb.SpwebApplication）。
+
+<skip>true</skip>: 跳过某些操作（例如打包），通常用于调试或特殊场景。
+
+<executions>: 定义了插件的执行目标。
+
+<execution>: 配置一个执行任务。
+
+<id>repackage</id>: 任务的唯一标识符。
+
+<goals>: 定义任务的目标，repackage 表示重新打包项目。
+
+---------------
+
+
+
+

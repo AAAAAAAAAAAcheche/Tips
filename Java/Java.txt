@@ -1,0 +1,2336 @@
+跨台原理
+
+										    (表面上是java.exe命令,实际底层会动态调用JVM，真正启作用的是JVM)
+	   		 编译javac.exe					  执行java.exe
+源文件A.java--------------->字节码文件A.class--------------->windows(JVM)
+
+JVA(Java Virtual Machine 一个虚拟的用于执行bytecode字节码的“虚拟计算机”)
+
+安装JDK（具备java开发环境）
+包含javac.exe java.exe JVM(将字节码文件翻译成当前操作系统可识别的执行文件格式)
+------------------------
+
+API(应用程序编程接口) = JDK文档（使用手册）
+curl -O https://download.oracle.com/java/21/latest/jdk-21_doc-all.zip
+
+-------------------------
+
+文档注释
+常用的javaDoc标签
+@author		标记文档化类的接口的作者
+@version	标记指定类或接口的版本
+@param		标记用于文档化参数
+
+可以在控制台用javadoc命令查看javadoc命令怎么使用
+
+eg:
+javadoc -d filename -version -author Name.java
+
+---------------------
+
+\t 制表符位置（8位）
+
+\n 换行
+
+----------------------
+
+IDE（集成开发环境）用于提供程序开发环境的应用程序
+
+----------------------
+
+IDEA的快捷键
+
+生成get set方法
+alt+insert
+
+出语句 	
+sout
+
+复制行 		
+ctrl+d
+
+删除行 		
+ctrl+y
+
+main方法 	
+psvm
+
+创建内容（创建模块，创建包，创建类等）
+alt+insert
+
+代码向上/向下移动
+ctrl+shift+up/down
+
+搜索类
+ctrl+n
+
+生成代码(构造方法等)
+alt+insert
+
+百能快捷键（导包，生成变量）
+alt+enter
+
+注释
+ctrl+/ 			(单行)
+ctrl+shift+/	(多行)
+
+重命名
+shift+f6
+
+for循环
+fori+回车
+
+代码块包围(try-catch,if,while等)
+ctrl+alt+t
+
+显示代码结构
+alt+7
+
+显示Project导航栏
+alt+1
+
+撤回
+ctrl+z
+
+缩进
+tab
+
+取消缩进
+shift+tab
+
+导入包
+alt+enter
+
+-------------------
+
+十进制数					99,-500
+八进制数(0开头)				015
+十六进制数(0x开头)			0x15
+二进制数(0b开头或0B开头)	0b15
+
+--------------------
+
+字符类型
+
+char a = '中';
+System.out.println(a);
+System.out.println(a + 1);
+
+output:
+中
+20014
+
+char ch1 = (char)20013;
+System.out.println(ch1);
+
+output:
+中
+
+char ch2 = '2' + 2;
+// '2' = 50; 50 + 2 = 54; 54 = '4'
+System.out.println(ch2);
+
+output:
+4
+
+---------------
+
+布尔类型
+
+true 或者 false, 在内存中占一位（不是一个字节）
+false = 0, true = 1
+
+----------------
+
+基本数据类型的转换
+
+long 8byte
+
+double 8byte
+
+int 4byte
+
+自动类型转换（数据范围小的变量可以直接赋值给数据范围大的变量，自动类型转换其本质就是在较小的数据前面补若干个字节）
+byte: 12 ---> 00001100 1个字节
+ |
+ V
+int: 12  ---> 00000000 00000000 00000000 00001100 4个字节
+
+强制类型转换（强行将范围大的数据，赋值给范围小的变量。强制类型转化的原理就是强行把前面的字节砍掉，有数据丢失的风险）
+int: 270 ---> 00000000 00000000 00000001 00001110
+ |
+ V
+byte: 14 ---> 00001110
+目标数据类型 变量名 = (目标数据类型)被转换的数据;
+
+
+转化阶梯
+byte ---> short ---> int ---> long ---> float ---> double
+					 /
+  		   char ----/
+当参与运算的数据都需要转化为同一种数据类型时，需要转化为整个表达式中级别最高的类型
+
+------------------------
+
+final
+变量被final修饰，变量就变成常量了，其值不可以被修改，被final修饰的常量约定俗成的规定：字母全部大写
+final修饰的常量属于：字符常量
+
+final double PI = 3.1415926;
+
+------------------------
+
+运算符号使用
+
+++i 	先加1，后运算
+--i 	先运算，后加1
+
+++		自减
+--		自增
+/		除法运算
+%		求余运算
+
++=		加等运算
+-=		减等运算
+*=		乘等运算
+/=		除等运算
+%=		求余等运算
+
+sum += num 				---> 		sum = sum + num
+编译效率高，可读性差				可读性好，编译效率低，手动进行类型转换
+底层自动进行类型转换
+ |
+ V
+byte a = 10;
+int b = 20;
+a += b; (自动转换类型)
+a = (byte)a + b; (需要手动转换类型 否则报错)
+
+&		a&b		与		ab有一个为false则为false
+&&		a&&b	短路与	ab都true则true，a为false则不计算b 结构为false
+|		a|b		或		ab都为false 结果为false，其中一个为true 则为true
+||		a||b	短路或	ab都为false 结果为false，第一个条件为true 则不计算b 结果为true
+!		!a		非		a为true 结果是false，反之
+^		a^b		异或	ab相同为false，不同为true
+
+逻辑运算符：左右连接的是布尔类型的操作数
+位运算符：左右连接的是数值型数据
+
+<<		把左边的运算数的各二进制位数左移，高位丢弃，低位补0
+>>		反之
+
+3 << 2 = 12 ---> 3 * 2^2 = 3 * 4 = 12
+00000000 00000000 00000000 00000011 ---> 3
+00000000 00000000 00000000 00001100 ---> 12
+
+5乘8的最快方式: 5 << 3 = 5 * 2^3 = 5 * 8 = 40
+
+6 >> 2 = 1
+00000000 00000000 00000000 00000110 ---> 6
+00000000 00000000 00000000 00000000 ---> 1
+
+6 & 3 = 2
+00000000 00000000 00000000 00000110 ---> 6
+00000000 00000000 00000000 00000011 ---> 3
+=----------------------------------------
+00000000 00000000 00000000 00000010 ---> 2
+
+6 | 3 = 7
+00000000 00000000 00000000 00000110 ---> 6
+00000000 00000000 00000000 00000011 ---> 3
+=----------------------------------------
+00000000 00000000 00000000 00000111 ---> 7
+
+6 ^ 3 = 5
+00000000 00000000 00000000 00000110 ---> 6
+00000000 00000000 00000000 00000011 ---> 3
+=----------------------------------------
+00000000 00000000 00000000 00000101 ---> 5
+
+~ 6 = -7
+00000000 00000000 00000000 00000110 ---> 6
+11111111 11111111 11111111 11111001 ---> -6	取反
+11111111 11111111 11111111 11111000 ---> -7 补码转十进制(最高位为1代表负数，需将补码转为原码 -1)
+00000000 00000000 00000000 00000111 ---> 7
+
+
+--------------------
+
+三元运算
+
+a ? b : c
+
+a（常量 变量 表达式 方式的返回值）为布尔值
+a = true	 结果返回b
+a = false 	 结果返回c
+
+----------------------
+
+方法（method）就是一段用来完成特定功能的代码片段，是一种语法结构，它可以把一段代码封装成一个功能，以便于重复使用
+
+什么是方法：
+对特定的功能进行提取，形成一个代码片段，这个代码片段是我们所说的方法
+
+方法和方法是并且的关系还是包含的关系:
+方法与方法之间是并列的关系 顺序不重要 但是方法不能放在方法里！！！
+
+方法的定义：
+修饰符1 修饰符2 ... 返回值类型 方法名 (形式参数列表){
+	方法体(需要执行的代码片段);
+	return 返回值;
+}
+
+eg
+public static int add(int num1, int num2){
+	int sum = num1 + num2;
+	return sum;
+}
+
+方法执行必须怎么办：
+必须进行调用 方法名（实例列表）
+
+方法的作用：
+提高代码复用性
+让逻辑更清晰
+
+定义方法时，需要考虑什么因素：
+考虑方法是否有返回值，返回的值类型是什么，如果没有返回值用void关键字 需要几个参数
+
+面向过程和面向对象的区别
+面向过程：考虑怎么做 注重的是事件的具体的步骤/过程
+面向对象：注重“参与者” 谁的数据谁处理 功能封装进对象 考虑谁来做
+
+-----------------------
+
+类的编写
+
+编写类名（驼峰命名法）
+属性（成员变量）
+	修饰符 属性类型 属性名 = 默认值;
+方法（成员方法）
+
+创建对象
+	类名 对象名 = new 类名();
+	对象名.成员变量 = 默认值;
+
+匿名对象(如果只用一次的话)没有名字的对象
+	new 类名().成员变量 = 默认值;
+	new 类名().方法();
+
+成员变量
+	位于类中，方法之外的变量，即属性(整个类)
+	没有赋值均为0（默认值 = 0）
+	不用初始化，有默认值
+
+局部变量
+	位于类中，并处于方法中或代码块中的变量（方法中）
+	没有默认值
+
+构造器(构造方法)
+	修饰符 构造方法名 （形参）{方法体}
+	创建对象的代码，对象会去调用一个方法，这个方法就是构造方法（构造器）
+	调用构造器的时候，如果你的类中没有写构造器，那么系统会默认给你分配一个构造器，只是我们看不到罢了。类在设计时，如果不写构造器，jav是会为类自动生成一个无参构造器的
+	构造器和方法的区别：
+		无返回值
+		方法内部不能有return+返回值语句
+		构造器的名字特殊，必须跟类名一样
+eg
+public class Person {
+    /**
+     * age
+     */
+
+    int age = 10;
+
+    public Person(){
+        System.out.println("构造器");
+    }
+
+    public void eat(){
+        System.out.println("吃");
+    }
+}
+
+public class fun {
+    public static void main(String[] args) {
+        Person p = new Person();
+
+        p.eat();
+    }
+}
+
+Output:
+构造器
+吃
+
+	构造器的作用：
+		不是为了创建对象，因为调用构造器之前，这个对象就已经创建好了，并且属性有默认的初始值的值。
+		调用构造器的目的是创建对象时，同时完成对成员变量（属性）的初始化赋值
+
+eg
+public Person(){
+	age = 10;
+	name = "Lucy"
+}
+
+public static void main(String[] args){
+
+	Person p = new Person();
+
+	System.out.println(p.age);
+	System.out.println(p.name);
+
+}
+
+Output:
+10
+Lucy
+
+	空参数构造器：构造方法没有参数
+	带参数构造器：构造方法有参数，参数个数按照及时需求去定义即可
+	
+	如果编写了带参构造器，系统就不会自动创建空参构造器
+
+	尽量保证空构造器的存在(在创建了有参构造器的情况下)
+
+	一般不会在空构造器中进行初始化操作，因为那样的话每个对象的属性就都一样了。不我只要保证空构造器的存在就可以了，里面不用写东西
+
+-----------------------
+
+内存分析
+
+栈(虚拟机栈)：方法运行时所进入的内存(局部变量，形参)
+堆：new出来的东西会在这块内存中开辟空间并且产生地址，存放字符串常量池(对象，数组)
+方法区：存放类信息的地方(字节码信息，字符串常量池)
+
+eg:
+
+public class Person{
+	int id;
+	int age;
+	Person(int a, int b){
+		id = a;
+		age = b;
+	}
+}
+
+class Test{
+	public void change(Person p){
+		p.id = 2;
+		p.age = 18;
+	}
+	public static void main(String[] args){
+		
+	}
+}
+
+-------------------------
+
+创建对象的过程
+1	在第一次遇到一个类的时候，对这个类进行加载，只加载一次
+2	创建对象，在堆中开辟空间
+3	对对象进行初始操作，属性赋值都是默认的初始值
+
+--------------------------
+
+this的用法
+
+this可以修饰属性:
+this.age
+this.name
+this.heigth
+
+this可以修饰构造器:
+this修饰构造器必须放在第一行
+可以在构造器里面调用别的带参数的构造体
+
+public Person(int age, String name){
+	this(age);
+	this.name = name;
+}
+
+public Person(int age){
+	this.age = age
+}
+
+this(age)调用当前类里面的带一个参数的构造体
+
+---------------------
+
+		静态
+  特性               说明
+类级别共享	静态成员属于类本身，所有实例共享同一份资源。
+生命周期长	静态成员在类加载时初始化，程序结束时销毁。
+访问便捷性	通过类名直接访问，无需创建对象。
+功能独立性	静态方法不依赖对象状态，适合工具类、工厂类等场景。
+
+-------------------
+
+static修饰
+
+static可以修饰 属性 方法 代码块 内部类 (不可以修饰构造器)
+
+类加载的时候，会讲静态内容也加载到方法区的静态域中（静态内容被所有该类的对象共享）
+静态先于对象被加载
+
+官方访问方式:类名.属性名 =    来访问
+eg:
+public class Test{
+	static int age;
+	public static void main(String[] args){
+		Test.age = 100;
+		System.out.println(Test.age);
+	}
+}
+
+eg:
+public class Student{
+	String name;
+	int age;
+//	String school;
+	static String school;
+		
+	public static void main(String[] args){
+
+		Student.school = "Java"
+
+		Student s1 = new Student();
+		s1.name = "Fcc";
+		s1.age = 19;
+//		s1.school = "Java";
+
+		Student s2 = new Student();
+		s2.name = "IOI";
+		s2.age = 100;
+//		s3.school = "Java";
+		
+	}
+}
+
+
+修饰方法时 public 和 static 先后无关紧要
+
+普通的方法里	访问静态和非静态的属性都是可以的
+静态方法里 		不能访问非静态属性(以及非静态方法 应为静态方法先于非静态方法加载，有时间差问题)(静态方法中不能访问this关键字)(静态方法可以用 对象名.方法名 去调用)
+
+方法在同一个类中可以直接调用
+
+-------------------------
+
+类的组成
+属性 方法 构造器 代码块 内部类
+
+------------------------
+
+代码块: 
+
+普通块	限制局部变量的作用范围
+静态块	优点是类在加载的时候就被加载了
+构造块 	在代码块外写代码
+同步块	
+
+顺序：
+静态块（只执行一次 用于数据库的初始化信息 一般用于执行一些全局性的初始化操作）
+ |
+ V
+构造块(不常用)
+ |
+ V
+构造器
+ |
+ V
+方法中的普通块
+
+---------------------------
+
+导入包
+
+1 	使用不同包下的类需要导包：import **.**.**;
+
+2	在导包以后，还想用其他包下同名的类，就必须要手动写所在的包
+
+3	同一个包下的类想使用不需要导包，可以直接使用
+
+4	在java.lang包下的类，可以直接使用无需导包
+	System.out.println(Math.random());
+
+5	IDEA中导包快捷键：alt+enter
+
+6	可以直接导入
+	import java.util.*;
+	import java.util.HashMap;
+
+导入的包没有包含和被包含的关系
+
+//导入 java.lang下的Math类中的所有静态的内容
+import static java.lang.Math.*;
+
+静态导入后，同一个类中有相同的方法的时候，会优先走自己写的方法
+
+import static java.lang.Math.*;
+
+public class test{
+	public static void main(String() args){
+		System.out.println(round(5.6));
+		System.out.println(abs(-10));
+	}
+	public static int round(double a){
+		return 100;
+	}
+}
+
+Output:
+100
+10
+
+------------------
+
+程序设计追求（高内聚，低耦合）
+高内聚：类的内部数据操作细节自己完成，不允许外部干涉
+低耦合：仅对外暴露少量的方法用于使用
+
+面向对象三大特性
+
+封装（将某些东西进行隐藏，然后提供相应的方式进行获取）
+	提高代码安全性
+
+继承(父类/基类/超类 子类/派生类)
+	提高代码复用性
+	便于代码的扩展
+	为了以后多态的使用
+
+	父类private修饰的内容：
+		一个父类可以有多个子类
+		一个子类只能有一个直接父类 但是可以间接的继承其他类 继承具有传递性
+		Object是所有类的根基父类（所有类都直接或者间接的继承自Object）
+
+	类是对对象的抽象	荣耀20，红米3，华为p40 ---> 类：手机类
+	继承是对类的抽象：
+		学生类：Student
+		属性：姓名，年龄，身高，学生编号
+		方法：吃饭，睡觉，喊叫，学习
+
+		教师类：Teacher
+		属性：姓名，年龄，身高，教室编号
+		方法：吃饭，睡觉，喊叫，教学
+
+		员工类：Emploee
+		属性：姓名，年龄，身高，员工编号
+		方法：吃饭，睡觉，喊叫，工作
+
+		共同的东西
+		人类
+		属性：姓名，年龄，身高
+		方法：吃饭，睡觉，喊叫
+
+		学生类/教师类/员工类 继承自 人类
+
+		以后定义代码：子类继承父类 父类涵盖了所有相同的属性和方法 子类不用再再次定义
+		先定义人类 		(父类)	
+		再定义员工等	(子类)
+
+多态
+
+------------------
+
+权限修饰符
+			同一个类	同一个包	子类	所有类
+private		   *
+default		   *		   *	
+public	   	   *		   *		 * 		  *
+protected	   *		   *		 *		  
+
+代码一般属性用private修饰 方法用public修饰
+
+---------------------
+
+重写Override
+	子类和父类中 当子类对父类提供的方法不满意的时候，要对父类的方法进行重写
+
+重写要求
+	子类的方法名字和父类必须一致（包括个数，类型，顺序）修饰符 返回值 可以不一样
+
+重载和重写的区别
+	重载(Overload)：在同一个类里面 方法名相同 形参列表不同(如参数的类型 参数的个数 参数的顺序)
+	eg:
+		public static int add(int a){
+			return a;
+		}
+		public static int add(int a, int b){
+			return b;
+		}
+
+	重写：同上
+
+		 位置		修饰符	返回值	方法名	  参数	 抛出异常	方法体	
+	重载 同一个类中  无关	 无关  必须相同 必须不同   无关		 不同
+	重写 子父类中	  *	  	  *    必须相同 必须相同  小于等于   不同
+				      |       |
+					  |	      V
+					  |	    父类的返回值类型大于子类
+					  V
+					父类的权限修饰符要低于子类的
+
+--------------------
+
+super修饰(可以修饰 属性 方法)
+
+super和this一样 只是一个指 父类（super） 一个指本类/子类（this）
+
+通常情况下可以不写 在本类有age的情况下想要访问父类的属性就可以使用super(子类和父类的属性重名的情况)
+
+super.eat()	 					调用父类的方法
+super.age	 					调用父类的age
+age		 	 					调用本类的age
+
+	都要放第一行 (因为两个构造器都要放在第一行 使用super调用父类 和this调用本类 的构造器只能存在一个)
+eg: 
+---错---误---案---例---
+public Student(int age, String name, double score){
+	super(age, name);
+	this(score);
+}
+---错---误---案---例---
+
+
+super()							调用父类的构造器
+super(value1, value2, ....)		调用父类的带参构造器
+this()							调用本类构造器
+this(value1, value2, ....)		调用本类的带参构造器
+
+
+eg:
+
+public class Student extends Person{
+	
+	int score;
+	
+	public Student(){
+		super();
+	}
+
+	public Student(int age, String name){
+		
+		// 法1
+		super.age = age;
+		super.name = name;
+
+		// 法2
+		super(age, name);
+	}
+
+	public Student(int age, String name, double score){
+		
+		// 法1
+		super.age = age;
+		super.name = name;
+
+		// 法2
+		super(age, name);
+		this.score = score;
+	}
+	
+}
+______________________
+
+toString方法
+
+public static void main(String[] args){
+	Student s = new Student("kali", 10, 29.2);
+	System.out.println(s);
+	System.out.println(s.toString);
+}
+
+Output:
+com.gg.test10.Student@368102c8
+com.gg.test10.Student@368102c8
+
+方法原理
+getClass().getName() + '@' + Integer.toHexString(hashCode)
+		| 				|				|               
+		V				V				V
+com.gg.test10.Student   @			368102c8
+	全限定路径： 				  
+  包名+类名的完整表示			 hasCode()-->将对象在堆中的地址进行哈希算法
+									，返回一个码-->哈希码
+							将这个哈希码传到Integer.toHexString(哈希码)中
+								返回一个字符串，这个字符串是一个十六位的数
+										对应的字符串
+
+								对象-->堆中分配地址-->进行哈希操作-->哈希码-->转成16禁止-->String
+
+两个输出的是一样的 toString是Object类里面的方法
+其实System.out.println(s)就是省略了.toString
+本质上就是在调用toString
+
+Object的toString的作用（看API）
+返回该对象的字符串表示
+通常toString方法会返回一个“以文本方式表示”此对象的字符串
+
+不满意可以重写
+public String toString(){
+	return ".....";
+}
+
+toString的作用就是对对象进行“自我介绍”，一般子类对父类提供的
+______________________
+
+equals方法(Object类)
+
+== 比较的是地址
+
+Phone p = new Phone("Apple", 1000.23, 2023);
+Phone p2 = new Phone("Apple", 1000.23, 2023);
+
+System.out.println(p == p2);
+
+Output:
+false(因为比较的是地址,东西一样 但是地址不一样 所以是false)
+
+equals方法底层依然是比较地址（使用==）
+所以我们需要重写equals
+
+	@Override
+    public boolean equals(Object obj){
+        // 将obj转为Phone类型
+        Phone other = (Phone)obj;
+        if(this.getBrand() == other.getBrand() &&
+                this.getPrice() == other.getPrice() &&
+                this.getYear() == other.getYear()){
+            return true;
+        }
+        return false;
+    }
+
+这样再次比较就是相同的了
+
+当再次创建一个cat类
+cat c = new cat();
+System.out.println(p1.equals(c))
+出现报错 显示数据类型转换错误
+这时候我不想要报错可以添加一个判断
+
+instanceof是用来判段 a 是否是 b 的实例 返回true/false
+a instanceof b
+_____________________
+
+		类与类之间的关系
+
+package com.gg.test12;
+
+public class Girl {
+
+    // Attribute
+    private String name;
+    private int age;
+    /**
+     * 如果不初始化的话 可能会显示空指针的错误 因为Mon m本身就没有初始值 所以 Mon m = null
+     * 我们需要把它具体化
+     */
+    Mon m = new Mon();
+
+    // Constructor
+    public Girl(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public Girl(){}
+
+    // set,get method
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public int getAge(){
+        return age;
+    }
+
+    public void setAge(int age){
+        this.age = age;
+    }
+
+    // method
+
+    /**
+     *
+     * @param a
+     *
+     * 这里的形参是基本数据类型
+     */
+    public void add(int a){
+        System.out.println(a);
+        System.out.println(a + 100);
+    }
+
+    /**
+     *
+     * @param b
+     *
+     * 这里的形参是引用数据类型Boy
+     */
+    public void Love(Boy b){
+        System.out.println("男朋友的名字是：" + b.name + "\n男朋友的年龄是：" + b.age);
+        b.Buy();
+    }
+
+    public void wechat(){
+        m.say();
+    }
+
+}
+
+
+++
+
+package com.gg.test12;
+
+public class Boy {
+
+    // Attribute
+    String name;
+    int age;
+
+    // Constructor
+    public Boy(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public Boy(){}
+
+    // method
+    public void Buy(){
+        System.out.println("hello ! dear !");
+    }
+
+}
+
+++
+
+package com.gg.test12;
+
+public class demo {
+    public static void main(String[] args) {
+        Boy b = new Boy("kali", 12);
+        Girl g = new Girl("lucy", 12);
+
+        g.Love(b);
+		g.wechat();
+	
+		g.m = new Mon("KK")
+		g.wechat();
+    }
+}
+
+++
+
+package com.gg.test12;
+
+public class Mon {
+
+	private String name = "Lucy";
+
+	public Mon(String name){
+		this.name = name;
+	}
+
+	public Mon(){}
+
+    public void say(){
+        System.out.println("My name is " + this,name + " , lets talk !");
+    }
+
+}
+
+
+类与类产生关系
+	|
+	V
+将一个类作为另一个类中的方法的形参
+将一个类作为另一个类的属性
+
+类与类的关系
+1 继承关系（父子类）
+2 实现关系
+3 依赖关系（让b类作为参数在a类中某个方法使用，Boy和Girl的例子）
+4 关联关系（b类以属性的形式出现在a类中，Mon的例子）
+5 聚合关系（代码层面上，和关联关系是一样的）
+6 组合关系（代码层面，与关联关系也是一致的）
+
+______________________
+
+
+		多态
+
+同一个行为，不同的子类表现出不同的形态
+多态就是用同一个方法调用，然后由于对象不同产生不同的行为
+多态跟属性无关，多态指的是方法的多态，而不是属性的多态
+
+多态的好处
+为了提高代码的扩展性(但是扩展性不是最好的，反射是最好的),符合面向对象的设计原则:开闭原则
+开闭原则:指的是扩展是开放的，修改是关闭的
+
+多态应用场合
+1 父类当做方法的形参，传入具体的子类对象
+2 父类当做方法的返回值，返回的是具体的子类的对象
+3 接口当做方法的形参，传入具体的实现类的对象
+4 接口当做方法的返回值，返回的是具体的实现类的对象
+
+多态的要素
+继承
+重写
+父类引用指向子类对象
+
+pig p = new pig();
+animal an = p;
+将上一句话代码合为一句话
+animal an = new pig();	左侧为编译期的类型 右侧为运行期的类型
+
+先有父类再有子类--->继承
+先有子类再有父类--->泛化
+
+父类当方法的形参，然后传入的是巨体的子类的对象，调用方法，根据传入的子类数据的不同，展现出来的效果也不同，构成多态
+
+package com.gg.test13;
+
+public class demo {
+    public static void main(String[] args) {
+        Girl g = new Girl();
+
+        Cat c = new Cat();
+        g.play(c);
+
+        Dog d = new Dog();
+        g.play(d);
+
+        animal a = c;
+        g.play(a);
+
+        animal b = d;
+        g.play(b);
+    }
+}
+
+++
+
+package com.gg.test13;
+
+public class animal {
+
+    public void shout(){
+        System.out.println("叫");
+    }
+
+    public void scratch(){
+        System.out.println("抓");
+    }
+
+}
+
+++
+
+package com.gg.test13;
+
+public class Girl {
+
+    public void play(animal c){ // animal c = d = new Dog()
+        c.shout();
+        c.scratch();
+    }
+
+}
+
+++
+
+package com.gg.test13;
+
+public class Dog extends animal{
+
+    @Override
+    public void shout(){
+        System.out.println("wof wof ");
+    }
+
+    @Override
+    public void scratch(){
+        System.out.println("wof wof ");
+    }
+
+    public void guard(){
+        System.out.println("protect");
+    }
+
+}
+
+++
+
+package com.gg.test13;
+
+public class Cat extends animal{
+
+    @Override
+    public void shout(){
+        System.out.println("cat miao miao");
+    }
+
+    @Override
+    public void scratch(){
+        System.out.println("cat miao miao");
+    }
+
+}
+
+
+
+_____________________
+
+		向下转型 向上转型
+
+package com.gg.test13;
+
+public class demo{
+	public static void main(String[] args){
+		Girl g = new Girl();
+		Pig p = new Pig();
+		animal an = p;
+
+		an.shout();		// 不报错
+		an.eat();		// 报错
+		an.age;			// 不报错
+		an.weight;		// 报错
+	}
+}
+
+报错原因：
+an在编译期的时候是animal类型，在animal中没有eat方法，也没有weight属性，这个属性和方法是Pig中的
+an只能看到空间中animal部分的内容
+
+硬要访问eat()方法和weight属性的时候可以加入转型代码
+将animal转为Pig类型	
+
+Pig p = new Pig();
+animal an = p; 	   // 向上转型(子类往父类转)
+
+an.shout();
+Pig pig = (Pig)an; // 向下转型(父类往子类转)
+pig.eat();
+pig.weight;
+pig.age;
+_________________________
+
+		简单工厂设计模式
+
+不仅可以使用父类做方法的形参，也可以让父类作为方法的返回类型，真实的返回对象可以是任意子类的对象
+
+简单工厂模式是解决大量的创建问题的一个解决方案，将创建和使用分开，工厂负责创建，使用者直接调用
+1 定义一个static方法（可以通过类名直接调用）
+2 返回值的类型是父类类型，返回的可以是任意子类类型
+3 传入一个字符串类型的参数，工厂根据参数创建对应的子类产品
+
+
+pckage com.gg.test13;
+
+public class PetStore { // 工厂类
+
+    public static Animal getAnimal(String PetName){// 多态的应用场合
+
+        // 局部变量初始化
+        Animal an = null;
+
+        // PetName.equals("cat") 如果传进来一个空 就会发生空指针异常
+        if("cat".equals(PetName)){
+            an = new Cat();
+        }
+
+        if("dog".equals(PetName)){
+            an = new Dog();
+        }
+
+        return an;
+    }
+
+}
+______________________
+
+		final修饰符
+
+final修饰变量
+
+情况1
+final修饰变量就不可改变,这个变量成为字符常量，名字大写（约定俗成）
+final int A = 10;
+
+情况2
+final修饰引用数据类型，那么地址值不可改变,但是属性依然可以改变
+final Dog d = new Dog("bobo", 11);
+// d = new Dog("kali", 12)  报错
+d.age = 10;
+d.name = "sansan"
+
+情况3
+final Dog d2 = new Dog();
+a(d2)
+
+public static void a(Dog d){
+	d = new Dog();
+}
+
+这个情况是可以的因为d2的地址没有变 d的地址改变了
+
+情况4
+final Dog d2 = new Dog();
+b(d2)
+
+public static void b(final Dog d){
+	d = new Dog(); 报错
+}
+
+d2的地址不变 传入b方法后d的地址也不变，d的地址是b方法传入的d2的地址，d不可改变地址 所以报错
+
+
+final修饰方法
+
+package com.gg.test14;
+
+public class Person {
+    public final void eat(){
+        System.out.println("eat");
+    }
+}
+
+class Student extends Person{
+    @Override
+    public void eat(){
+        super.eat();
+    }
+}
+
+修饰后子类不可重写
+
+
+final修饰类
+
+如果是public final class Person{
+}
+
+那么此类不可被继承
+_____________________
+
+		抽象类抽象方法
+
+在一个类中会有一类方法是子类永远不会被满足，会对这个方法进行重写
+
+一个方法的方法体去掉，然后被abstract修饰，那么这个方法就是抽象方法
+一个类中如果有方法是抽象方法，那么这个类也要变成一个抽象类
+一个抽象类中有0-n个抽象方法
+
+抽象类可以被其他的类继承
+抽象类的作用是为子类提供一个通用的模版,子类可以在模版的基础上进行开发,先重写父类的抽象方法可以扩展子类自己的内容，抽象方法避免了子类设计的随意性
+
+类似于Animal的方法 每个动物不同的叫法，所以每次都要重写，那么父类的方法就可以写成抽象方法 Animal成为一个抽象类 限制子类随意发挥又可以扩展内容
+
+法1
+abstract class Student extends Person{}
+
+法2
+class Student extends Person{
+	@Override
+	public void say(){
+		System.out.println("666");
+	}
+}
+
+一个类继承抽象类，那么这个类可以变成抽象类
+但是一般子类不会加abstract修饰，一般会让子类重写父类的抽象方法
+子类继承抽象类就必须重写所有的抽象类
+如未全部重写，那么子类可变为抽象类
+
+package com.gg.test15;
+
+public abstract class Person {
+
+    public void eat(){
+        System.out.println("滚");
+    }
+
+    public abstract void say();
+    public abstract void sleep();
+
+}
+
+class Student extends Person{
+    @Override
+    public void say() {}
+    
+    @Override
+    public void sleep() {}
+}
+
+创建抽象类的对象，抽象类不可以创建对象
+但是创建子类对象是可以的
+
+class demo{
+	public static void main(String[] args){
+
+		Person p = new Person(); // 报错
+
+		Student s = new Student();
+		s.sleep();
+		s.say();
+
+	}
+}
+_________________
+
+		接口
+
+类是类，接口是接口
+
+接口中没有构造器
+
+接口的意义
+	•	规定规范：接口定义了一组方法，谁实现了这个接口，就必须按照这个规范来实现方法。
+	•	解耦合：让代码之间的依赖关系变松散，便于维护、扩展。
+	•	多态性：一个接口可以有很多不同的实现，程序可以根据不同实现表现出不同行为。
+
+继承：子类对父类的继承
+实现：实现类对接口的实现
+eg:
+	继承：	手机 extends 照相机	（这是一个“is-a”的关系 手机是照相机 有点怪，应为如果是交卷相机的话，这句话就不对）
+	接口：	手机 implements 照相功能 (实现是“has-a” 手机具备照相的能力,手机实现照相功能 这句很顺了)
+
+声明接口
+	public interface Person{}
+
+在JDK1.8之前，接口中只有两个部分
+常量：		有固定修饰符	public static final
+抽象方法：	固定修饰符		public abstract
+public interface Person{
+	public static final int NUM = 10;
+	public abstract void a();
+	public abstract int b(String name);
+}
+
+类和接口是 实现关系
+实现一个接口后需要把接口里面的所有抽象方法重写
+class Student implements Person{
+	@Override
+	public void a(){
+		...
+	}
+
+	@Override
+	public int b(String name){
+		...
+		return 0;
+	}
+}
+
+如果没有重写全部的抽象方法 需要转为抽象类
+abstract class Student implements Person{
+	@Override
+	public void a(){
+		...
+	}
+}
+
+java只有单继承，但是有多实现
+一个类继承其他类，只能继承一个父类
+但是实现类实现接口的话，可以实现多个接口
+
+extends只能放前面 注意！！！
+class Student extends Other implements Person{
+
+}
+
+实现多个接口
+
+class Other{
+	int A = 19;
+	String name = "kaka";
+}
+
+class interface Person_1{
+	int NUM = 10;
+	void a();
+}
+
+interface Person_2{
+	void e();
+	void d(String name);
+}
+
+class Student extends Other implements Person_1,Person_2{
+	@Override
+	void a(){}
+	void e(){}
+	void d(String name){}
+}
+
+--eg:
+package com.gg.test16;
+
+public interface A {
+    public static final int AK = 19;
+    public abstract int A22(String name);
+}
+
+interface A1{
+    public abstract void A11();
+}
+
+class B{
+    int KK = 99;
+    String name = "kaka";
+}
+
+class Student extends B implements A1,A{
+    @Override
+    public void A11(){
+        System.out.println("A11");
+    }
+
+    @Override
+    public int A22(String name) {
+        return 0;
+    }
+}
+
+接口不能创建对象 但是可以 父类引用指向子类对象
+interface i = new interface();  报错！！！
+interface i = new Student();	成功 接口指向实现类（多态）
+
+接口中的常量访问
+
+1 接口.常量 ---> interface.NUM;
+
+2 实现类.常量 ---> interface i = new Student();
+				 Student.NUM;
+3 Student s = new Studnt();
+	s.NUM
+
+在JDK1.8之后，新增了非抽象方法
+1 用public default修饰的非抽象方法
+	接口中必须加default 但是实现类中不能加default 否则报错
+	public interface A{
+		public default void B(){
+			System.out.println("Hello interface");
+		}
+	}
+
+	class Student implements A{
+
+		// 可以这么调用的
+		public void C(){
+			b();
+			A.super.b();
+		}
+		
+		@Override
+		public void B(){
+			System.out.println("Hello interface");
+		}
+		
+	}
+
+2 静态方法
+	static不可以省略不写
+	静态方法不能重写 所以如果子类重新写static方法后，也可以直接调用接口的静态方法
+	public interface I{
+		public static void A(){
+			System.out.println("I的静态方法");
+		}
+	}
+
+	class Student implements I{
+		public void A(){
+			System.out.println("Student的静态方法");
+		}
+	}
+
+	class B{
+		public static void main(String[] args){
+			Student s = new Student();
+			s.A();
+			Student.c();
+			I.A();
+		}
+	}
+
+在接口中添加非抽象类方法是为了修改放便，如果不添加 那么我在接口中加入一个抽象方法，所有的实现类都要更改，非常的麻烦
+
+____________________________
+
+		内部类：成员内部类
+
+package com.gg.demo18;
+
+/**
+ * 类的组成：属性，方法，构造器，代码块（普通快，静态块，构造块，同步块），内部块
+ *
+ * ------------
+ *
+ * 一个类A的内部的类B叫内部类   B：内部类   A：外部类
+ *
+ * 内部类：成员内部类 局部内部类
+ * 位置：方法内 块内 构造器内
+ *
+ * 成员内部类    有属性 方法 构造器 内部类嵌套内部类 等
+ *    修饰符       private default protect public final abstract
+ *
+ * 内部类可以访问外部类的内容(静态只能访问静态属性和静态方法)
+ * 想要获取类的属性可以创建对象
+ *
+ *
+ * 局部内部类
+ *
+ * ------------
+ *
+ * 构造块：构造块（构造代码块）是定义在类中的代码块，其核心功能为 ‌统一管理对象初始化逻辑‌，在每次实例化对象时自动执行
+ * public class User {
+ *     private String name;
+ *     // 构造块
+ *     {
+ *         System.out.println("初始化用户对象");
+ *         name = "默认用";
+ *     }
+ *     public User() {}
+ *     public User(String name) {
+ *         this.name = name;
+ *     }
+ * }
+ *
+ * public class User {
+ *     private String role;
+ *     {
+ *         // 所有构造方法共享的初始化逻辑
+ *         role = "guest";  // 每次创建对象时执行
+ *     }
+ *     public User() {}
+ *     public User(String role) {
+ *         this.role = role;
+ *     }
+ * }
+ *
+ *------------
+ *
+ * 静态块：确保全局配置在类使用时已初始化完成
+ * public class ConfigLoader {
+ *     static String apiKey;
+ *     static {
+ *         // 类加载时读取配置文件
+ *         apiKey = loadFromConfigFile();  // 仅执行一次
+ *     }
+ * }
+ *
+ * ------------
+ *
+ *
+ */
+
+public class demo {
+
+    int a = 100;
+    int age = 1234123;
+    static int b = 200;
+
+    // 非静态内部类
+    public class A{
+        /**
+         * 成员内部类
+         */
+
+        int age = 9;
+        String name = "lisa";
+
+        public void test(){
+            int age = 123;
+
+            // 内部类和外部类属性重名的时候 调用如下
+            // 100
+            System.out.println(a);
+            test();
+            // 123
+            System.out.println(age);
+            // 9
+            System.out.println(this.age);
+            // 1234123
+            System.out.println(demo.this.age);
+        }
+    }
+
+    class K{
+        A a = new A();
+    }
+
+    static class B{
+        /**
+         * 静态成员内部类
+         */
+
+        String name = "kaka";
+
+        public void test(){
+            System.out.println(b);
+            test();
+        }
+    }
+
+    public static void test(){
+        class A{
+            /**
+             * 这个是方法内的内部类
+             */
+        }
+
+        B b = new B();
+
+        System.out.println(b.name);
+
+    }
+
+    public void kk2(){
+        A a = new A();
+        B b = new B();
+
+        System.out.println(b.name);
+        System.out.println(a.name);
+    }
+
+    public demo(){
+        class A{
+            /**
+             * 这个是构器内的内部类
+             */
+        }
+    }
+}
+
+class demo2{
+    public static void main(String[] args) {
+
+        // 创建外部类的对象
+        demo d = new demo();
+        d.kk2();
+
+        // 创建内部类
+        // 静态内部类创建对象
+        demo.B b = new demo.B();
+
+        // 非静态成员内部类创建对象
+//        demo.A a = new demo.A(); 错误
+        demo t = new demo();
+        demo.A a = t.new A();
+    }
+}
+
+_______________________
+
+		内部类：局部内部类
+
+
+pckage com.gg.demo18;
+
+/**
+ * 局部内部类
+ *
+ * 局部内部类中访问到的变量必须是被final修饰的
+ *
+ * 匿名内部类 直接通过接口来创建这个类的对象 没有名字
+ * new Test();
+ * new Array();
+ *
+ */
+
+public class demo2 {
+
+    public void method(){
+//        int a = 20;
+        final int a = 20;
+        class A {
+            public void A(){
+                // 报错 局部内部类中访问到的变量必须是被final修饰的
+//                a = 20;
+//                System.out.println(a);
+
+                System.out.println(a);
+            }
+        }
+    }
+
+    // 如果 B类 在整个项目中只使用一次，那么姐没有必要单独创建一个B类，使用内部类就可以了
+    public Comparable method2(){
+        class B implements Comparable{
+            @Override
+            public int compareTo(Object o) {
+                return 0;
+            }
+        }
+        return new B();
+    }
+
+    // 是上面的简短版
+    public Comparable method3(){
+        // 创建了一个匿名内部类
+        return new Comparable(){
+            @Override
+            public int compareTo(Object o) {
+                return 200;
+            }
+        };
+    }
+
+    // 跟上面一样
+    public void teat(){
+        Comparable com = new Comparable(){
+            @Override
+            public int compareTo(Object o){
+                return 20;
+            }
+        };
+        System.out.println(com.compareTo("abc"));
+    }
+
+}
+
+__________________________
+
+		异常
+
+
+pckage com.gg.demo19;
+
+/**
+ *
+ * 异常
+ *
+ * import java.util.Scanner;
+ *
+ * public class demo {
+ *     public static void main(String[] args) {
+ *         Scanner sc = new Scanner(System.in);
+ *
+ *         System.out.print("请输入第一个数字(A):");
+ *         int a = sc.nextInt();
+ *         System.out.print("请输入第二个数字(B)：");
+ *         int b = sc.nextInt();
+ *         System.out.println(String.format(" A / B = %d", (a / b)));
+ *     }
+ * }
+ *
+ * 出现了两个问题
+ *
+ * 1 除数(分母)为0时 计算出错
+ * 请输入第一个数字(A):123
+ * 请输入第二个数字(B)：0
+ * Exception in thread "main" java.lang.ArithmeticException: / by zero
+ * 	at com.gg.demo19.demo.main(demo.java:30)
+ *
+ * 2 录入的应该为int类型 但是录入的不是int类型
+ * 请输入第一个数字(A):adsf
+ * Exception in thread "main" java.util.InputMismatchException
+ * 	at java.util.Scanner.throwFor(Scanner.java:864)
+ * 	at java.util.Scanner.next(Scanner.java:1485)
+ * 	at java.util.Scanner.nextInt(Scanner.java:2117)
+ * 	at java.util.Scanner.nextInt(Scanner.java:2076)
+ * 	at com.gg.demo19.demo.main(demo.java:50)
+ *
+ * 用if-else解决问题
+ *
+ * public static void main(String[] args) {
+ *         Scanner sc = new Scanner(System.in);
+ *
+ *         System.out.print("请输入第一个数字(A):");
+ *         if(sc.hasNextInt()) {
+ *             int A = sc.nextInt();
+ *             System.out.println("请输入第二个数字(B):");
+ *
+ *             // hasNextInt()
+ *             // 如果通过使用 nextInt() 方法，此扫描器输入信息中的下一个标记可以解释为指定基数中的一个 int 值，则返回 true
+ *             if(sc.hasNextInt()) {
+ *                 int B = sc.nextInt();
+ *                 System.out.println(String.format("A / B = %d", (A / B)));
+ *             }else {
+ *                 System.out.println(String.format("%s", "数据类型错误"));
+ *             }
+ *         }else {
+ *             System.out.println(String.format("%s", "数据类型错"));
+ *         }
+ *     }
+ * 缺点
+ * 代码臃肿
+ * 业务代码和处理异常的代码混在一起
+ * 可读性差
+ * 程序员需要花大量的精力来维护漏洞
+ * 程序员很难堵住所有的漏洞
+ *
+ *
+ * 异常三连 try-catch-finally
+ *
+ * try-catch捕获异常
+ * try {
+ *             System.out.print("请输入第一个数字(A):");
+ *             int A = sc.nextInt();
+ *             System.out.println("请输入第二个数字(B):");
+ *             int B = sc.nextInt();
+ *         }catch (Exception e) {
+ *             System.out.println(String.format("%s", "程序出现异常"));
+ *         }
+ * try中没异常，catch不执行
+ * try中有异常，catch进行捕获
+ * 如果catch中异常类型和出现的异常类型匹配的话，走catch代码进行捕获（捕获成功后 后面代码没有影响）
+ * 反之则不走catch代码，捕获失败，报错
+ *
+ *
+ *
+ * String.format()方法 类似于python的f"{}{}"
+ * 转换符	说明	                示例
+ * %s	    字符串	        String.format("%s", "Hello")
+ * %d	    十进制整数	    String.format("%d", 123)
+ * %f	    浮点数	        String.format("%f", 3.14)
+ * %b	    布尔值	        String.format("%b", true)
+ * %c	    字符	            String.format("%c", 'A')
+ * %x	    十六进制整数	    String.format("%x", 255)
+ * %o	    八进制整数	    String.format("%o", 8)
+ * %e	    科学计数法浮点数	String.format("%e", 1000.0)
+ * %%	    百分号本身	    String.format("%d%%", 50)
+ */
+
+import java.util.Scanner;
+
+public class demo {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        try {
+            System.out.print("请输入第一个数字(A):");
+            int A = sc.nextInt();
+            System.out.print("请输入第二个数字(B):");
+            int B = sc.nextInt();
+            System.out.println(String.format("A / B = %d", (A / B)));
+        }catch (Exception e) {
+            // 第一种处理 什么都不输出
+
+            // 第二种处理 输出字符
+            System.out.println(String.format("%s", "程序出现异常"));
+
+            // 第三种处理 输出异常
+            // 调用toString方法，显示异常类名
+            // method 1 显示异常的类名
+//            System.out.println(e);
+//            System.out.println(e.toString());
+            // method 2 显示异常描述信息对应的字符串，如果没有就显示null
+//            System.out.println(e.getMessage());
+            // method 3 显示异常的堆栈信息，在控制台中将异常的效果展示给我们，方便我们查看
+            e.printStackTrace();
+
+            // 第四种处理 抛出异常
+            throw e;
+        }
+
+        System.out.println("程序结束");
+    }
+
+}
+
+__________________________
+
+		throw和throws
+
+package com.gg.demo19;
+
+/**
+ *
+ * throw和throws有什么区别
+ * 位置不同
+ * throw    方法内部
+ * throws   方法的签名处，方法的声明处
+ *
+ * 内容不同
+ * throw + 异常对象(检查异常，运行时异常)
+ * throws + 异常的类型(可以多个类型，可以拼接)
+ *
+ * 作用不同
+ * throw    异常出现的源头，制造异常
+ * throws   在方法的声明处，告诉方法的调用者，这个方法中可能会出现
+ *          我声明的这些异常。然后调用者对这个异常进行处理
+ *          要么自己处理要么再继续向外抛出异常
+ *
+ */
+
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class demo4 {
+    public static void main(String[] args) throws Exception {
+        // 两个相除，当除数为0的时候，程序出现异常
+        devide();
+    }
+
+    public static void devide() throws Exception{
+        Scanner sc = new Scanner(System.in);
+        System.out.println("请输入第一个数(A): ");
+        int A = sc.nextInt();
+        System.out.println("请输入第二个数(B): ");
+        int B = sc.nextInt();
+        if( B == 0){
+            // 1
+            // 直接创建一个匿名对象
+            // 制造运行时异常
+//            throw new RuntimeException();
+
+            // 2
+            // 制造检查异常
+            // 制造一个检查异常 然后用try-catch捕获
+//            try {
+                throw new Exception();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+            // 或者直接抛出
+            // devide throws Exception()
+            // main方法调用 异常抛给main方法 main方法再抛给虚拟机
+
+
+        }else{
+            System.out.println(String.format("A / B = %d", (A / B)));
+        }
+    }
+}
+
+________________________
+
+		异常案例
+
+package com.gg.demo20;
+
+public class Student {
+
+    private String name;
+    private int age;
+    private String sex;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getSex(){
+        return sex;
+    }
+
+    public void setSex(String sex) throws Exception{
+        if(sex.equals("boy") || sex.equals("girl")){
+            this.sex = sex;
+        }
+        else {
+            // 默认设置为男
+//            this.sex = "boy";
+
+            // 提醒
+//            System.out.println("性别错误，默认为男");
+
+            // 制造异常（运行时异常）
+//            throw new RuntimeException("性别错误");
+
+            // 制造异常（检查异常）
+//            try{
+//                throw new Exception("性别错误");
+//            }catch(Exception e){
+//                e.printStackTrace();
+//                System.out.println(e.getMessage());
+//            }
+
+            // 抛出错误
+            throw new Exception("性别错误");
+        }
+    }
+
+    @Override
+    public String toString(){
+        return String.format("Student{name = %s, age = %d, sex = %s}", this.name, this.age, this.sex);
+    }
+
+    public Student(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public Student(String sex){
+        // 调用无参构造器
+//        this();
+        // 调用有参构造器
+//        this("默认姓名", 0);
+        this();
+        this.sex = sex;
+    }
+
+    public Student(String name, int age, String sex){
+        this.name = name;
+        this.age = age;
+        try{
+            this.setSex(sex);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public Student() {
+        this.name = "未知";
+        this.age = 0;
+        this.sex = "boy";
+    }
+
+}
+
+package com.gg.demo20;
+
+public class demo {
+    public static void main(String[] args) {
+        // 创建一个Student对象
+        Student s = new Student("Lisa", 19, "gadf");
+        // System.out.println(s); == System.out.println(s.toString);
+        System.out.println(s);
+        System.out.println("-----------------");
+//        Student s2 = new Student();
+//        s2.setAge(123);
+//        s2.setName("Sasa");
+//        try {
+//            s2.setSex("bibi");
+//        }
+//        catch (Exception e) {
+//            e.printStackTrace();
+//            System.out.println(e.getMessage());
+//        }
+//        System.out.println(s);
+    }
+}
+
+__________________________
+
+		自定义异常
+
+
+sckage com.gg.demo19;
+
+/**
+ * 自定义异常
+
+	可以选择继承检查时异常
+	还是运行时异常
+
+ */
+
+
+
+public class demo5 {
+    public static void main(String[] args) {
+        throw new MyException("这是一个自定义的错误");
+    }
+}
+
+class MyException extends RuntimeException {
+    // 序列号 还没学 只要知道不要一样就好
+    static final long serialVersionUID = -70348971907459L;
+
+    public MyException() {}
+
+    public MyException(String message) {
+        super(message);
+    }
+}
+tatic final long serialVersionUID = -7034897190745766939L
+
+——————————————————————————————————————————
+
+		包装类
+
+package com.gg.bao21;
+
+/**
+ * 包装类的引入
+ *
+ * 什么是包装类?
+ * 将基本数据类型对应进行类一个封装，产生了一个新的类叫包装类
+ * int byte ... ---> 基本数据类型
+ * 包装类 ---> 引用数据类型
+ *
+ * 基本数据类型       对应的包装类
+ * byte             Byte
+ * short            Short
+ * int              Integer
+ * long             Long
+ * float            Float
+ * double           Double
+ * char             Character
+ * boolean          Boolean
+ *
+ * 已经有基本数据类型了，为什么还要有包装类?
+ * java语言 面向对象的语言 最擅长的操作各种各样的类
+ *
+ *
+ *
+ *
+ *
+ */
+
+public class demo {
+}
+
+______________________________________
+
+		包装类
+
+package com.gg.bao21;
+
+/**
+ * 包装类的引入
+ *
+ * 什么是包装类?
+ * 将基本数据类型对应进行类一个封装，产生了一个新的类叫包装类
+ * int byte ... ---> 基本数据类型
+ * 包装类 ---> 引用数据类型
+ *
+ * 基本数据类型       对应的包装类
+ * byte             Byte
+ * short            Short
+ * int              Integer
+ * long             Long
+ * float            Float
+ * double           Double
+ * char             Character
+ * boolean          Boolean
+ *
+ * 已经有基本数据类型了，为什么还要有包装类?
+ * java语言 面向对象的语言 最擅长的操作各种各样的类
+ *
+ *
+ *
+ *
+ *
+ */
+
+public class demo {
+}
+
+_______________________
+
+		包装类的属性
+
+package com.gg.bao21;
+
+/**
+ *
+ * 包装类常用属性
+ *
+ * 包装类特有的机制(JDK1.5之后更新的)
+ * 自动装箱 自动拆箱 : 将基本数据类型和包装类快速的类型转换
+ *
+ */
+
+public class demo2 {
+    public static void main(String[] args) {
+//        System.out.println(Integer.MAX_VALUE);
+//        System.out.println(Integer.MAX_VALUE + 1);
+//        System.out.println(Integer.MIN_VALUE);
+//        System.out.println(Integer.MIN_VALUE - 1);
+//        System.out.println(Integer.SIZE);
+//        System.out.println(new Integer(8));
+//        System.out.println(new Integer("123"));
+//        try{
+//            new Integer("asdf");
+//        }catch (Exception e){
+//            System.out.println("输入的数据类型错误");
+//        }
+
+        // 自动装箱 int --> Integer
+        Integer i = 21;
+        System.out.println(toString(i));
+
+        // 自动拆箱 Integer --> int
+        int i2 = new Integer(12);
+        System.out.println(toString(i2));
+
+        int i3 = 17;
+        System.out.println(toString(i3));
+
+        String I = "hello";
+        System.out.println(toString(I));
+
+        int a = 1;
+        int b = 2;
+        System.out.println(Integer.compare(a, b));
+
+        // == 如果比较的是 -128 到 127 之间，比较的是具体的值
+        // 如果大于或者小于，比较的是包装类的地址
+        Integer a1 = 10;
+        Integer b1 = 10;
+        System.out.println(a1.compareTo(b1));
+        System.out.println(a1 == b1);
+        Integer a2 = 1110;
+        Integer b2 = 1110;
+        System.out.println(a1 == b1);
+
+        Integer a3 = 1111;
+        int a4 = Integer.valueOf(a3);
+        System.out.println(a4);
+    }
+
+    public static String toString(Object str){
+        System.out.println("值是:" + str);
+        System.out.println(String.format("数据类型是: %s", str.getClass().getTypeName()));
+        if(str instanceof Integer | str instanceof Long | str instanceof Float | str instanceof Double) {
+            int a = (int) str;
+            System.out.print("输出二进制:");
+            for(int i = 31; i >= 0; i --){
+                // 1 & 1 = 1
+                // 1 & 0 = 0
+                // 0 & 0 = 0
+                System.out.print((a & (1 << i)) == 0 ? "0" : "1");
+            }
+            System.out.println();
+        }
+        return "-------";
+    }
+}
+
+_______________________
+
+		java.util.Date方法
+
+package com.gg.bao21;
+
+/**
+ * java.util.Date方法
+ */
+
+import java.util.Date;
+
+public class demo3 {
+    public static void main(String[] args) {
+
+        System.out.println(new Date());
+
+        // Greenwich Mean Time + 时区个数
+        // expire method / disposal method / deprecated
+        System.out.println(new Date().toGMTString().toString());
+        System.out.println();
+
+        System.out.println(new Date().toLocaleString().toString());
+        System.out.println();
+
+        // As of JDK 1.1, replaced by Calendar.get(Calendar.YEAR)
+        // + 1900
+        System.out.println(new Date().getYear());
+        System.out.println(new Date().getYear() + 1900);
+        System.out.println();
+
+        // 返回自 1970 年 1 月 1 日 00:00:00 GMT 以来此 Date 对象表示的毫秒数。
+        System.out.println(new Date().getTime());
+        System.out.println();
+        /**
+         * 这个是一样可以获取时间差 这个是静态方法 可以之间用 类名.方法名 调用
+         *
+         * public static native long currentTimeMillis();
+         *              本地方法
+         * 不是抽象方法，这个方法的具体实现不是通过java写的，是通过c或者c++写的
+         *
+         * 一般回去衡量算法所用的时间
+         */
+        System.out.println(System.currentTimeMillis());
+        long startTime = System.currentTimeMillis();
+//        for (int i = 0; i < 1000; i++) {
+//            System.out.println(i);
+//        }
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime - startTime);
+        System.out.println();
+    }
+}
+
+__________________________
+
+
+		java.sql.Date
+
+package com.gg.bao21;
+
+/**
+ * java.sql.Date;和java.util.Date;区别
+ * java.util.Date
+ * 年月日 时分秒
+ *
+ * java.sql.Date
+ * 年月日
+ *
+ * public class Date extends java.util.Date
+ * java.sql.Date是java.util.Date的子类
+ */
+
+import java.sql.Date;
+
+public class demo4 {
+    public static void main(String[] args) {
+
+        Date b = new Date(1745721513947L);
+        System.out.println(new Date(1745721513947L));
+
+        // 如果我想要使用java.util.Date里面的方法 可以之间声明
+        java.util.Date a = new java.sql.Date(1745721513947L);
+        // 向下转型成sql.Date
+        /**
+         * Animal an = new Dog();
+         * Dog d = (Dog) an;
+         *
+         * 只有在对象是一只具体的狗的时候 才可以向下转型
+         * 如果是 Animal an = new Animal();
+         *       Dog d = (Dog) an;
+         *       会报错
+         */
+        Date date = (Date) a;
+        System.out.println(date.getYear());
+        System.out.println(new java.util.Date(1745721513947L));
+        System.out.println();
+        java.util.Date b1 = b;
+        System.out.println(b1);
+
+    }
+}
+
+________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,226 @@
+		Java爬虫
+
+主流java爬虫框架
+Apache Nutch2
+webmagic
+Heritrix
+WebCollector
+crawler4j
+Spiderman
+SeimiCrawler
+jsoup
+java selenium
+htmlunit
+
+_______________________
+
+		WebMagic
+		
+WebMagic是一个简单灵活的Java爬虫框架。基于WebMagic，你可以快速开发出一个高效、易维护的爬虫。 
+
+优点： 
+
+ 1.简单的API，可快速上手 
+
+ 2.模块化的结构，可轻松扩展 
+
+ 3.提供多线程和分布式支持
+
+缺点:
+
+ 1.不支持JS页面抓取
+
+_____________________
+
+		WebCollector
+
+WebCollector是一个无须配置、便于二次开发的JAVA爬虫框架（内核），它提供精简的的API，只需少量代码即可实现一个功能强大的爬虫。WebCollector-Hadoop是WebCollector的Hadoop版本，支持分布式爬取。
+
+ 优点:
+
+  1i基于文本密度的网页正文自动抽取
+
+  i.支持断点重爬
+
+  3.支持代理
+
+缺点:
+
+  1.不支持分布式,只能单机
+
+   2.无URL优先级调度
+
+  3.活跃度不高
+
+___________________
+
+		Heritrix
+
+Heritrix 是一个由 java 开发的、开源的网络爬虫，用户可以使用它来从网上抓取想要的资源
+
+优点
+
+Heritrix的爬虫定制参数多
+
+缺点
+
+1.单实例的爬虫，之间不能进行合作。
+
+2.在有限的机器资源的情况下，却要复杂的操作。
+
+3.只有官方支持，仅仅在Linux上进行了测试。
+
+4.每个爬虫是单独进行工作的，没有对更新进行修订。
+
+5.在硬件和系统失败时，恢复能力很差。
+
+6.很少的时间用来优化性能。
+
+7.相对于Nutch，Heritrix仅仅只是一个爬虫工具，没有提供搜索引擎。如果要对抓取的站点排序必须要实现类似于Pagerank的复杂算法。
+
+____________________
+
+		rawler4j
+
+rawler4j是一款基于Java的轻量级单机开源爬虫框架
+
+优点
+
+1.多线程采集
+
+2.内置了Url 过滤机制，采用的是BerkeleyDB 进行url的过滤。
+
+3.可扩展为支持结构化提取网页字段，可作为垂直采集用
+
+缺点
+
+1.不支持动态网页抓取，例如网页的ajax部分
+
+2.不支持分布式采集，可以考虑将其作为分布式爬虫的一部分，客户端采集部分
+
+________________________-
+
+		Jsoup
+
+Jsoup（经典·适合静态网友）
+这个框架堪称经典，也是我们暑期实训老师讲解的框架。有近乎完整的文档介绍。
+
+和HtmlUnit同样，只能get到静态内容。
+
+不过，这个框架有个有个优点，具有很强大的解析网页的功能。
+
+
+jsoup 是一款Java 的HTML解析器，可直接解析某个URL地址、HTML文本内容。它提供了一套非常省力的API，可通过DOM，CSS以及类似于jQuery的操作方法来取出和操作数据。
+
+Package包
+1 org.jsoup				包含主Jsoup类，该类提供对jsoup功能的便捷静态访问
+2 org.jsoup.helper		包含支持核心jsoup代码的类的包
+3 org.jsoup.nodes		HTML文档结构节点
+4 org.jsoup.parser		包含HTML解析器、标记规范和HTML分词器
+5 org.jsoup.safety		包含jsoup HTML 清理器和安全列表定义
+6 org.jsoup.select		支持CSS样式元素选择器的包
+
+Document:	文档对象 每份HTML页面都是一个文档对象，Document是jsoup体系中最顶层的结构
+Element:	元素对象 一个Document中可以包含着多个Element对象，可以使用Element对象来遍历节点提取数据或直接操作HTML
+Node:		节点对象 标签名称，属性等都是节点对象，节点对象用来存储数据
+Elements:	元素对象集合 类似于List	
+类继承关系:	Document继承自Element(class Document extend Element)，Element继承自Node(class Element extends Node)
+一般执行:
+	先获取Document对象，然后获取Element对象，最后通过Node对象获取数据
+	
+开始 --获取--> Document --获取--> Element --获取--> Node
+				   |				 ^
+				   |				 |
+				   |				 |
+				   |------------> Elements
+
+Element		代表单个HTML/XML标签元素（如<div>）	继承自Node类，属于叶子节点7
+Elements	存储多个Element的集合容器	本质为ArrayList<Element>
+
+目标元素				CSS 选择器示例							说明
+获取 <title> 标签		"title"							直接按标签名匹配	
+获取 <meta> 标签		"meta"							匹配所有 <meta> 元素	
+特定 charset 属性		"meta[charset]"					匹配含 charset 属性的 <meta>	
+指定 http-equiv			"meta[http-equiv]"				匹配含 http-equiv 属性的 <meta>	
+匹配 <link> 标签		"link[href]"					筛选含 href 属性的 <link> 元素	
+获取 <script> 标签		"script[src]"					匹配含 src 属性的 <script>
+
+===获取页面全部代码
+
+package PC;
+
+/**
+ *
+ * 文档内容可知道，获取数据源的方法有三种
+ * 1    从一段html代码字符串获取      Document doc = Jsoup.parse(html);
+ * 2    从一个url获取               Document doc = Jsoup.connect(url).get();
+ * 3    从一个html文件获取          File input = new File("XXX.html")
+ *                               Document doc = Jsoup.parse(input, 'UTF-8', url);
+ *
+ */
+
+import java.io.IOException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+public class demo1 {
+    public static void get_html(String url){
+        try{
+            Document doc = Jsoup.connect(url).get();
+            System.out.println(doc);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        String url = "http://news.tjut.edu.cn/yw.htm";
+        get_html(url);
+    }
+}
+
+
+===用相关class、id、tag的方法解析我们需要的数据
+
+
+
+
+_________________________
+
+	selenium
+
+感觉很厉害，实际真的很厉害，看官网以及其他人的介绍，说是真正模拟浏览器。GitHub1.4w+star，你没看错，上万了。但是我硬是没配好环境。入门Demo就是没法运行成功，所以就放弃了。
+
+_________________________
+
+		cdp4j
+
+cdp4j（方便快捷，但是需要依赖谷歌浏览器）
+使用前提：
+
+安装Chrome浏览器，即可。
+
+简单介绍：
+
+HtmlUnit的优点在于，可以方便的爬取静态网友；缺点在于，只能爬取静态网页。
+
+selenium的优点在于，可以爬取渲染后的网页；缺点在于，需要配环境变量等等。
+
+将二者整合，取长补短，就有了cdp4j。
+
+之所以选用它，是因为真的方便好用，而且官方文档详细，Demo程序基本都能跑起来，类名起的见名知意。想当年学软件工程的时候，一直在纳闷，为什么要写文档啊，我程序能实现功能不就得了？现如今，看着如此详实的文档，留下了激动而又悔恨的泪水......
+
+cdp4j有很多功能：
+
+a. 获得渲染后的网页源码
+
+b. 模拟浏览器点击事件
+
+c. 下载网页上可以下载的文件
+
+d. 对网页进行截屏或转PDF打印
+
+e. 等等
+
+
+

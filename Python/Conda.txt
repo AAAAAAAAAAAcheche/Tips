@@ -1,0 +1,66 @@
+创建一个环境(创建一个python3.9的环境)
+conda create --name my_project python=3.9
+
+激活环境
+conda activate my_project
+
+删除环境
+conda remove --name my_project --all
+
+退出环境
+conda deactivate my_project
+
+查看环境
+conda env list
+
+默认情况下，每次打开终端都需要手动 conda activate my_project，你可以让它自动初始化
+conda init zsh (Zsh是mac默认配置)
+conda init bash
+然后 重启终端，下次打开终端就能直接 conda activate my_project 了
+
+在conda里面进入Python的交互模式
+conda activate my_project
+python
+然后你就可以直接输入 Python 代码
+print("Hello COnda!")
+退出交互模式
+exit()
+
+如果你用 conda 运行 Jupyter Notebook
+jupyter notebook
+__________________
+
+conda换源(跟pip互不影响)
+
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+conda config --set show_channel_urls yes
+__________________
+
+启动环境后用pip下载的扩展是只在环境内的
+__________________
+
+pip 换源
+
+单次换源
+pip install requests -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+永久换源
+mkdir -p ~/.pip
+nano ~/.pip/pip.conf
+输入
+	[global]
+	index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+___________________
+
+在Pycharm里面添加conda环境 这样pip在环境下载的插件都可以使用
+
+Setting
+选择Project:Python
+选择Python Interpreter
+点击 add...
+(如果是conda就添加conda 如果是别的解释器就添加路径)
+___________________
+
+python -m pip install xx
+意思是：用当前这个 python 解释器调用 pip，去安装 xxx 包。
+___________________

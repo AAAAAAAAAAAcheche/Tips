@@ -1,0 +1,1202 @@
+
+读取网页源代码
+使用urllib库（python自带的库）
+
+# 导入urllib库
+import urllib.request
+
+# 目标网址
+url = "website"
+
+# 模拟浏览器登陆目标网址
+response = urllib.request.urlopen(url)
+
+# 获取响应中的源码 read()获取的是二进制数据
+content = response.read()
+
+# 输出源码
+print(content)
+
+但是会有些乱码 而且是连在一起的 不好看
+这时候可以用beautifulSoup来格式化一下(扩展库)
+
+import urllib.request
+from bs4 from BeautifulSoup
+
+url = "website"
+
+response = urllib.request.urlopen(url)
+
+content = response.read().decode("utf-8")
+
+# 'html.parser' 是解析器，Python 自带的标准 HTML 解析工具，速度快，适合大部分网页。
+final = BeautifulSoup(content, "html.parser")
+
+# soup.prettify() 以 美观、缩进格式 的形式输出 HTML 代码，使其更易阅读。
+A = final.prettify()
+
+print(A)
+
+
+		soup 的常用功能：
+	•	soup.title：获取 <title> 标签
+	•	soup.find('div')：查找第一个 <div> 标签
+	•	soup.find_all('a')：查找所有 <a> 标签
+	•	soup.get_text()：获取页面纯文本内容
+
+------------------------------------------
+
+		爬虫
+
+# -*- codeing = utf-8 -*-
+from bs4 import BeautifulSoup  # 网页解析，获取数据
+import re  # 正则表达式，进行文字匹配`
+import urllib.request, urllib.error  # 制定URL，获取网页数据
+import xlwt  # 进行excel操作
+#import sqlite3  # 进行SQLite数据库操作
+
+findLink = re.compile(r'<a href="(.*?)">')  # 创建正则表达式对象，标售规则   影片详情链接的规则
+findImgSrc = re.compile(r'<img.*src="(.*?)"', re.S)
+findTitle = re.compile(r'<span class="title">(.*)</span>')
+findRating = re.compile(r'<span class="rating_num" property="v:average">(.*)</span>')
+findJudge = re.compile(r'<span>(\d*)人评价</span>')
+findInq = re.compile(r'<span class="inq">(.*)</span>')
+findBd = re.compile(r'<p class="">(.*?)</p>', re.S)
+
+
+def main():
+    baseurl = "https://movie.douban.com/top250?start="  #要爬取的网页链接
+    # 1.爬取网页
+    datalist = getData(baseurl)
+    savepath = "豆瓣电影Top250.xls"    #当前目录新建XLS，存储进去
+    # dbpath = "movie.db"              #当前目录新建数据库，存储进去
+    # 3.保存数据
+    saveData(datalist,savepath)      #2种存储方式可以只选择一种
+    # saveData2DB(datalist,dbpath)
+
+
+# 爬取网页
+def getData(baseurl):
+    datalist = []  #用来存储爬取的网页信息
+    for i in range(0, 10):  # 调用获取页面信息的函数，10次
+        url = baseurl + str(i * 25)
+        html = askURL(url)  # 保存获取到的网页源码
+        # 2.逐一解析数据
+        soup = BeautifulSoup(html, "html.parser")
+        for item in soup.find_all('div', class_="item"):  # 查找符合要求的字符串
+            data = []  # 保存一部电影所有信息
+            item = str(item)
+            link = re.findall(findLink, item)[0]  # 通过正则表达式查找
+            data.append(link)
+            imgSrc = re.findall(findImgSrc, item)[0]
+            data.append(imgSrc)
+            titles = re.findall(findTitle, item)
+            if (len(titles) == 2):
+                ctitle = titles[0]
+                data.append(ctitle)
+                otitle = titles[1].replace("/", "")  #消除转义字符
+                data.append(otitle)
+            else:
+                data.append(titles[0])
+                data.append(' ')
+            rating = re.findall(findRating, item)[0]
+            data.append(rating)
+            judgeNum = re.findall(findJudge, item)[0]
+            data.append(judgeNum)
+            inq = re.findall(findInq, item)
+            if len(inq) != 0:
+                inq = inq[0].replace("。", "")
+                data.append(inq)
+            else:
+                data.append(" ")
+            bd = re.findall(findBd, item)[0]
+            bd = re.sub('<br(\s+)?/>(\s+)?', "", bd)
+            bd = re.sub('/', "", bd)
+            data.append(bd.strip())
+            datalist.append(data)
+
+    return datalist
+
+
+# 得到指定一个URL的网页内容
+def askURL(url):
+    head = {  # 模拟浏览器头部信息，向豆瓣服务器发送消息
+        "User-Agent": "Mozilla / 5.0(Windows NT 10.0; Win64; x64) AppleWebKit / 537.36(KHTML, like Gecko) Chrome / 80.0.3987.122  Safari / 537.36"
+    }
+    # 用户代理，表示告诉豆瓣服务器，我们是什么类型的机器、浏览器（本质上是告诉浏 览器，我们可以接收什么水平的文件内容）
+
+    request = urllib.request.Request(url, headers=head)
+    html = ""
+    try:
+        response = urllib.request.urlopen(request)
+        html = response.read().decode("utf-8")
+    except urllib.error.URLError as e:
+        if hasattr(e, "code"):
+            print(e.code)
+        if hasattr(e, "reason"):
+            print(e.reason)
+    return html
+
+
+# 保存数据到表格
+def saveData(datalist,savepath):
+    print("save.......")
+    book = xlwt.Workbook(encoding="utf-8",style_compression=0) #创建workbook对象
+    sheet = book.add_sheet('豆瓣电影Top250', cell_overwrite_ok=True) #创建工作表
+    col = ("电影详情链接","图片链接","影片中文名","影片外国名","评分","评价数"," 概况","相关信息")
+    for i in range(0,8):
+        sheet.write(0,i,col[i])  #列名
+    for i in range(0,250):
+        # print("第%d条" %(i+1))       #输出语句，用来测试
+        data = datalist[i]
+        for j in range(0,8):
+            sheet.write(i+1,j,data[j])  #数据
+    book.save(savepath) #保存
+
+# def saveData2DB(datalist,dbpath):
+#     init_db(dbpath)
+#     conn = sqlite3.connect(dbpath)
+#     cur = conn.cursor()
+#     for data in datalist:
+#             for index in range(len(data)):
+#                 if index == 4 or index == 5:
+#                     continue
+#                 data[index] = '"'+data[index]+'"'
+#             sql = '''
+#                     insert into movie250(
+#                     info_link,pic_link,cname,ename,score,rated,instroduction,info)
+#                     values (%s)'''%",".join(data)
+#             # print(sql)     #输出查询语句，用来测试
+#             cur.execute(sql)
+#             conn.commit()
+#     cur.close
+#     conn.close()
+
+
+# def init_db(dbpath):
+#     sql = '''
+#         create table movie250(
+#         id integer  primary  key autoincrement,
+#         info_link text,
+#         pic_link text,
+#         cname varchar,
+#         ename varchar ,
+#         score numeric,
+#         rated numeric,
+#         instroduction text,
+#         info text
+#         )
+#
+#
+#     '''  #创建数据表
+#     conn = sqlite3.connect(dbpath)
+#     cursor = conn.cursor()
+#     cursor.execute(sql)
+#     conn.commit()
+#     conn.close()
+
+# 保存数据到数据库
+
+
+
+if __name__ == "__main__":  # 当程序执行时
+    # 调用函数
+     main()
+    # init_db("movietest.db")
+     print("爬取完毕！")
+
+_____________________
+
+		requests库
+
+requests.request(url)		构造一个请求,支持一下各种方法
+requests.get()				发送get请求(常用)
+requests.post()				发送post()(常用)
+requests.head()				获取HTML头部信息
+requests.put()				发送put请求
+requests.patch()			提交局部修改的请求
+requests.delete()			提交删除请求
+
+		语法结构
+requests.get(url, params = None)
+
+url 	目标网站
+params	参数
+方法结果为Response对象,包含服务器的响应信息
+
+response对象的常用属性
+response.status_code		响应状态码
+response.content			把response对象转换为二进制数据
+response.text				把response对象转换为字符串数据
+response.encoding			定义response对象的编码
+response.cookies			获取请求后的cookie
+response.url				获取请求网址
+response.json()				内置的JSON解码器
+Response.headers			以字典对象存储服务器响应头,字典键不区分大小写
+
+		不带参数请求
+"""
+@auther Fcc
+
+requests库
+不带参数的get请求
+
+"""
+
+import requests
+
+url = 'https://www.baidu.com'
+
+# 发送get请求
+resp = requests.get(url)
+
+# 设置响应的编码格式
+resp.encoding = 'utf-8'
+
+# 获取请求后的cookie信息
+cookie = resp.cookies
+
+# 获取请求头
+header = resp.headers
+
+print('响应状态码: ', resp.status_code)
+print('cookie: ', cookie)
+print('请求网址', resp.url)
+print('请求头: ', header)
+print('请求内容', resp.text)
+
+
+		带参数请求
+"""
+@auther Fcc
+
+requests库
+带参数的get请求
+
+"""
+
+import requests
+
+"""
+源地址是
+https://www.so.com/s'q=python
+
+这里用参数params键值对代替
+"""
+url = 'https://www.so.com/s'
+
+params = {'q': 'python'}
+
+# 发送get请求
+resp = requests.get(url, params = params)
+
+# 设置响应编码
+resp.encoding = 'utf-8'
+
+print(resp.text)
+
+		获取JSON数据文件
+
+当JSON输出的不是格式化可以这么解决
+import json
+import pprint
+
+# 在 PyCharm Console 里调试的时候，加这一行
+pprint.pprint(json.loads(json.dumps(resp.json(), ensure_ascii=False)), indent=4)
+
+"""
+@auther Fcc
+
+获取JSON数据
+
+"""
+
+import requests
+import json
+import pprint
+
+# url = 'https://image.baidu.com/search/acjson?tn=resultjson_com&word=%E8%BD%A6&ie=utf-8&fp=result&fr=&ala=0&applid=&pn=120&rn=30&nojc=0&gsm=78&newReq=1'
+url = 'https://image.baidu.com/search/acjson?tn=resultjson_com&word=%E8%BD%A6&ie=utf-8&fp=result&fr=&ala=0&applid=&pn=120&rn=30&nojc=0&gsm=78&newReq=1'
+header = {
+    'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36'
+}
+
+resp = requests.get(url, headers=header)
+resp.encoding = 'utf-8'
+
+json_data = resp.json()
+
+# 在 PyCharm Console 里调试的时候，加这一行
+pprint.pprint(json.loads(json.dumps(resp.json(), ensure_ascii=False)), indent=4)
+
+		获取二进制文件
+
+"""
+@auther Fcc
+
+获取二进制文件
+
+"""
+
+import requests
+
+url = 'https://www.baidu.com/img/flexible/logo/pc/result@2.png'
+
+resp = requests.get(url)
+
+# 纯粹
+with open ('logo.png', 'wb') as file:
+    file.write(resp.content)
+
+其中
+
+with open ('logo.png', 'wb') as file:
+    file.write(resp.content)
+
+以二进制写入模式（'wb'）打开或创建一个叫 logo.png 的文件。
+然后把 resp.content 写进这个文件。
+
+通常这种写法用于下载图片或文件，比如你用 requests 请求了一个图片文件：
+import requests
+
+resp = requests.get('https://example.com/logo.png')
+with open('logo.png', 'wb') as file:
+    file.write(resp.content)
+
+with open() as file 是 Python 里一个上下文管理器的用法，叫做 “with 语句”。
+它的主要作用是：自动帮你管理资源，比如打开文件后，不用你手动写 file.close()，出了 with 代码块，文件就自动关闭了。
+
+	1.	open('data.txt', 'r')：打开 data.txt 文件，模式是 r（读模式）。
+	2.	as file：把打开的文件对象赋值给变量 file。
+	3.	with 保证无论有没有异常，最后都会自动关闭文件。
+
+	•	图片是二进制数据，不是普通的文本（不像 .txt、.csv 这种可以直接看懂的文件）。
+	•	如果你用普通文本模式（'w'），Python 可能会自动处理换行符、编码问题，这就会破坏图片原本的数据，导致保存下来的图片打不开或损坏。
+
+		requests的post请求
+
+post请求语法结构
+requests.post(url, data = None, json = None)
+url		需要爬去的网址
+data	请求数据
+json	json格式的数据
+
+		requests的session请求
+"""
+@auther Fcc
+
+requests库的session发送请求
+requests.session 是 requests 提供的一个会话对象，能帮你 自动保存和复用请求之间的信息。
+    保存cookie        你登陆了,session会自动记住服务器发来的cookie,后续请求自动带上
+    共享header        可以给session设置统一的请求头(比如统一的User-Agent),不用自己每次加
+    更高效             复用TCP连接,不用每次请求都重新握手,速度快
+    模拟连续操作          登陆,下单,发评论,抓取登陆后才能看的页面,连贯完成
+
+"""
+
+import requests
+
+url  = 'https://www.xs5.org/login.php'
+
+data = {
+    'username': 'Fcheche',
+    'password': 'Jeven031225',
+    'usecookie': ''
+}
+
+session = requests.session()
+resp = session.post(url, data = data)
+resp.encoding = 'utf-8'
+
+# print(resp.text)
+
+# 执行连贯操作
+hot_url = 'https://www.xs5.org/1/1072/841676.html'
+
+resp2 = session.get(hot_url)
+resp2.encoding = 'utf-8'
+
+print(resp2.url)
+print(resp2.text)
+
+		XPath数据分析
+
+全称：XML Path Language 是一种小型的查询语言
+是一门在XML文档中查找信息的语言
+
+
+XPath的优点
+1 可在XML中查找信息
+2 支持HTML的查找
+3 可通过元素和属性进行导航
+
+XPath需要的依赖库:lxml
+pip install lxml
+
+<?xml version="1.0" encoding="UTF-8"?>			文档声明 版本是1.0 采用的编码格式是utf-8
+<bookstore>										根元素（一个XML文档中只能有一个根元素）
+	<book>
+		<title lang="en">Harry Potter</title>
+		<author>J K.Rowling</author>
+		<year>2005</year>
+		<price>29.99</price>
+	</book>
+</bookstore>
+
+使用XPath选取节点
+1 nodename		选取此节点的所有子节点
+2 /				从根节点选择
+3 //			从匹配选择的当前节点选择文档中的节点，而不考虑它们的位置
+4 .				选取当前节点
+5 ..			选取当前节点的父节点
+6 /text()		获取当前路径下的文本内容
+7 /@xxx			提取当前路径下标签的属性值
+8 |可选符		可选取若干个路径//p|//div,在当前路径下选取所有符合条件的p标签和div标签
+
+通配符		描述
+*		匹配任何元素节点。
+@*		匹配任何属性节点。
+node()	匹配任何类型的节点。
+
+
+路径表达式								结果
+//book/title | //book/price			选取 book 元素的所有 title 和 price 元素。
+//title | //price					选取文档中的所有 title 和 price 元素。
+/bookstore/book/title | //price		选取属于 bookstore 元素的 book 元素的所有 title 元素，以及文档中所有的 price 元素。
+
+
+路径表达式				结果
+/bookstore/*		选取 bookstore 元素的所有子元素。
+//*					选取文档中的所有元素。
+//title[@*]			选取所有带有属性的 title 元素。
+
+xpath('/body/div[1]')				选取body下的第一个div节点
+xpath('/body/div[last()]')			选取body下最后一个div节点
+xpath('/body/div[last()-1]')		选取body下倒数第二个div节点
+xpath('/body/div[position()<3]')	选取body下前两个div节点
+xpath('/body/div[@class]')			选取body下带有class属性的div节点
+xpath('/body/div[@class="main"]')	选择body下class属性为main的div节点
+xpath('/body/div[price>35.00]')		选择body下price元素大于35的div节点
+
+实例：
+1 qidian.com
+2 选择全部书籍
+3 打开Xpath
+4 寻找书籍的名字 ---> 点开属性分析  是在<div="book-mid-info">下的<h2>的<a>标签下
+5 在Xpath里面输入 //div[@class="book-mid-info"]/h2/a/text()  就会显示出小说的名字
+			//							从当前节点选择文档中的节点，不考虑它们的位置
+			text（）					获取当前路径下的文本内容
+			div[@class="book-mid-info"]	选择class属性为book-mid-info的div节点
+6 开始同理寻找作者 //p[@class="author"]/a[1]/text()
+7 找到之后开始编写代码
+"""
+@auther Fcc
+
+XPath解析数据
+
+"""
+
+import requests
+from lxml import etree
+
+url = 'https://www.qidian.com/all/'
+
+header = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+    'Host': 'www.qidian.com',
+    'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+    'Accept-Encoding': 'gzip, deflate, br, zstd',
+    'Cookie': 'e1=%7B%22l6%22%3A%22%22%2C%22l7%22%3A%22%22%2C%22l1%22%3A%22%22%2C%22l3%22%3A%22%22%2C%22pid%22%3A%22qd_P_all%22%2C%22eid%22%3A%22%22%7D; e2=%7B%22l6%22%3A%22%22%2C%22l7%22%3A%22%22%2C%22l1%22%3A3%2C%22l3%22%3A%22%22%2C%22pid%22%3A%22qd_p_qidian%22%2C%22eid%22%3A%22qd_A16%22%7D; _csrfToken=iMJpEIxUzQKoEKRPn77J3CxXkoelQMwAekdpiaHB; newstatisticUUID=1744644686_1507655709; fu=1393780855; traffic_utm_referer=https%3A//www.google.com/; _gid=GA1.2.1951880027.1745342692; e2=%7B%22l6%22%3A%22%22%2C%22l7%22%3A%22%22%2C%22l1%22%3A3%2C%22l3%22%3A%22%22%2C%22pid%22%3A%22qd_p_qidian%22%2C%22eid%22%3A%22qd_A15%22%7D; e1=%7B%22l6%22%3A%22%22%2C%22l7%22%3A%22%22%2C%22l1%22%3A3%2C%22l3%22%3A%22%22%2C%22pid%22%3A%22qd_p_qidian%22%2C%22eid%22%3A%22qd_A16%22%7D; Hm_lvt_f00f67093ce2f38f215010b699629083=1744644688,1745368314; HMACCOUNT=2167564A93F5EFCA; _ga_FZMMH98S83=GS1.1.1745368042.3.1.1745368445.0.0.0; _ga=GA1.1.287892898.1744644688; _ga_PFYW0QLV3P=GS1.1.1745368042.3.1.1745368445.0.0.0; Hm_lpvt_f00f67093ce2f38f215010b699629083=1745368452; w_tsfp=ltvuV0MF2utBvS0Q7a/qkkKqEjgkcDA4h0wpEaR0f5thQLErU5mB1IV8t8/zMHHZ48xnvd7DsZoyJTLYCJI3dwNATcWZc4oX2QWUw9V0jdtGCUExRJ/YCF4aI7p25GIVL3hCNxS00jA8eIUd379yilkMsyN1zap3TO14fstJ019E6KDQmI5uDW3HlFWQRzaLbjcMcuqPr6g18L5a5TuOsQ6qfwkgV+lGhEWQ3S1LD39xshWzcO9fYB+pd5yrSqA='
+}
+
+session = requests.session()
+resp = session.get(url, headers=header)
+
+# print(resp.text)
+# print(resp.status_code)
+
+"""
+类型转换
+
+将str类型转化为class 'lxml.etree_Element'
+"""
+e = etree.HTML(resp.text)
+# print(type(e))
+name = e.xpath('//div[@class="book-mid-info"]/h2/a/text()')
+author = e.xpath('//p[@class="author"]/a[1]/text()')
+# print(name)
+# print(author)
+for name, author in zip(name, author):
+    print(name + ': ' + author)
+
+=
+in zip 是 Python 中用于 同时遍历多个列表 的高效方式
+将多个列表（或任何可迭代对象）"压缩"成一个迭代器，每次返回一组对应位置的元素
+eg
+names = ["三体", "活着", "平凡的世界"]
+authors = ["刘慈欣", "余华", "路遥"]
+
+for name, author in zip(names, authors):
+    print(name + ": " + author)
+
+三体: 刘慈欣
+活着: 余华
+平凡的世界: 路遥
+
+=
+e = etree.HTML(resp.text) 这行代码是 lxml 库 中用于解析 HTML 文本的关键操作，它的作用是将网页的 HTML 源代码转换为一个特殊的 XPath 可解析的对象（即 lxml.etree._Element 对象）
+lxml.etree 模块提供的函数，专门用于解析 HTML 文本（即使是格式不完整的 HTML 也能处理）。
+生成的 Element 对象，后续可以用 XPath 或 CSS 选择器从中提取数据
+修复残缺 HTML：
+很多网页的 HTML 代码不规范（如缺少 </li> 闭合标签），etree.HTML() 会自动补全
+支持 XPath：
+只有将 HTML 转为 Element 对象后，才能用 e.xpath() 提取数据
+高效解析：
+比 Python 内置的 html.parser 或 BeautifulSoup 更快（尤其处理大文件时）
+
+=
+有的时候ipv6访问不了可以强制换成ipv4
+import socket
+import urllib3
+from urllib3.util import connection as urllib3_connection
+
+# 让 urllib3 只用 IPv4
+def allowed_gai_family():
+    return socket.AF_INET
+
+urllib3_connection.allowed_gai_family = allowed_gai_family
+
+后面的一样 url = '' ...
+
+
+		BeautifulSoup解析数据
+
+一个可以从HTML或者XML文件中提取数据的python库
+功能强大，容错率高，文档相对完善，清晰易懂
+非python标准模块，安装才能使用
+
+BeautifulSoup传入的HTML 不是url 我们需要把url解析出html内容 然后再传到BeautifulSoup解析
+
+安装
+pip install bs4
+
+测试是否下载 import bs4BeautifulSoup解析数据
+
+一个可以从HTML或者XML文件中提取数据的python库
+功能强大，容错率高，文档相对完善，清晰易懂
+非python标准模块，安装才能使用
+
+安装
+pip install bs4
+
+测试是否下载 import bs4
+
+
+解析器
+BeautifulSoup支持python标准库中的HTML解析器，还支持一些第三方的解析器，如果不安装第三方解析器，则python会使用默认解析器
+序号    解析器          使用方法                            优点                     缺点
+1      标准库       BeautifulSoup(html,'html.parser')    内置标准库，速度适中        python3.2版本前
+                                                         文档容错能力强             文档容错能力差
+
+2      lxml HTML     BeautifulSoup(html,'lxml')          速度快                    安装c语言库
+                                                        文档容错能力差
+3     lxml XML       BeautifulSoup(html, 'xml')        速度快，唯一支持XML         安装c语言库
+
+4     html5lib       BeautifulSoup(html, 'html5lib')   容错能力最强，可生成HTML5     运行慢，扩展差
+
+
+"""
+@auther Fcc
+
+BeautifulSoup解析数据
+
+一个可以从HTML或者XML文件中提取数据的python库
+功能强大，容错率高，文档相对完善，清晰易懂
+非python标准模块，安装才能使用
+
+安装
+pip install bs4
+
+测试是否下载 import bs4
+
+解析器
+BeautifulSoup支持python标准库中的HTML解析器，还支持一些第三方的解析器，如果不安装第三方解析器，则python会使用默认解析器
+序号    解析器          使用方法                            优点                     缺点
+1      标准库       BeautifulSoup(html,'html.parser')    内置标准库，速度适中        python3.2版本前
+                                                         文档容错能力强             文档容错能力差
+
+2      lxml HTML     BeautifulSoup(html,'lxml')          速度快                    安装c语言库
+                                                        文档容错能力差
+3     lxml XML       BeautifulSoup(html, 'xml')        度快，唯一支持XML         安装c语言库
+
+4     html5lib       BeautifulSoup(html, 'html5lib')   容错能力最强，可生成HTML5     运行慢，扩展差
+
+
+"""
+
+from bs4 import BeautifulSoup
+
+url = """
+    <html>
+        <title>飞飞飞<!--gogogogo--></title>
+        <body>
+            <h2 class='info bg kk' float='left'></h2>
+            <a href='https://www.baidu.com'></a>
+            <h3><!-- ksdalfj --></h3>
+        </body>
+    </html>
+
+"""
+
+# bs = BeautifulSoup(url, 'html.parser')
+bs = BeautifulSoup(url, 'lxml')
+
+# 获取title标签
+print(bs.title)
+
+print("---------------------------------")
+
+# 获取<h2>所有属性
+# 例子应用了三个class的样式 全都可以提取
+# 包括多少属性都能提取
+print(bs.h2.attrs)
+
+print("---------------------------------")
+
+# 获取单个属性
+# 获取class的属性
+print(bs.h2.get('class'))
+print(bs.h2['class'])
+print(bs.a['href'])
+
+print("---------------------------------")
+
+# 获取文本内容
+print(bs.title.text)
+# bs.title.string 获标签中注释的文本内容
+print(bs.title.string)
+
+print(bs.h3.text)
+print(bs.h3.string)
+
+
+BeautifulSoup数据提取的方法
+
+返回值类型	方法		功能				语法					举例
+Tag			find()	 提取满足要求的首个数据	bs.find(标签,属性)  	bs.find('div', class_='books')
+Tag			find_all 提取满足要求的所有数据 bs.find_all(标签,属性)	bs.find_all('div', class_='books')
+
+CSS选择器
+功能				举例
+通过ID查找		bs.select('#abc')
+通过class查找	bs.select('.abc')
+通过属性查找	bs.select(a['class="abc"'])
+
+Tag对象
+功能					举例
+获取标签			bs.title
+获取所有属性		bs.title.attrs
+获取单个属性的值	bs.div.get('class')
+					bs.div['class']
+
+BeautifulSoup提取数据的使用
+
+"""
+
+from bs4 import BeautifulSoup
+
+html = """
+    <html>
+        <title>飞飞飞</title>
+        <div class="info" float="left">欢迎你</div>
+        <div class="info" float="right" id="gb">
+            <span>好好学习</span>
+            <span>你是天才</span>
+            <a href="https://www.baidu.com">官网</a>
+        </div>
+        <body>
+            <div>
+                <span>sad六块腹肌拉屎的肌肤i</span>
+            </div>
+        </body>
+    </html>
+    
+"""
+
+bs = BeautifulSoup(html, 'lxml')
+# <class 'bs4.element.Tag'>
+print(bs.title, type(bs.title))
+
+print("---------------------------------")
+
+# 获取第一个满足条件的标签
+print(bs.find('div', class_='info'), type(bs.find('div', class_='info')))
+
+print("---------------------------------")
+
+# 得到的是一个标签的列表
+print(bs.find_all('div', class_='info'), type(bs.find_all('div', class_='info')))
+
+print("---------------------------------")
+
+for item in bs.find_all('div', class_='info'):
+    print(item, '    ', type(item))
+
+print("---------------------------------")
+
+print(bs.find_all('div', attrs={'float': 'right'}))
+
+print("---------------------------------")
+
+print(bs.find('div', attrs={'float': 'right'}))
+
+print("--------------css选择器-------------------")
+
+print(bs.select("#gb"))
+
+print("---------------------------------")
+
+print(bs.select('.info'))
+
+print("---------------------------------")
+
+# div下的span标签
+print(bs.select('div>span'))
+
+print("---------------------------------")
+# div应用了info的标签下的span标签
+
+print(bs.select('div.info>span'))
+
+print("---------------------------------")
+
+"""
+如果想里面的文本在后面加一个.text
+但是不能直接用 需要for循环出单个元素后面加上.text
+
+bs.select('div.info>span').text
+这个是错误的
+
+正确如下
+"""
+
+for item in bs.select('div.info>span'):
+    print(item.text)
+
+实例
+
+"""
+@auther Fcc
+
+BeautifulSoup使用
+
+"""
+
+import requests
+from bs4 import BeautifulSoup
+
+url = 'https://www.taobao.com'
+header ={
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36'
+    , 'Cookie': 't=e494b2b1138f37bde97fd0809e8ebf76; cna=qs1eIKFdgyEBASQJjUz3eojt; mtop_partitioned_detect=1; _m_h5_tk=52d121aced0b2d36cf38695e84b5bd85_1745425014015; _m_h5_tk_enc=4bc20ca13ec30691a14d10ba9755f670; arms_uid=222bf124-91c8-4935-826c-895336ec9818; _tb_token_=58e33b1073e1e; thw=us; cookie2=1b1e895c89281006bcbf093bcbf7a535; sca=5ea4ec74; xlly_s=1; isg=BF9fYO1ASx5SP0DdPnaoFAm87rXpxLNmKMKH_PGsjo5VgH4C-ZKNtgEaQxj-R4ve; tfstk=gA7mCoiuCLMIr1yJ2aTbxOBRivr8MET6AO39BFpa4LJSHx3A_C8GUOFXH1yfINvyuhsvBKpMS163wJULJs1X5EeLpyQZHkxvuIk2QhPw4CAawIyIKaMe5FyLp03wcyY13Ov-kEoyaLOM_cuVQURyTC8w_I8aZLRMOckVQOPkzBRnbd-Z7_ky9LJw7FWNa7A9UC8w7Uzinp7VJay5GV1gjNcRzIxDLsJc61QPPvphgK0aL6dDmDC2EVuNrGxilBp3rYJR_6swqN4jkF1RxOjNU5uwIgRhKBBYzqYN4TbHY_wnlKjPhNYvAPcMZMfPna8gxjORo_7BjZwmzKX5aMLf88gGL_Cdl3_gKYJ1DBTyigVZ4K-N4YnrY8ZK5QPOzci60QOkpizT5EVu8ElgZ7mCBnRWMLFuZc1p0QOkp7VoY4t2NIpR.'
+
+}
+
+resp = requests.get(url, headers = header)
+resp.encoding = 'utf-8'
+html = resp.text
+
+# print(html)
+
+bs = BeautifulSoup(html, 'lxml')
+a_list = bs.find_all('a')
+
+for i in a_list:
+    url = i.get('href')
+
+    if(url == None):
+        continue
+
+    if(url.startswith('https') or url.startswith('http')):
+        print(f"{i.text}: {url}")
+
+# for i in a_list:
+#     print(i.text)
+
+# print(len(a_list))
+
+
+
+正则表达式
+Python的正则模块是re 是python的内置库
+
+            正则语法
+序号      元字符         说明
+1           .            匹配任意字符
+2           ^            匹配字符串的开头
+3           $            匹配字符的末尾
+4           *            匹配前一个元字符0到多次
+5           +            匹配前一个元字符1到多次
+6           ?            匹配前一个元字符0到1次
+7           {m}          匹配前一个字符m次
+8           {m, n}       匹配前一个字符m到n次
+9           {m, n}?      匹配前一个字符m到n次，并且取尽可能少到情况
+10          \\           对特殊字符进行转义
+11          []           一个字符的合集，可匹配其中任意一个字符
+12          |            逻辑表达式“或”，比如a｜b代表可匹配a或者b
+13          (...)        被括起来的表达式作为一个元组。findall()在有组的情况下只显示组的内容
+
+        特序列
+序号      元字符                  说明
+1           \A                  只在字符串开头进行匹配
+2           \b                  匹配位于开头或者结尾的空字符串
+3           \B                  匹配不位于开头或者结尾的空字符串
+4           \d                  匹配任意十进制数，相当于[0-9]
+5           \D                  匹配任意非数字字符，相当于[^0-9]
+6           \s                  匹配任意空白字符，相当于[\t\n\r\f\v]
+7           \S                  匹配任意非空白字符，相当于[^\t\n\r\f\v]
+8           \w                  匹配任意数字，字母，下划线，相当于[a-zA-Z0-9]
+9           \W                  匹配任意非数字，字母，下划线，相当于[^a-zA-Z0-9]
+10          \Z                  只在字符串结尾进行匹配
+11          [\u4e00-\u9fa5]     中文
+
+        正则处理函数
+序号              正则处理函数                              说明
+1           re.match(pattern, string, flags=0)          尝试从字符串的开始位置匹配一个模式，如果匹配成功，就返回一个匹配成功的对象，否则返回None
+2           re.search(pattern, string, flags=0)         扫描整个字符串并返回第一次成功匹配的对象，如果匹配失败，就返回None
+3           re.findall(pattern, string, flags=0)        获取字符串中所有匹配的字符串，并以列表的形式返回
+4           re.sub(pattern, string, count=0, flags=0)   用于替换字符串中的匹配项，如果没有匹配的项，则返回没有匹配的字符串
+5           re.compile(pattern[,flag])                  用于编译正则表达式，生成一个正则表达式(pattern)对象，供match()和search()函数使用
+
+"""
+
+import re
+
+
+s = 'I study python3.....8 every day'
+
+# <re.Match object; span=(0, 1), match='I'>
+# print(re.match('I', str1))
+
+# group() 是 Python re 模块中匹配对象（Match 对象）的方法，用于提取正则表达式匹配到的字符内容
+print(re.match('I', s).group())
+print(re.match('\w', s).group())
+print(re.match('.', s).group())
+
+print("-----------------match方法，从起始位开始匹配----------------")
+
+print(re.search('\d', s).group())
+print(re.search('\W', s).group())
+print(re.search('study', s).group())
+print(re.search('s\w', s).group())
+
+print("-----------------search方法，从任意位开始匹配，匹配第一个（找到第一个就停）----------------")
+
+# 直接返回列表（无需 .group()）如果直接 print(re.search(...)) 会显示 <re.Match object> 对象而非具体内容
+print(re.findall('y', s))
+print(re.findall('\d', s))
+print(re.findall('\W',s))
+
+"""
+
+正则表达式
+Python的正则模块是re 是python的内置库
+
+            正则语法
+序号      元字符         说明
+1           .            匹配任意字符
+2           ^            匹配字符串的开头
+3           $            匹配字符的末尾
+4           *            匹配前一个元字符0到多次
+5           +            匹配前一个元字符1到多次
+6           ?            匹配前一个元字符0到1次
+7           {m}          匹配前一个字符m次
+8           {m, n}       匹配前一个字符m到n次
+9           {m, n}?      匹配前一个字符m到n次，并且取尽可能少到情况
+10          \\           对特殊字符进行转义
+11          []           一个字符的合集，可匹配其中任意一个字符
+12          |            逻辑表达式“或”，比如a｜b代表可匹配a或者b
+13          (...)        被括起来的表达式作为一个元组。findall()在有组的情况下只显示组的内容
+
+        特序列
+序号      元字符                  说明
+1           \A                  只在字符串开头进行匹配
+2           \b                  匹配位于开头或者结尾的空字符串
+3           \B                  匹配不位于开头或者结尾的空字符串
+4           \d                  匹配任意十进制数，相当于[0-9]
+5           \D                  匹配任意非数字字符，相当于[^0-9]
+6           \s                  匹配任意空白字符，相当于[\t\n\r\f\v]
+7           \S                  匹配任意非空白字符，相当于[^\t\n\r\f\v]
+8           \w                  匹配任意数字，字母，下划线，相当于[a-zA-Z0-9]
+9           \W                  匹配任意非数字，字母，下划线，相当于[^a-zA-Z0-9]
+10          \Z                  只在字符串结尾进行匹配
+11          [\u4e00-\u9fa5]     中文
+
+        正则处理函数
+序号              正则处理函数                              说明
+1           re.match(pattern, string, flags=0)          尝试从字符串的开始位置匹配一个模式，如果匹配成功，就返回一个匹配成功的对象，否则返回None
+2           re.search(pattern, string, flags=0)         扫描整个字符串并返回第一次成功匹配的对象，如果匹配失败，就返回None
+3           re.findall(pattern, string, flags=0)        获取字符串中所有匹配的字符串，并以列表的形式返回
+4           re.sub(pattern, string, count=0, flags=0)   用于替换字符串中的匹配项，如果没有匹配的项，则返回没有匹配的字符串
+5           re.compile(pattern[,flag])                  用于编译正则表达式，生成一个正则表达式(pattern)对象，供match()和search()函数使用
+
+"""
+
+import re
+
+
+s = 'I study python3.....8 every day'
+
+# <re.Match object; span=(0, 1), match='I'>
+# print(re.match('I', str1))
+
+# group() 是 Python re 模块中匹配对象（Match 对象）的方法，用于提取正则表达式匹配到的字符内容
+print(re.match('I', s).group())
+print(re.match('\w', s).group())
+print(re.match('.', s).group())
+
+print("-----------------match方法，从起始位开始匹配----------------")
+
+print(re.search('\d', s).group())
+print(re.search('\W', s).group())
+print(re.search('study', s).group())
+print(re.search('s\w', s).group())
+
+print("-----------------search方法，从任意位开始匹配，匹配第一个（找到第一个就停）----------------")
+
+# 直接返回列表（无需 .group()）如果直接 print(re.search(...)) 会显示 <re.Match object> 对象而非具体内容
+print(re.findall('y', s))
+print(re.findall('\d', s))
+print(re.findall('\W',s))
+
+"""
+p 开头  \w 匹配任意数字，字母，下划线    + 匹配前一个元字符1到多次  . 匹配任意字符    \d 匹配任意十进制数
+
+针对字符串 s = "study12:python;3.10"：
+
+‌查找 p 的位置‌
+python 中的 p 是第一个匹配的字符，位于索引位置 6。
+‌匹配 p\w+
+p 后紧跟 ython（\w+ 匹配到 ython，共 5 字符）。
+此时匹配到子串 python（索引 6-11）。
+‌匹配 .
+python 后的字符是 ;，. 成功匹配它。
+‌匹配 \d
+; 后的字符是 3，符合 \d 的要求。
+‌最终匹配结果‌
+完整匹配的子串为 python;3。
+
+. 后面加 + 就是 任意字符1到多次
+"""
+print(re.findall('p\w+.\d', s))
+print(re.findall('p\w', s))
+print(re.findall('p\w+', s))
+print(re.findall('p\w+.\d', s))
+print(re.findall('p\w+.+', s))
+print(re.findall('p\w+\W+', s))
+
+print("-----------------findall方法，从任意位开始匹配，匹配多个----------------")
+
+print(re.sub('study', 'sleep', s))
+
+print("-----------------sub方法，替换----------------")
+针对字符串 s = "study12:python;3.10"：
+
+‌查找 p 的位置‌
+python 中的 p 是第一个匹配的字符，位于索引位置 6。
+‌匹配 p\w+
+p 后紧跟 ython（\w+ 匹配到 ython，共 5 字符）。
+此时匹配到子串 python（索引 6-11）。
+‌匹配 .
+python 后的字符是 ;，. 成功匹配它。
+‌匹配 \d
+; 后的字符是 3，符合 \d 的要求。
+‌最终匹配结果‌
+完整匹配的子串为 python;3。
+
+. 后面加 + 就是 任意字符1到多次
+"""
+print(re.findall('p\w+.\d', s))
+print(re.findall('p\w', s))
+print(re.findall('p\w+', s))
+print(re.findall('p\w+.\d', s))
+print(re.findall('p\w+.+', s))
+print(re.findall('p\w+\W+', s))
+
+print("-----------------findall方法，从任意位开始匹配，匹配多个----------------")
+
+print(re.sub('study', 'sleep', s))
+
+print("-----------------sub方法，替换----------------")
+
+		pyquery分析数据
+"""
+@auther Fcc
+
+        pyquery解析数据
+pyquery库是jQuery的python实现，能够以jQuery的语法来操作解析HTML文档，易用性和解析速度都很好
+前提条件：
+    对css选择器与jQuery有所了解
+
+非python标准模块
+    pip install pyquery
+    import pyquery
+
+        pyquery的初始化方式
+字符串方式
+    from pyquery import PyQuery as py
+    doc=py(str)
+    print(doc)
+    print(type(doc))
+
+url方式
+    from pyquery import PyQuery as py
+    doc=py(url='https://www.baidu.com', encoding='utf-8')
+    print(type(doc))
+    print(doc('title'))
+
+文件
+    from pyquery import PyQuery as py
+    doc=py(filename='demo.html')
+    print(type(doc))
+
+"""
+
+from pyquery import PyQuery as py
+
+html = """
+    <html>
+        <title>飞飞飞</title>
+        <div class="info" float="left">欢迎你</div>
+        <div class="info" float="right" id="gb">
+            <span>好好学习</span>
+            <span>你是天才</span>
+            <a href="https://www.baidu.com">官网</a>
+            <div id="main">
+                <div id="iio">
+                </div>
+            </div>
+        </div>
+        <body>
+            <div>
+                <span>sad六块腹肌拉屎的肌肤i</span>
+            </div>
+            <div>
+                <span>sad六块腹肌拉屎sadfadsfsadfsadfsadfasdf的肌肤i</span>
+            </div>
+        </body>
+    </html>
+
+"""
+
+# 创建PyQuery的对象 实际上就是在进行一个类型转换 将str类型转成PyQuery类型
+doc = py(html)
+print(doc)
+print(type(doc))
+print(type(html))
+print(doc('title'))
+
+print('------------------------------')
+
+url = 'https://www.xs5.org/login.php'
+
+doc2 = py(url)
+print(doc2)
+
+print('------------------------------')
+
+doc3 = py(filename='demo21.html')
+print(doc3)
+
+print('------------------------------')
+
+"""
+1   获取当前节点       doc('#main') 
+2   获取子节点        doc('#main').children()
+3   获取父节点        doc('#main').parent()
+4   获取兄弟节点      doc('#main').siblings()
+5   获取属性         doc('#main').attr('href')
+6   获取内容         doc('#main').html()    doc('#main').text()
+"""
+
+doc4 = py(html)
+
+print(doc4('#main'))
+print('------------------------------')
+print(doc4('#gb').children())
+print('------------------------------')
+print(doc4('#iio').parent())
+print('------------------------------')
+print(doc4('#gb').siblings())
+print('------------------------------')
+print(doc4('#gb').attr('class'))
+print('------------------------------')
+print(doc4('#gb').html())
+print('------------------------------')
+print(doc4('#gb').text())
+
+		案例
+"""
+@auther Fcc
+
+
+
+"""
+
+import requests
+from pyquery import PyQuery as py
+
+url = 'https://www.qidian.com/all/'
+
+header = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+    'Host': 'www.qidian.com',
+    'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+    'Accept-Encoding': 'gzip, deflate, br, zstd',
+    'Cookie': 'e1=%7B%22l6%22%3A%22%22%2C%22l7%22%3A%22%22%2C%22l1%22%3A%22%22%2C%22l3%22%3A%22%22%2C%22pid%22%3A%22qd_P_all%22%2C%22eid%22%3A%22%22%7D; e2=%7B%22l6%22%3A%22%22%2C%22l7%22%3A%22%22%2C%22l1%22%3A3%2C%22l3%22%3A%22%22%2C%22pid%22%3A%22qd_p_qidian%22%2C%22eid%22%3A%22qd_A16%22%7D; _csrfToken=iMJpEIxUzQKoEKRPn77J3CxXkoelQMwAekdpiaHB; newstatisticUUID=1744644686_1507655709; fu=1393780855; traffic_utm_referer=https%3A//www.google.com/; _gid=GA1.2.1951880027.1745342692; e2=%7B%22l6%22%3A%22%22%2C%22l7%22%3A%22%22%2C%22l1%22%3A3%2C%22l3%22%3A%22%22%2C%22pid%22%3A%22qd_p_qidian%22%2C%22eid%22%3A%22qd_A15%22%7D; e1=%7B%22l6%22%3A%22%22%2C%22l7%22%3A%22%22%2C%22l1%22%3A3%2C%22l3%22%3A%22%22%2C%22pid%22%3A%22qd_p_qidian%22%2C%22eid%22%3A%22qd_A16%22%7D; Hm_lvt_f00f67093ce2f38f215010b699629083=1744644688,1745368314; HMACCOUNT=2167564A93F5EFCA; _ga_FZMMH98S83=GS1.1.1745368042.3.1.1745368445.0.0.0; _ga=GA1.1.287892898.1744644688; _ga_PFYW0QLV3P=GS1.1.1745368042.3.1.1745368445.0.0.0; Hm_lpvt_f00f67093ce2f38f215010b699629083=1745368452; w_tsfp=ltvuV0MF2utBvS0Q7a/qkkKqEjgkcDA4h0wpEaR0f5thQLErU5mB1IV8t8/zMHHZ48xnvd7DsZoyJTLYCJI3dwNATcWZc4oX2QWUw9V0jdtGCUExRJ/YCF4aI7p25GIVL3hCNxS00jA8eIUd379yilkMsyN1zap3TO14fstJ019E6KDQmI5uDW3HlFWQRzaLbjcMcuqPr6g18L5a5TuOsQ6qfwkgV+lGhEWQ3S1LD39xshWzcO9fYB+pd5yrSqA='
+}
+
+session = requests.session()
+resp = session.get(url, headers=header)
+resp.encoding = 'utf-8'
+html = resp.text
+
+print('响应头：', resp.status_code)
+# print('HTML:\n', resp.text)
+
+doc = py(html)
+list_1 = [a.text for a in doc('h2 a')]
+
+for i in list_1:
+    print(i, end=' ')
+    if(i == list_1[len(list_1)-1]):
+        print(i)
+
+list_2 = [a.text for a in doc('p.author a.name')]
+
+for i in list_2:
+    print(i, end=' ')
+
+for i, j in zip(list_1, list_2):
+    # print(i, ': ', j)
+    print(f"\n 书名:{i} \n 作者:{j} \n----------------")
+
+
+		JSON文件存储
+
+JSON(JavaScript Object Notation)是一种轻量级的数据交换格式,它是基于ECMScript的一个子集
+JSON采用完全独立于语言的文本格式
+JSON在python中分别由list和dict组成
+
+无需安装即可使用
+
+json模块提供的4个功能
+序号		函数				描述
+1			json.dumps()		实现python类型转化为json字符串，返回一个str对象，把一个python对象编码转成json字符串
+2			json.loads()		把json格式字符串解码转换成python对象，从json到python的类型转化
+3			json.dump()			将python内置类型序列化为json对象后写入文件
+4			json.load()			读取文件中json形式的字符串转化为python类型
+
+
+
+
