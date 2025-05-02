@@ -1,0 +1,22 @@
+Fedora版本的linux
+
+nmcli是fedora默认的网络管理工具，用来配置网络接口
+	列出网络连接
+	nmcli connection show
+
+	修改ip地址
+	#设置静态IP地址
+	nmcli com mod "修改的网络名称(en0)" ipv4.addresses192.168.1.100/24
+	#设置网关
+	nmcli con mod "修改的网络名称(en0)" ipv4.geteway 192.168.1.1
+	#设置DNS服务器
+	nmcli com mod "修改的网络名称(en0)" ipv4.dns "8.8.8.8"
+	#重启网络连接
+	nmcli com up "修改的网络名称(en0)"
+	#验证配置
+	ip addr show eth0
+	ip addr
+
+
+
+

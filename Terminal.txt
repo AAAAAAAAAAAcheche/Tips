@@ -1,0 +1,212 @@
+du -sh location
+查看目录和软件的大小
+-s：只显示总计，不显示每个文件的大小。
+-h：以人类可读的格式显示大小（例如 KB、MB、GB）。
+----------------
+du -sh *
+查看目录下的每个文件的大小
+-----------------
+显示文件的具体类型
+file <filename>
+-------------------
+表示在home文件夹查找
+~/
+
+~/.zsh
+---------------------
+查看文件在哪里
+which file_name
+
+大部分 Linux 软件 都会在 ~（Home 目录）下存放用户配置文件，并在启动时 自动加载，但具体的文件名和规则可能不同
+--------------------------
+清理空间
+
+清理用户缓存
+rm -rf ~/Library/Caches/*
+
+清理系统缓存
+sudo rm -rf /Library/Caches/*
+
+清除日志文件
+sudo rm -rf /private/var/log/*
+rm -rf ~/Library/Logs/*
+
+---------------------
+
+根目录文件说明
+
+/bin
+基本用户命令的可执行文件目录
+包含系统引导和单用户模式下使用的基本命令
+常见命令：ls, cp, mv, cat, rm, mkdir, bash 等
+可以ls /bin来查看你能用什么命令
+
+/sbin
+系统管理命令的可执行文件目录
+只有超级用户（root）才能执行的大部分管理工具
+常见命令：iptables, ifconfig, reboot, shutdown 等
+
+/etc
+系统配置文件目录
+包含大部分系统和服务的配置文件
+重要子目录:
+	/etc/passwd		:	用户账户信息
+	/etc/shadow		:	用户密码信息
+	/etc/hostname	:	主机名配置
+	/etc/fstab		:	文件系统挂载信息
+	/etc/docker		:	Docker的配置文件
+
+/home
+用户主目录
+
+/root
+root用户的主目录
+
+/var
+储存动态数据，如日志，缓存，临时文件
+常见字目录:
+	/var/log/	:	系统日志文件
+	/var/lib/	:	服务运行时的数据文件（如Docker数据等）
+	/var/tmp/	:	临时文件
+	/var/spool/	:	任务队列数据（如邮件，打印任务等）
+
+/usr
+用户程序和库的存储目录
+usr代表Unix System Resources,不是用户目录
+重要的子目录:
+	/usr/bin/	:	非必要的用户命令（如vim , wget）
+	/usr/sbin/	:	非必要的系统管理命令（如apachectl）
+	/usr/lib/	:	系统库文件
+
+/lib
+系统启动和运行时所需要的共享库文件
+/lib/modules/	:	内核模块存放路径
+
+/dev
+设备文件存放目录
+子目录:
+	/dev/sda	:	硬盘设备
+	/dev/tty	:	终端设备
+	/dev/null	:	丢弃数据的虚拟设备
+
+/tmp
+临时文件存放目录
+任何程序或者用户都可以在/tmp中创建临时文件,系统重启时自动清除
+
+/opt
+可选的第三方软件包目录
+用户可以在此目录中安装额外的软件包，不同于系统自带的软件
+
+/proc
+虚拟文件系统，存放系统和进程
+常见文件:
+	/proc/cpuinfo	:	CPU信息
+	/proc/meminfo	:	内存信息
+	/proc/<PID>		:	每个进程的详细信息
+
+/sys
+虚拟文件系统，暴露内核信息
+提供与设备，驱动，内核交互的接口
+
+/mnt
+手动挂载设备的临时目录
+一般使用mount命令将设备挂载到该目录
+
+/boot
+系统启动引导相关文件目录
+包含:
+	vmlinuz		:	内核文件
+	initrd		:	初始内存盘
+	grub		:	引导加载程序配置
+
+/srv
+系统服务数据目录
+Web服务，FTP服务器等服务等数据存储在这里
+
+/lost+found
+系统崩溃或文件系统错误时恢复的文件
+当fsck进行文件系统检查后,会将恢复的数据保存在此目录
+
+-----------------------
+
+macos防火墙指令
+
+pfctl命令
+配置文件位于/etc/pf.conf
+
+使用pf的配置文件允许端口
+1.备份文件
+sudo cp /etc/pf.conf /etc/pf.conf.backup
+
+2.编辑文件配置
+vim /etc/pf.conf
+
+3.允许端口规则
+内容末尾添加
+pass in inet proto tcp from any to any port 8080
+
+pass in：允许传入流量。
+inet：适用于 IPv4 和 IPv6。
+proto tcp：指定 TCP 协议（如果是 UDP，改为 proto udp）。
+from any to any：允许来自任何地址的流量。
+port 8080：允许的端口号。
+
+4.保存退出并且配置pf配置
+pfctl -f /etc/pf.conf
+
+4.1如果pf未启用
+pfctl -e
+
+5.检查pf状态和规则是否生效
+pfctl -s rules
+---------------------
+
+配置环境变量:
+
+(windows)
+	可以在任意的地方打开你想要的文件
+	你可以在环境变量中编辑添加 类似于qq/bin的文件路径（bin路径下有qq的exe文件可以运行）
+	添加完在命令行输入qq.exe就能运行了 不需要去到目录下再启动
+
+(MacOS)
+	sudo su 进入root
+	vim / nano ~/.zshrc
+	输入 export JAVA_HOME=/Library/.../home
+	输入 export PATH=$JAVA_HOME/bin:$PATH
+	source ~/.zshrc
+	就可以了
+	这只是当前用户的环境变量的配置
+	想要全局 需要去/etc/profile配置路径
+	输入的代码完全相同
+
+(Linux)
+	跟MacOS一样
+	不过有的是.zshrc 有的是.bashrc
+	source .zshrc/.bashrc
+	修改.zshrc/.bashrc仅对当前用户有效
+	想要对全用户都生效需要配置/etc/profile（系统级配置）
+	sudo su
+	vim / nano /etc/profile
+	# 系统级 JAVA_HOME 配置
+	export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+	export PATH=$JAVA_HOME/bin:$PATH
+	source /etc/profile
+	就可以配置全局了
+	
+--------------------
+
+netstat -nr -f inet
+查看路由表
+
+-------------------
+
+
+
+
+
+
+
+
+
+
+

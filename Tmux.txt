@@ -1,0 +1,66 @@
+一个命令行分屏的工具
+tmux 							启动默认会话
+tmux new -s 会话名				创建并进入新会话
+tmux ls							列出所有会话
+tmux attach -t 会话名			连接到已存在的会话
+tmux kill-session -t 会话名		杀死某个会话
+tmux kill-server 				杀死所有tmux会话
+
+所有快捷键默认以Ctrl + b，笔，比如 d 的实际操作是 Ctrl + b 松开 摁下 d
+简写为Cb + d
+tmux source-file ~/.tmux.conf
+
+Cb + d		分离当前会话（detach）
+Cb + c		创建新窗口	
+Cb + n/p	下一个/上一个窗口
+Cb + &		关闭当前窗口
+Cb + ,		重命名当前窗口
+Cb + "		水平分割窗格
+Cb + %		垂直分割窗格
+Cb + o		在窗格之间切换
+Cb + x		关闭当前窗格
+Cb + z		放大/还原当前窗格
+Cb + ? 		显示所有快捷键帮助
+Cb + [		进入复制/滚动模式 然后使用方向键或者是pageUp pageDown来滚动 按q退出滚动模式 按Enter复制选中的内容（配合空格键可以进行选中）
+
+__________________
+
+tmux默认不会有配置文件要自己创建
+
+cd ~/
+touch .tmux.conf
+__________________
+
+鼠标控制(可以让鼠标选中单个窗口的字段 不会连着别的窗口的字段选中)
+
+cd ~/.tmux.conf
+
+加上
+
+set-option -g mouse on
+bind -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel "xclip -selection clipboard -in"
+
+如果是macos
+
+set-option -g mouse on
+bind -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel "pbcopy"
+
+然后重启(要在tmux启动的时候输入 没启动的话先启动 tmux)
+
+tmux source-file ~/.tmux.conf
+__________________
+
+ctrl + b [ 进入后按空格选中跳到最后的解决办法
+
+vim ./.tmux.conf
+
+setw -g mode-keys vi
+__________________
+
+
+
+
+
+
+
+

@@ -1,0 +1,35 @@
+换源
+
+cd /etc/yum.repos.d
+vi CentOS-Base.repo
+
+[base]
+name=CentOS-7 - Base
+baseurl=https://mirrors.aliyun.com/centos-altarch/7/os/aarch64/
+enabled=1
+gpgcheck=0
+
+[updates]
+name=CentOS-7 - Updates
+baseurl=https://mirrors.aliyun.com/centos-altarch/7/updates/aarch64/
+enabled=1
+gpgcheck=0
+
+[extras]
+name=CentOS-7 - Extras
+baseurl=https://mirrors.aliyun.com/centos-altarch/7/extras/aarch64/
+enabled=1
+gpgcheck=0
+
+将其中的baseurl更换为国内源
+
+把gpgcheck关闭，如上
+
+然后刷新源
+yum clean all
+yum makecache
+yum repolist
+
+就可以了
+
+

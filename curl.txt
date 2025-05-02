@@ -1,0 +1,44 @@
+查看网页
+curl -i https://example.com
+------------------------------
+curl -O url 表示将下载的文件保存为与远程文件相同的文件名
+------------------------------------------------------------
+curl ipinfo.io
+curl ipinfo.io 是一个命令行工具，用于通过访问 ipinfo.io 服务获取与你的 IP 地址相关的详细信息
+运行 curl ipinfo.io 会返回你的公网 IP 地址
+{
+  "ip": "203.0.113.1",
+  "hostname": "example.com",
+  "city": "Los Angeles",
+  "region": "California",
+  "country": "US",
+  "loc": "34.0522,-118.2437",
+  "org": "AS12345 Example ISP",
+  "postal": "90001",
+  "timezone": "America/Los_Angeles"
+}
+
+用途
+检查公网 IP：快速查看你的公网 IP 地址。
+调试网络问题：确认你的网络连接和 IP 地址是否正确。
+地理位置验证：检查你的 IP 地址是否被正确识别为预期的地理位置。
+ISP 信息：了解你的互联网服务提供商。
+自动化脚本：在脚本中使用 curl ipinfo.io 获取 IP 信息，用于自动化任务。
+
+获取特定字段：可以通过指定字段名称获取特定信息
+curl ipinfo.io/ip          # 只获取 IP 地址
+curl ipinfo.io/city        # 只获取城市
+curl ipinfo.io/country     # 只获取国家
+curl ipinfo.io/org         # 只获取 ISP 信息
+
+查询其他 IP 的信息：可以通过在 URL 中指定 IP 地址查询其他 IP 的信息
+curl ipinfo.io/8.8.8.8
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,463 @@
+----------------------------------------
+user.name=FCC
+user.email=sdeveneco@gmail.com
+url=https://github.com/AAAAAAAAAAAcheche/fielname.git
+令牌=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
+
+gitee.com
+令牌=f7f3ecd45cb9d5cfa0fd998f13e6b9d5
+
+github令牌
+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
+------------------------------------
+用git来记住令牌 这样就不用每次都要输入令牌了
+git config --global credential.helper store
+然后再执行一次git push，会输入用户名和令牌，之后都不会询问了
+
+这个是用于提交git文件时候
+用户邮件正常输入
+Git 询问密码时，粘贴你的 Token
+------------------------------------------
+查看当前的git配置信息
+--global 影响整个用户账号的 Git 设置，适用于所有 Git 仓库。
+不加 --global 只影响当前仓库（适用于不同项目有不同配置的情况）。
+--system 影响整个计算机（很少用，一般需要管理员权限）。
+git config --list
+git config --list --global
+git config --list --system
+---------------------------------------------
+git add → 把文件添加到暂存区
+git commit → 把暂存区的文件提交到本地仓库
+git push → 把本地提交推送到远程仓库（GitHub/GitLab 等）
+-----------------------------------------------------------
+配置 Git 用户的姓名和电子邮件（这些信息会出现在提交记录中）
+git config --global user.name "Your Name"
+git config --global user.email "youremail@example.com"
+-----------------------------------
+在当前目录下初始化一个新的git仓库
+git init
+---------------------------
+克隆一个远程仓库到本地
+git clone <repository_url>
+	eg:
+	git clone https://github.com/username/repository.git
+------------------------------------------------------------------
+查看当前工作目录和暂存区的状态，哪些文件已经修改，哪些文件已经暂存
+git status
+----------------------------
+查看提交历史记录
+git log
+	可以使用一些选项来格式化日志
+	git log --onelone 一行显示每个提交记录
+	git log --graph 以图形化的方式显示分支和合并历史
+-------------------------------------------------------------------------
+跟踪文件（“跟踪文件”是指 Git 会记录文件的变化并将其纳入版本控制的过程）
+添加完不会写入仓库，要提交才算提交到仓库
+git add <file_name> 添加一个文件到仓库
+git add . 添加当前目录下的所有文件
+------------------------------------
+提交已暂存的更改，并写入提交信息
+git commit -m "Your commit message"
+-----------------------
+查看某次提交的具体内容
+git show <commit_id>
+--------------------------
+查看当前分支及所有分支
+git branch
+------------------------
+查看远程仓库中的所有分支
+git branch -r
+------------------------------
+查看本地和远程仓库的所有分支
+git branch -a
+---------------------------------
+创建一个新的分支并且切换到该分支
+git checkout -b <branch_name>
+---------------------------------------------
+创建一个完全新的分支（不基于任何现有的分支）
+git checkout --orphan new-branch
+git switch --orphan new-branch
+------------------------------
+列出远程仓库名称
+git remote
+--------------------
+列出远程仓库以及URL
+git remote -v
+----------------------------
+显示某个远程仓库的详细信息
+git remote show <repository>
+---------------------
+直接查看远程仓库的引用
+git ls-remote <url或远程名>
+--------------------------------
+修改远程仓库URL
+git remote set-url origin https://...../name.git
+----------------------------------------------------------------------
+如果你修改了远程仓库的url，可以继续将本地仓库的内容推送到新的远程仓库
+git push -u origin main
+--------------------
+删除远程仓库
+git remote remove origin
+-------------------------
+添加一个新的远程仓库
+git remote add origin https://..../name.git
+-----------------------------------------------
+修改分支名称
+git branch -m new_name
+------------------------
+查看仓库当前配置
+git config list
+-----------------------------
+查看--global的配置文件路径
+git config --global --list --show-origin
+------------------------------
+查看某个历史提交的文件
+git ls-tree -r HEAD
+----------------------------------
+把git add进来的文件提交到本地Git仓库
+暂存区——>本地仓库
+git commit -m "提交信息"
+git commit -m "提交信息"	不会自动添加修改，需要手动 git add
+git commit -am "提交信息"	自动提交已修改的文件，但不会提交新文件
+------------------------------------------------------------------------
+完全清除git的凭证存储配置,这会从全局配置中删除credential.helper设置
+git config --global --unset credential.helper
+---------------------------------------------
+给新的仓库添加一个远程仓库,如果原来有会报错
+git remote add origin https://github.com/AAAAAAAAAAAcheche/C.git
+--------------------
+可以添加多个远程仓库
+git remote add (另个名字)backup https://github.com/AAAAAAAAAAAcheche/C.git
+---------------------------
+创建分支但是不切换过去
+git branch new_branch_name
+---------------------------
+创建分支并且切换过去
+git checkout -b new_branch_name
+git switch -c new_branch_name
+-------------------------------
+推送新的分支到远程
+git push -u origin new_branch_name
+------------------------------------
+下载分支,这样会克隆ioi，而不是默认的main
+git clone --branch (ioi)分支名 url
+------------------
+确实远程主分支
+git remote show origin
+------------------------
+删除分支(本地)
+git branch -d 分支名
+-----------------------
+恢复已删除的分支
+查看commit
+git reflog
+找到分支后恢复
+git checkout -b main conmmit_ID
+	eg: git checkout -b main e5f1d3c
+	这样 main 分支就回到了 e5f1d3c 这个提交点
+-----------------------------------------------------
+设置上游分支(上游分支（Upstream Branch）指的是本地分支关联的远程分支。
+它的作用是让 git pull 和 git push 默认知道要跟哪个远程分支同步，不需要每次手动指定。如果没有设置上游分支，每次 git push 或 git pull 都要写完整命令：git push origin main,git pull origin main )
+git里面 git push -u 的-u 是 --set-upstream
+将本地分支推送到远程仓库（如果远程还没有这个分支，会新建）。
+设置默认的上游分支，以后只需要 git push 和 git pull，不用每次都写 origin main。
+git branch -u origin/main
+git branch --set-upstream-to=origin/<branch>
+git push --set-upstream origin master
+------------------------------------------------
+如果你已经设置上游分支，可以查看
+git branch -vv
+---------------------------------
+移除git记录的未跟踪文件信息(删除没提交的所有文件)慎用
+git clean -fd
+-f 强制移除未跟踪文件
+-d 删除未跟踪的目录
+----------------------
+如果想取消上游分支
+git branch --unset-upstream
+-----------------------------------
+git pull 是 Git 用来从远程仓库获取最新的代码，并合并到本地分支的命令。
+-------------------------------------------
+简单来说，git pull = git fetch + git merge：
+	1.	git fetch 先从远程仓库获取最新的代码，但不合并。
+	2.	git merge 再把远程分支的最新代码合并到当前分支。
+---------------------------------
+如果只想获取远程代码，但是不合并
+git fetch origin main
+手动合并
+git merge origin/main
+---------------------------------------
+已经有远程分支，但是本地分支没有关联上游
+git branch --set-upstream-to=origin/<远程分支> <本地分支>
+-----------------------------------------
+只克隆某个分支（不下载其他分支）
+git clone -b <branch_name> --single-branch <url> 
+----------------------------
+删除远程分支
+git branch -a
+git push origin --delete branch_name
+--------------------------------------
+恢复远程分支的文件
+git branch -a
+git checkout origin/branch_name -- filename
+----------------------------
+恢复整个分支
+git fetch origin
+git checkout origin/branch_name -- .
+---------------------------
+创建一个独立的branch
+git checkout --orphan filename
+--------------------------------
+如果你已经 git add 了某些文件但不想提交它们，可以使用 git reset 取消暂存
+git reset HEAD file/file.md
+-----------------------------------
+创建了一个新分支并且移除了不需要的文件后，可以添加并提交文件
+git add .
+git commit -m "Create a new branch with no history"
+--------------------------------
+删除远程仓库的文件
+git rm -r --cached <文件路径>
+git commit -m "remove"
+git push origin <branch>
+------------------------
+批量删除多个文件
+git rm -r --cached logs/
+git commit -m "remove logs"
+git push origin master
+-----------------------
+查看远程分支的文件
+git ls-tree -r origin/<branch> --name-only
+--name-only 选项的作用是 只显示文件名，而不显示其他详细信息
+git show origin/<branch>:<文件路径>
+---------------------------------------------------------------------------
+如果这些删除的文件 只是被 git rm 或 git add -u 移入了暂存区，但本地还没有运行 git commit，你可以使用
+git restore --staged <file name>
+---------------------------
+取消暂存（撤销git add）
+git restore --staged filename filename
+----------------------------------------
+直接丢弃未跟踪的文件（撤销git commit -m ""）
+git clean -fd
+git clean -f：删除未跟踪的文件（⚠️ 会永久删除，谨慎使用！）。
+git clean -fd：删除未跟踪的文件和目录。
+----------------------------------------------------
+使用https url直接推送,建议是提前配置
+git push https://github.com/username/repository.git branch-name
+----------------------------------------------------------------
+使用ssh url直接推送
+git push git@github.com:username/repository.git branch-name
+-------------------------------------------------------------
+只拉取 不合并
+只下载远程仓库的最新提交，但不会合并到本地分支
+git fetch origin
+可以手动检查更新 适用于想先看远程仓库的变化在决定如何操作
+git log origin/main --oneline
+---------------------------------
+拉取 合并（把远程分支的更改合并到本地）建议
+git pull --no-rebase
+或者设置config文件
+git config pull.rebase false
+git pull origin branch
+如果你想使用 URL 合并拉取（pull）远程仓库的代码，你可以使用以下命令
+git pull <远程仓库URL> <远程分支名>
+------------------------------------
+拉取 只允许快进合并
+git pull --ff-only
+如果本地没有额外的提交，则直接快进
+如果有额外的提交，git会报错，提示你必须手动合并或变基
+--------------------------------
+拉取 变基，不是合并
+git pull --rebase
+变基不会创建额外的合并提交，而是让本地的提交“排队”到远程提交后面，保持历史记录线
+用url变基拉取
+git pull --rebase <远程仓库URL> <远程分支>
+--------------------------
+合并分支
+比如你在 feature 分支上开发了一个新功能，现在要把它合并到 main 分支
+git checkout main
+git merge feature
+--------------------------
+ssh登陆
+ls -al ~/.ssh
+如果有id_rsa and id_rsa.pub就说明已经有密钥了
+如果没有密钥则创建密钥
+	ssh-keygen -t rsa -b 4096 -C 1214234@qq.com(你的邮箱)
+	然后会提示
+		Enter file in which to save the key (/Users/你的用户名/.ssh/id_rsa):
+	直接回车，保存为默认名称id_rsa
+	然后会要求输入密码短语（Passphrase），可以留空（直接回车），也可以输入一个密码，增加安全性
+如果有密钥 添加ssh密钥到ssh代理
+eval "$(ssh-agent -s)"
+然后执行
+ssh-add ~/.ssh/id_rsa
+这是为了让ssh代管理密钥，避免每次使用ssh都要输入密码
+添加ssh公钥到git远程仓库
+cat ~/.ssh/id_ras.pub
+复制公钥内容 添加到github
+完成后测试ssh连接
+ssh -T git@github.com
+ssh -T git@gitee.com
+成功的话会看到
+Hi 用户名! You've successfully authenticated, but GitHub does not provide shell access.
+or
+Hi 用户名! You've successfully authenticated, but Gitee does not provide shell access.
+表示ssh连接已经正确配置
+使用ssh地址克隆 拉取 推送
+git clone git@github.com:你的用户名/仓库名.git
+or
+git clone git@gitee.com:你的用户名/仓库名.git
+
+可以替换Token令牌url
+git remote set-url origin git@github.com:your-username/your-repo.git
+--------------------------------------------------------------------
+误删了文件，但想恢复它们
+git restore .
+这会把 所有未暂存的被删除文件 恢复回来
+---------------------------------------
+如果只想恢复某个特定文件，比如 README.md，可以运
+git restore README.md
+-------------------------
+不想恢复文件，但也不想提交删除记录，只想让 Git 忘记这些改动，可以运行
+git checkout -- .
+or
+git reset --hard
+git reset --hard会丢弃所有 未提交的修改，请谨慎使用！
+-----------------------------------------------------
+不想让某些文件再次被 Git 追踪（比如 Spring/build/ 这种编译后的目录），可以把它们加到 .gitignore 文件里，比如
+echo "Spring/build/" >> .gitignore
+echo "Token.txt" >> .gitignore
+git add .gitignore
+git commit -m "Update .gitignore"
+如果你还没有克隆仓库，可以使用
+git clone --mirror <远程仓库URL>
+git clone --mirror https://gitee.com/AAAAAAAAAAAcheche/All.git
+git clone --mirror <URL> 除了创建裸仓库，还会 保留远程所有分支和引用的映射，并且 默认推送时会同步远程的所有更新
+适用于备份和迁移仓库
+----------------------------------
+仓库迁移
+1克隆旧的仓库
+git clone --mirror url
+2进入克隆仓库
+cd old-repo.git
+3添加新的远程仓库
+git remote set-url --push origin url
+4推送到新的仓库
+git push --mirror
+-----------------------------------------
+=Relate the remote branch
+
+Create a local branch
+git checkout -b branchName origin/remoteBranchName
+-b Indicates creating and switching to a new branch
+
+Check if the remoteBranchName branch exists remotely
+git branch -r
+-------------------------------------------------------
+git push origin Tips 的含义
+origin：远程仓库的名称。
+Tips：本地分支的名称。
+这条命令的完整形式是：
+git push origin Tips:Tips
+它会将本地的 Tips 分支推送到远程仓库，并在远程仓库中创建一个名为 Tips 的分支。
+如果远程仓库中已经存在 Tips 分支，Git 会尝试将本地 Tips 分支的更改合并到远程 Tips 分支。
+
+如果你想在推送时同时设置本地分支与远程分支的跟踪关系，可以使用 -u 参数：
+git push -u origin Tips
+这会将本地 Tips 分支与远程 Tips 分支关联起来。
+以后可以直接使用 git push 或 git pull，而不需要指定远程分支。
+---------------------------
+警告：正在添加嵌入式 git 仓库
+你在执行 git add . 的时候，添加了嵌套的 Git 仓库（也叫嵌入式仓库），比如
+JSFinder/
+LinuxEnvConfig/
+OneForAll/
+yjtools/
+
+如果直接 git add，嵌套的 Git 仓库会被当作普通目录对待。
+	•	这意味着外层仓库的 git clone 时，内层的 Git 仓库内容不会被克隆。
+	•	外层仓库无法追踪内层仓库的变更。
+如果你继续提交，这些嵌套的 Git 仓库内容可能会丢失历史信息。
+	•	你会丢失嵌套仓库的 commit 历史。
+	•	只会保留外层仓库的引用。
+
+如果这些嵌套目录是你想保留的独立项目，你应该把它们添加为 Git 子模块
+
+子模块（Submodule）是一个 Git 仓库嵌套在另一个 Git 仓库中的机制。
+	•	主仓库（Superproject）：包含子模块的仓库。
+	•	子模块（Submodule）：嵌套的 Git 仓库，独立于主仓库。
+
+	•	你希望在一个项目中引用其他项目的代码，比如一个 Web 项目引用了一个前端框架或者一个工具库。
+	•	子模块可以保持与原始仓库的分离，并且主仓库可以固定子模块的某个版本。
+
+重新添加的效果：
+	•	重新关联子模块的远程仓库。
+	•	子模块目录会重新被克隆并关联到主仓库。
+	•	子模块的状态会被重新初始化。
+
+# 移除已经添加的嵌套仓库
+git rm --cached JSFinder LinuxEnvConfig OneForAll yjtools
+# 你需要删除目录才能添加子模块（但也不一定 反正我是删了）
+rm -rf filename
+# 添加为子模块
+git submodule add <JSFinder 的远程仓库地址> JSFinder
+git submodule add <LinuxEnvConfig 的远程仓库地址> LinuxEnvConfig
+git submodule add <OneForAll 的远程仓库地址> OneForAll
+git submodule add <yjtools 的远程仓库地址> yjtools
+# 更新子模块
+git submodule update
+	•	根据 .gitmodules 和 .git/config 中的配置信息，从远程仓库拉取子模块的代码。
+	•	子模块会被检出到 .gitmodules 文件中记录的特定提交。
+# 初始化子模块
+git submodule update --init --recursive
+	git submodule init
+		•	读取 .gitmodules 文件中的配置。
+		•	将子模块的信息添加到本地 Git 配置中（.git/config）。
+		•	只是初始化子模块信息，但不会下载子模块代码。
+		•	--init：初始化所有未初始化的子模块。
+		•	--recursive：递归初始化和更新所有嵌套子模块（如果子模块本身还有子模块）。
+# 提交子模块更改
+git add .
+git commit -m "Add submodules for JSFinder, LinuxEnvConfig, OneForAll, and yjtools"
+# 拉取子模块更新 拉取子模块的最新提交，并将子模块切换到最新提交。
+git submodule update --remote
+# 如果远程仓库地址更改，sync 命令会更新子模块的远程 URL。
+git submodule sync
+
+#  删除子模块
+# 1. 取消子模块跟踪
+git rm --cached <submodule_path>
+# 2. 删除子模块的目录
+rm -rf <submodule_path>
+# 3. 删除子模块配置
+rm -rf .git/modules/<submodule_path>
+# 4. 如果有 .gitmodules，删除对应子模块的信息
+
+	•	如果主仓库没有更新子模块，拉取时子模块的状态会停留在指定的 commit，而不会自动跟随主仓库的最新提交。
+	•	子模块更像是一个“快照”，固定在某个版本，如果不更新，可能导致依赖的版本过旧。
+
+如果你不需要保留嵌套仓库的 Git 历史，可以删除嵌套仓库的 .git 目录
+rm -rf JSFinder/.git
+rm -rf LinuxEnvConfig/.git
+rm -rf OneForAll/.git
+rm -rf yjtools/.git
+----------------------------
+查看缓存文件,列出 所有已缓存的文件（已 git add 的文件）
+git ls-files
+------------------
+你可以通过 --cached 选项来过滤只查看缓存的文件
+git ls-files --cached
+------------------------
+查看已缓存文件的详细信息
+git ls-files --stage
+-------------------------
+如果上传的文件超过100MB 仓库就会禁止，并且记录你的文件提交，如果再想提交需要删除记录才行
+git filter-repo --path Miniconda3 --invert-paths --force
+然后就可以提交了
+------------------------------------
+如果有远程仓库了 然后git branch -a 显示只有一个那可以通过fetch来解决
+git fetch origin
+---------------------------
+
+
+
+

@@ -1,0 +1,400 @@
+
+清理Docker mirrors
+
+删除所有停止的容器
+docker container prune
+
+删除所有未使用的容器
+docker image prune -a
+
+在 Docker 中，挂载（Mount）是指将主机（Host）上的目录或文件，或者Docker 管理的存储卷（Volume），连接到容器内部的指定路径，使容器可以访问这些数据。Docker 的挂载机制是容器与外部环境共享数据的重要方式。
+
+ocker 挂载的两种主要方式
+绑定挂载（Bind Mount）
+将主机上的一个目录或文件直接挂载到容器中。容器内的路径会映射到主机上的路径，两者共享数据。
+特点：
+主机和容器共享同一个文件或目录。
+数据存储在主机上，容器只是访问这些数据。
+适合开发环境，方便修改主机上的代码或配置文件。
+示例：
+docker run -v /host/path:/container/path my_image
+/host/path 是主机上的路径。
+/container/path 是容器内的路径。
+
+Docker 卷挂载（Volume Mount）
+使用 Docker 管理的卷（Volume）挂载到容器中。Docker 卷是 Docker 专门用于数据持久化的机制，数据存储在 Docker 的存储区域中，而不是直接暴露在主机文件系统中。
+特点：
+数据由 Docker 管理，路径通常位于 Docker 的存储目录（如 /var/lib/docker/volumes/）。
+更适合生产环境，数据更安全且易于备份和迁移。
+支持多个容器共享同一个卷。
+示例：
+docker run -v my_volume:/container/path my_image
+my_volume 是 Docker 卷的名称。
+/container/path 是容器内的路径。
+
+Docker 挂载的作用
+数据持久化
+容器本身是临时的，删除后数据会丢失。通过挂载，可以将数据存储在主机或 Docker 卷中，即使容器被删除，数据也不会丢失。
+数据共享
+多个容器可以挂载同一个目录或卷，实现数据共享。
+开发调试
+在开发环境中，可以将代码目录挂载到容器中，方便在主机上修改代码并实时生效。
+配置文件管理
+将配置文件挂载到容器中，方便修改配置而不需要重新构建镜像。
+
+启动Docker
+open -a Docker
+
+如果 Docker 启动失败，可能是以下原因：
+权限问题：确保你有管理员权限。
+资源冲突：检查是否有其他程序占用了 Docker 所需的端口或资源。
+Docker 未完全安装：尝试重新安装 Docker
+
+检查docker是否运行
+docker version
+
+如果运行 docker 命令时提示 command not found，可能是因为 Homebrew 的路径未正确配置。可以尝试以下命令：
+brew link --overwrite docker
+
+-----
+Docker tutorial
+
+查看docker是否安装成功
+docker version
+or
+docker info
+
+Docker 需要用户具有 sudo 权限，为了避免每次命令都输入sudo，可以把用户加入 Docker 用户组
+sudo usermod -aG docker $USER
+
+registry-mirrors 的作用
+registry-mirrors 字段用于指定一个或多个镜像加速器的地址。
+当你运行 docker pull 命令时，Docker 会优先从 registry-mirrors 中指定的地址拉取镜像。
+如果镜像加速器中没有所需的镜像，Docker 会回退到 Docker Hub 拉取。
+
+===========
+"dns": ["8.8.8.8", "8.8.4.4"] 是 Docker 配置文件中的一个字段，用于指定 Docker 使用的 DNS 服务器。它的作用是让 Docker 在解析域名时，使用指定的 DNS 服务器，而不是系统默认的 DNS 服务器。
+
+1. 什么是 DNS？
+DNS（Domain Name System，域名系统）是将域名（如 google.com）转换为 IP 地址（如 142.250.65.206）的系统。
+
+当 Docker 需要访问外部资源（如 Docker Hub）时，它需要通过 DNS 解析域名。
+
+2. 为什么需要配置 DNS？
+在某些情况下，系统默认的 DNS 服务器可能无法正确解析域名，导致 Docker 无法连接到外部资源。
+
+通过配置自定义 DNS 服务器（如 8.8.8.8 和 8.8.4.4），可以确保 Docker 能够正确解析域名。
+
+3. "dns": ["8.8.8.8", "8.8.4.4"] 的含义
+8.8.8.8 和 8.8.4.4 是 Google 提供的公共 DNS 服务器。
+
+这个配置告诉 Docker，在解析域名时，优先使用 8.8.8.8，如果失败则使用 8.8.4.4。
+
+4. 如何配置 DNS？
+打开 Docker Desktop。
+
+点击右上角的 Docker 图标，选择 Preferences。
+
+在左侧菜单中选择 Docker Engine。
+
+在配置文件中添加 dns 字段，例如：
+
+json
+Copy
+{
+  "dns": ["8.8.8.8", "8.8.4.4"]
+}
+点击 Apply & Restart，确保 Docker 重启并应用配置。
+
+5. 其他常用 DNS 服务器
+除了 Google 的 DNS 服务器，你还可以使用其他公共 DNS 服务器：
+
+Cloudflare：1.1.1.1 和 1.0.0.1
+
+OpenDNS：208.67.222.222 和 208.67.220.220
+
+阿里云：223.5.5.5 和 223.6.6.6
+
+例如：
+
+json
+Copy
+{
+  "dns": ["1.1.1.1", "1.0.0.1"]
+}
+6. 验证 DNS 配置是否生效
+运行以下命令查看 Docker 的配置信息：
+
+bash
+Copy
+docker info
+在输出中查找 DNS，确认配置已生效。例如：
+
+Copy
+DNS:
+  8.8.8.8
+  8.8.4.4
+7. 总结
+"dns": ["8.8.8.8", "8.8.4.4"] 是 Docker 配置文件中用于指定 DNS 服务器的字段。
+
+通过配置自定义 DNS 服务器，可以解决 Docker 无法解析域名的问题。
+
+你可以使用 Google、Cloudflare、OpenDNS 等公共 DNS 服务器。
+===============
+
+确认Docker是否能联网
+docker info | grep "Registry"
+如果没有输出 Registry Mirrors 或 https://mirror.aliyuncs.com，说明你可能还没有正确配置加速器。
+
+如果配置了daemon.json文件还是找不到的话 可能是Docker Desktop忽略或未正确解析，可以尝试手动指定
+docker --config-file ~/.docker/daemon.json
+
+
+
+可以直接使用镜像网址来下载
+docker pull url(domestic mirrors)
+
+docker tag url fileName
+docker tag：用于给已有的镜像创建一个新的标签（tag），不会复制镜像，只是创建一个新的引用
+fileName : 这是新的镜像标签，实际上是 hello-world:latest 的简写（省略了 :latest）。这样，你可以用 hello-world 直接引用该镜像，而不需要带上完整的仓库路径。
+这条命令的作用是将 ccr.ccs.tencentyun.com/library/hello-world(url) 重新打上一个本地标签 hello-world，这样你可以用 docker run hello-world 直接运行，而不需要指定完整的仓库地址。
+
+docker ps
+Show running containers
+Output containerID name status port
+
+docker ps -a
+Show all containers, including stopped one
+
+docker ps -q
+Output only container ID
+Output only containerID for batch operation
+eg:
+	docker rm $(docker ps -aq)
+
+view the container through the "docker container" commend to check the container
+
+After downloading, we need to create a container otherwise we won't be albe to see it on "docker ps -a"
+docker run tag(docker tag url fileName)
+eg:
+docker tag url hello-world
+docker run tag hello-world
+
+Some images downloaded for architectures other than arm64 will suffer performance loss
+当你拉取或运行镜像时，可以加上 --platform linux/arm64 选项，确保获取适合 ARM64 架构的版本
+docker pull --platform linux/arm64 fileName
+docker run --platform linux/arm64 fileName
+
+可以使用 docker manifest inspect 命令，查看镜像支持的平台
+docker manifest inspect fileName | grep architecture
+
+显示兼容性问题的时候
+docker pull --platform linux/arm64 image/version
+
+修改容器名称
+docker ps -a
+docker rename <OldName> <NewName>
+
+Stop the comtainer
+docker stop NAMES
+docker stop containerID
+
+Remove the container
+docker rm <containerID or NAMES>
+
+docker run 命令用于基于指定的镜像创建并启动一个新的容器。以下是该命令的基本语法和常用选项：
+docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+
+	•	OPTIONS：可选参数，用于配置容器的属性。
+	•	IMAGE：要使用的镜像名称或镜像 ID。
+	•	COMMAND 和 ARG：在容器中执行的命令及其参数。
+
+常用选项：
+	•	-d：在后台运行容器，并返回容器 ID。
+	•	-i：以交互模式运行容器，通常与 -t 一起使用。
+	•	-t：为容器分配一个伪终端，通常与 -i 一起使用。
+	•	--name：为容器指定一个名称。
+	•	-p：将容器内部的端口映射到主机端口。
+	•	-v：将主机的目录或文件挂载到容器中。
+	•	--rm：容器退出时自动删除容器。
+	•	-e：设置环境变量。
+
+在运行 MySQL 容器时，使用 -e 参数设置 MYSQL_ROOT_PASSWORD 环境变量。例如：
+docker run --name my_mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=your_password mysql:8.0
+
+您可以使用以下命令连接到正在容器中运行的 MySQL 服务器
+docker exec -it Mysql_8.0_JavaEE mysql -u root -p
+
+docker exec: 这个命令用来在一个正在运行的 Docker 容器内执行指定的命令。它允许你在容器中运行命令并与容器的文件系统进行交互。
+	•	-it: 这是两个选项的组合，分别是：
+	•	-i: 表示以交互模式运行容器。这意味着你可以和容器中的进程进行交互，而不是让它运行完后退出。
+	•	-t: 为命令分配一个伪终端（pseudo-terminal），这通常用来在终端上执行需要交互的命令。
+	•	Mysql_8.0_JavaEE: 这是目标容器的名称，你要在这个容器里执行命令。
+	•	mysql -u root -p: 这个命令是在容器内执行的 MySQL 客户端命令。它会启动 MySQL 客户端并尝试以 root 用户连接到数据库。
+	•	-u root: 以 root 用户身份连接。
+	•	-p: 该选项表示你将需要输入 root 用户的密码，-p 后面没有跟密码，表示密码会在运行时提示你输入。
+
+如果你只是想操作 MySQL 数据库，可以直接运行：
+docker exec -it Mysql_8.0_JavaEE mysql -u root -p
+
+查看容器日志，诊断问题
+docker logs NAMES 
+
+使用 docker exec 命令并指定 /bin/bash 或 /bin/sh（取决于容器中的 shell 类型）来打开一个终端
+docker exec -it Mysql_8.0_JavaEE /bin/bash
+这样就可以进入容器输入命令了
+如果你想 退出 Bash 但不停止容器，可以使用：
+exit
+or 
+ctrl + D
+
+如果你的目标是让 容器的数据 直接与本机同步，最简单的方式是 运行容器时挂载本机目录
+docker run -d -v ~/my_local_folder:/app --name my_container ubuntu
+	•	docker run
+启动一个新的 Docker 容器。
+	•	-d（detach 模式）
+让容器在后台运行，而不是占用当前终端。
+	•	-v ~/my_local_folder:/app（挂载本机目录到容器）
+	•	~/my_local_folder：macOS 上的本地目录，存放你想和容器共享的数据。
+	•	/app：容器内部的目录，容器可以读写该目录，和本机同步。
+	•	--name my_container
+给这个容器起一个名字 my_container，方便管理。
+	•	ubuntu
+使用 ubuntu 这个镜像作为容器的基础环境。
+
+===让 macOS 直接访问 Docker 容器中的 MySQL
+
+步骤 1：运行 MySQL 容器，并挂载数据到本机
+
+在 macOS 终端运行：
+docker run -d \
+  --name mysql_container \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -v ~/mysql_data:/var/lib/mysql \
+  -p 3306:3306 \
+  mysql:latest
+
+	•	-v ~/mysql_data:/var/lib/mysql → 把 MySQL 数据存储到本机目录，这样即使容器重启，数据也不会丢失。
+	•	-p 3306:3306 → 把 MySQL 端口暴露到 macOS，让本机可以直接访问。
+	•	MYSQL_ROOT_PASSWORD=root → 设置 root 用户的密码。
+	•	mysql:latest → 运行最新版本的 MySQL。
+
+在 macOS 终端直接访问 Docker MySQL
+mysql -h 127.0.0.1 -P 3306 -u root -p
+输入 root 作为密码后，如果能成功登录，说明 macOS 已经成功连接到 Docker MySQL
+
+在 IDEA 里连接 Docker MySQL
+如果你想在 IntelliJ IDEA（或 DataGrip） 里管理 Docker 里的 MySQL：
+	1.	打开 IDEA（或 DataGrip）。
+	2.	添加数据库连接：
+	•	Database type: 选择 MySQL
+	•	Host: 127.0.0.1
+	•	Port: 3306
+	•	User: root
+	•	Password: root
+	•	Driver: 选择 MySQL Driver（如果没有，IDEA 会提示下载）。
+	3.	点击 “Test Connection”，如果成功，就可以在 IDEA 里操作 Docker MySQL 了！
+
+
+docker run -d --privileged --name my_centos centos:7 /sbin/init
+1. docker run
+docker run 是用于创建并启动一个新的容器的命令。如果容器已经存在并且没有使用 --rm 标志，它会创建并启动一个新容器，或者重新启动一个已存在的容器。
+2. -d（Detached Mode）
+-d 是 “detached” 的缩写，意味着容器将在后台运行，而不是绑定到当前终端（不会显示容器的日志输出）。使用此选项，Docker 会将容器作为后台进程运行，允许你继续使用终端。
+3. --privileged
+--privileged 标志给容器授予扩展的权限，允许容器执行更多操作，类似于宿主机的权限。例如，容器将能够访问设备、加载内核模块、执行内核相关的操作等。在一些特定的情况下，运行 /sbin/init 进程时需要使用 --privileged，因为它需要进行一些与系统管理相关的操作。
+4. --name my_centos
+--name my_centos 是为容器指定一个自定义的名称。在这个例子中，容器被命名为 my_centos。如果没有指定名称，Docker 会自动为容器生成一个随机名称。
+5. centos:7
+centos:7 是要使用的 Docker 镜像名称及标签。在这个命令中，它指定了使用 CentOS 7 的镜像来创建容器。如果你没有这个镜像，Docker 会从 Docker Hub 拉取该镜像。
+6. /sbin/init
+/sbin/init 是要在容器中执行的命令。在这个命令中，它启动了一个完整的系统初始化进程，它是 Linux 系统的第一个进程，负责初始化系统并启动所有其他系统服务。通常在 Docker 容器中不需要运行 init，因为容器的目标是运行单一应用程序或进程，但是如果你希望容器模拟一个完整的操作系统环境，可以使用 init 进程。
+总结
+这条命令的作用是：
+	•	使用 CentOS 7 镜像创建并启动一个容器。
+	•	运行 /sbin/init，模拟一个完整的系统环境，使容器能够像普通的虚拟机或操作系统一样运行多个进程。
+	•	使用 --privileged 选项授予容器额外权限，允许它执行更多系统级别的操作。
+	•	容器将在后台运行，允许你继续使用终端。
+
+
+=====================start
+
+创建mysql一个容器挂载到本机(移植数据)
+
+docker pull mysql:latest
+
+docker run -d --name mysql_mont e MYSQL_ROOT_PASSWORD=password -v /local directory:/docker_container directory -p 3306:3306 mysql:latest
+
+eg:docker run -d \
+  --name mysql_container \
+  -e MYSQL_ROOT_PASSWORD=123456 \
+  -v /home/user/mysql_data:/var/lib/mysql \
+  -p 3306:3306 \
+  mysql:latest
+
+-v /home/user/mysql_data:/var/lib/mysql
+将 MySQL 容器的数据目录 /var/lib/mysql 挂载到本机的 /home/user/mysql_data 目录，确保数据持久化
+
+本机命令连接
+mysql -h 127.0.0.1 -p 3306 -u root -p
+
+如果要使用IDEA连接
+打开 IDEA，进入 Database 工具窗口。
+点击 + 按钮，选择 MySQL。
+填写连接信息：
+Host: localhost
+Port: 3306
+User: root
+Password: 你设置的密码（如 123456）
+点击 Test Connection，测试连接是否成功。
+连接成功后，即可在 IDEA 中操作 MySQL 数据库。
+
+查看日志
+docker logs mysql_container
+
+=========================done
+
+如果原来有docker_container要挂载到本机
+
+方法1
+
+docker stop target_container
+备份文件
+docker cp mysql_container:/var/lib/mysql /local backup directory
+eg:docker cp mysql_container:/var/lib/mysql /home/user/mysql_backup
+
+方法2
+
+修改改容器配置并且重新启动
+
+Docker 不支持直接修改正在运行的容器的挂载点，因此你需要通过 docker commit 和 docker run 重新创建一个容器
+
+将当前容器提交为一个新的镜像,这将创建一个名为 mysql_with_data 的新镜像，包含当前容器中的所有数据
+docker commit mysql_container mysql_with_data
+用新的镜像重新运行容器，并且挂载到本机
+docker run -d --name mysql_container_data -e MYSQL_ROOT_PASSWORD=password -v /local directory:/var/lib/mysql -p 3306:3306 mysql_with_data
+
+=======================done
+
+apt 下载docker
+
+apt install docker.io
+
+docker阿里云源
+https://dup220uz.mirror.aliyuncs.com
+
+在/etc/docker文件下 配置daemon.json 如果没有就创一个
+
+
+
+
+
+
+
+
+
+
+
+
+
+

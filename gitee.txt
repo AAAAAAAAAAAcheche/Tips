@@ -1,0 +1,15 @@
+user.name=Fcheche
+user.email=15517330+AAAAAAAAAAAcheche@user.noreply.gitee.com
+url=https://gitee.com/AAAAAAAAAAAcheche/filename.git
+令牌=f7f3ecd45cb9d5cfa0fd998f13e6b9d5
+进入gitee上传仓库的时候用Token进行身份验证,oauth2代表用）OAuth2.0身份验证来访问仓库，广泛用于web应用和服务之间的授权
+git remote set-url origin https://oauth2:(你的Token)@gitee.com/AAAAAAAAAAAcheche(用户名)/filename.git
+再输入就可以提交了
+git push -u origin main
+
+如果不想让令牌被人知道可以用凭证助手（Git Credential Helper）
+git config --global credential.helper store
+然后第一次输入用户和令牌 它就会记住了
+
+
+

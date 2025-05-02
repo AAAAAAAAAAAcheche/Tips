@@ -1,0 +1,71 @@
+关机
+shutdown now
+poweroff
+halt	(停止系统运行)
+
+定时关机
+shutdown +10
+
+定时关机
+shutdown 23:00
+
+重启系统
+shutdown -r now
+reboot
+
+取消关机计划
+shutdown -c
+
+查看当前主机名
+hostnamectl
+hostname
+
+更改主机名
+hostnamectl set-hostname new_name
+
+显示文件的修改时间等
+stat filename
+ls -a
+
+显示系统语言
+echo $LANG
+
+修改语言
+export LANG=zh_CN.UTF-8 #改成中文
+export LANG=en_US.UTF-8 #改成英文
+
+查看文件类型
+file filename
+
+microdnf是一个轻量级包管理器，适用于精简的容器环境
+microdnf install dnf(apt, yum)
+
+查看有哪些管理包工具
+ls /usr/bin | grep -E "yum|dnf|microdnf|rpm"
+查看有哪些命令
+ls /bin
+
+dnf是Oracle Linux 9中的默认下载文件（apt）
+换源
+# 列出源文件
+ls /etc/yum.repos.d/
+
+vim /etc/yum.repos.d/oracle-linux-ol9.repo
+
+[ol9_baseos_latest]
+name=Oracle Linux 9 - BaseOS
+baseurl=https://mirrors.aliyun.com/oracle-linux/9/baseos/x86_64/
+enabled=1
+gpgcheck=0
+
+[ol9_appstream]
+name=Oracle Linux 9 - AppStream
+baseurl=https://mirrors.aliyun.com/oracle-linux/9/appstream/x86_64/
+enabled=1
+gpgcheck=0
+
+
+
+
+
+

@@ -1,0 +1,654 @@
+Vue.js(简称Vue)是一个渐进式JavaScript框架
+
+特点是
+	数据驱动视图(MVVM模型)
+		Vue采用双向数据绑定，可以自动更新页面上的内容，无需手动操作DOM
+	组件化开发
+		Vue可以把UI拆分成可复用的组件，每个组件包含自己的HTML，CSS和JavaScript逻辑
+	指令系统
+		Vue提供了很多特定的HTML语法(如v-if,v-for,v-model)，让模版更具动态性
+	轻量级，容易上手
+		Vue只需要一个.js文件就可以运行，并且语法简单，适合初学者
+
+Vue 有自己的一些代码组织方式，比如 .vue 单文件组件格式。但 Vue 本质上还是基于 JavaScript，并不是一种新的文件格式标准。
+
+
+-----------done
+
+Vue实例创建
+
+const app = new Vue({
+	el:'#app'
+	data:{
+		nickname:'tony',
+		age:18,
+		friend:{
+			name:'jepson',
+			desc:'热爱学习 Vue'
+		}
+	}
+})
+
+这段代码是使用Vue.js创建一个Vue实例app,并将其挂载到id="app"的html元素上
+
+	new Vue{...}:创建一个Vue实例
+
+	el:'#app':表示Vue实例会控制id="app"这个html元素
+
+	data:{...}:定义了组建的数据，Vue会将这些数据与模版进行双向绑定（响应式）
+
+数据对象data
+
+	data: {
+	  nickname: 'tony',
+	  age: 18,
+	  friend: {
+	    name: 'jepson',
+	    desc: '热爱学习 Vue'
+	  }
+	}
+
+Vue的data选项包含了多个属性
+
+	nickname:'tony':定义了一个nickname变量，值为‘tony’
+
+	age:18:定义了一个age变量，值为18
+
+	friend:定义了一个对象包含{name:'jepson' 朋友的名字 desc:'热爱学习 Vue' 朋友的描述信息}
+	这些数据会被Vue处理成响应式数据，即当数据改变时，页面上的内容也会自动更新
+
+在HTML中,可以这样使用Vue绑定数据
+
+	<div id="app">
+	  <p>昵称：{{ nickname }}</p>
+	  <p>年龄：{{ age }}</p>
+	  <p>朋友名字：{{ friend.name }}</p>
+	  <p>朋友描述：{{ friend.desc }}</p>
+	</div>
+	vue会自动解析{{nickname}},{{age}}等占位符，并将其替换为data里的值
+
+-----------done
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+  
+<!-- 
+  插值表达式：Vue的一种模板语法
+  作用：利用 表达式 进行插值渲染
+  语法：{{ 表达式 }}
+
+  注意点：
+    1. 使用的数据要存在
+    2. 支持的是表达式，不是语句  if  for
+    3. 不能在标签属性中使用 {{ }}
+ -->
+<div id="app">
+  <p>{{ nickname }}</p>
+  <p>{{ nickname.toUpperCase() }}</p>
+  <p>{{ nickname + '你好' }}</p>
+  <p>{{ age >= 18 ? '成年' : '未成年' }}</p>
+  <p>{{ friend.name }}</p>
+  <p>{{ friend.desc }}</p>
+
+  <!-- ----------------------- -->
+  <!-- <p>{{ hobby }}</p> -->
+  <!-- <p>{{ if }}</p> -->
+  <!-- <p title="{{ nickname }}">我是p标签</p> -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+<script>
+
+  const app = new Vue({
+    el: '#app',
+    data: {
+      nickname: 'tony',
+      age: 18,
+      friend: {
+        name: 'jepson',
+        desc: '热爱学习 Vue'
+      }
+    }
+  })
+
+
+</script>
+
+</body>
+</html>
+
+解析
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+<!DOCTYPE html>
+#声明HTML5文档类型
+
+<meta charset="UTF-8">
+#设置字符编码，保证中文显示正常
+
+<mate http-equiv="X-UA-Compatible" content="IE=edge">
+#让IE以最新的模式渲染页面（提高兼容性）
+
+<mate name="viewport" content="width=device-width, initial-scale=1.0">
+#适配移动端，保证页面在不同设备上良好显示
+
+Vue绑定的HTML
+
+<div id="app">
+  <p>{{ nickname }}</p>
+  <p>{{ nickname.toUpperCase() }}</p>
+  <p>{{ nickname + '你好' }}</p>
+  <p>{{ age >= 18 ? '成年' : '未成年' }}</p>
+  <p>{{ friend.name }}</p>
+  <p>{{ friend.desc }}</p>
+
+  <!-- ----------------------- -->
+  <!-- <p>{{ hobby }}</p> -->
+  <!-- <p>{{ if }}</p> -->
+  <!-- <p title="{{ nickname }}">我是p标签</p> -->
+</div>
+
+这里<div id="app">是vue作用的根元素，vue会控制其中的内容
+
+插入表达式{{}}解析
+
+	在{{}}中，vue可以解析JavaScript表达式
+
+		{{nickname}}
+			直接显示nickname变量的值, 即tony
+	
+		{{nickname.toUpperCase()}}
+			toUpperCase()是JavaScript的字符串方法,转化为大写,即TONY
+
+		{{nickname + '你好'}}
+			值符串凭借,输出tony你好
+
+		{{age >= 18 ? '成年' : '未成年'}}
+			三元运算符,判断age是否大于等于18
+
+		{{friend.name}}
+			访问friend对象的name属性,输出jepson
+
+		{{friend.desc}}
+			访问friend对象的desc属性,输出'热爱学习Vue'
+
+<p>{{ hobby }}</p>
+	Vue只能绑定data里存在的变量,hobby没有定义会报错
+
+<p>{{ if }}</p>
+	if不是表达式,而是JavaScript的语句,Vue插值表达式只能使用表达式,不能使用语句 会报错
+
+<p title="{{ nickname }}">我是p标签</p>
+	Vue插值语法{{}}不能用于HTML属性
+	正确做法
+		<p :title="nickname">我是p标签</p>
+		这样title属性的值会正确绑定为nickname
+
+===Vue核心逻辑
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+<script>
+
+  const app = new Vue({
+    el: '#app',  // 挂载到 id="app" 的 div
+    data: {  
+      nickname: 'tony',  // 定义变量 nickname
+      age: 18,  // 定义变量 age
+      friend: {  // 定义 friend 对象
+        name: 'jepson',
+        desc: '热爱学习 Vue'
+      }
+    }
+  })
+
+</script>
+
+<script src="https://cdn.jsdeluvr.net/npm/vue@2.7.14/dist/vue.js"></script>
+引入Vue
+从CDN载入Vue2.7.14版本
+这样HTML就能使用Vue功能
+让new Vue({...})生效
+Vue代码需要Vue库的支持
+
+Vue.js有不同的版本
+
+vue.js				完整版
+vue.min.js			完整版的压缩版,代码更小，功能相同
+vue.runtime.js		运行时版,不支持template选项
+vue.rentime.min.js	运行时版的压缩版
+
+如果要使用 template 选项（比如 el: '#app'），建议用 vue.js 或 vue.min.js
+
+如果不想用CDN,可以手动下载Vue并且在本地引用
+<script src="vue.js"></script>  <!-- 本地完整版 -->
+<script src="vue.min.js"></script>  <!-- 本地压缩版 -->
+
+也可以使用NPM安装（适用于Vue项目开发）
+npm install vue
+然后在JavaScript文件中
+import Vue from 'vue';
+
+如果你在 HTML 里写 Vue 代码（比如 new Vue({...})），必须引入 Vue.js
+如果你在 Vue 项目中用 Vue CLI 创建的项目，Vue.js 会自动安装，不需要 <script> 额外引入
+
+const app = new Vue({
+  el: '#app',
+  data: { ... }
+});
+创建Vue实例
+
+const关键字 用于声明一个常量，即app变量
+
+	const 只是变量声明，不是 Vue 语法
+
+	const 不是固定的，你可以用 let 或 var 代替，但 const 是最推荐的写法
+
+		// 推荐 ✅
+		const app = new Vue({ el: '#app', data: { nickname: 'tony' } });
+
+		// 也可以使用 let ✅（可重新赋值）
+		let app = new Vue({ el: '#app', data: { nickname: 'tony' } });
+
+		// 也可以使用 var ✅（可重新赋值，作用域不同）
+		var app = new Vue({ el: '#app', data: { nickname: 'tony' } });
+
+	为什么用const	Vue实例一旦创建，通常不会被重新赋值，所以用const
+
+app变量 储存Vue实例，Vue实例创建后会控制指定的HTML结构
+
+	app变量本身不能被重新赋值
+		eg: app = new Vue({...}) 报错：不能被重新赋值
+
+	但是可以修改app里的数据
+		eg: app.nickname = "Jack"; Vue会自动更新页面
+
+el:'#app'绑定Vue到id="app"的HTML元素上
+
+	el表示Vue要控制的HTML元素,即Vue作用的根容器
+	
+	el是Vue的一个固定选系，必须写el不能换名字
+	
+	el 可以不写吗？ 可以不写 el，但这样 Vue 不会自动挂载，需要手动 $mount()
+		const app = new Vue({
+			  data: { nickname: 'Alice' }
+		});
+
+		// 手动挂载到 id="app"
+		app.$mount('#app');
+	
+	'#app' 表示Vue绑定到id="app"的HTML元素
+
+data:{}定义Vue管理的响应式数据
+
+data: {
+  nickname: 'tony',
+  age: 18,
+  friend: {
+    name: 'jepson',
+    desc: '热爱学习 Vue'
+  }
+}
+响应式数据
+Vue会监听这些数据的变化,如果nickname,age发生变化,页面会自动更新，不需要手动操作DOM
+
+Vue的工作原理
+	Vue解析el:'#app'，找到id="app"这个HTML元素
+	Vue读取data里的nickname,age,friend数据，并且在页面中渲染出来
+	
+	如果数据发生变化
+		app.nickname = "Jack";
+		页面上{{nickname}}的内容会自动变成"Jack"，无需手动修改HTML
+
+核心概念
+	1.	Vue 绑定的是 data 里的数据，使用 {{ 变量 }} 进行插值渲染。
+	2.	插值表达式可以使用 JavaScript 表达式（如 toUpperCase()、+ 号拼接等），但不能写 if、for 这种语句。
+	3.	Vue 不能直接在 HTML 属性中使用 {{ }}，要用 v-bind 代替。
+	4.	数据是响应式的，修改 data 里的值，页面会自动更新。
+
+-----------done
+
+v-show
+v-if
+的使用
+
+===v-show
+
+<p v-show="isVisible">hello Vue!</p>
+isVisible:true	元素显示(display:block)
+isVisible:false	元素隐藏(display:none)
+
+v-show适用于频繁切换的情况
+切换时不会删除DOM结构,只是通过css隐藏
+在控制台仍然能看到元素,只是display:none了
+
+eg:
+<div id="app">
+	<p v-show="isVisible">
+		This paragraph can be show or hidden
+	</p>
+	<button @click="isVisible = !isVisible">
+			switch
+	</button>
+</div>
+<script>
+	new Vue({
+		el:'#app',
+		data:{
+			isVisible: true
+		}
+	});
+</script>
+
+这里的@click="isVisible != isVisible"是Vue.js语法，用于绑定点击事件切换isVisible变脸的值(true-false)
+@click="" == v-on:click=""
+
+===v-if
+
+v-if	条件成立时才渲染DOM
+
+<p v-if="hasPermission">you have permission</p>
+
+isVisible=true	元素被添加到DOM
+isvisible=false	元素从DOM删除
+真正的DOM结构会被创建或者销毁
+
+适用于不常切换的情况（切换整个模块）
+元素真的被添加或者删除，DOM结构改变
+频繁切换时，创建和销毁DOM会增加性能开销
+
+<div id="app">
+	<p v-if="isVisible">This paragraph will actually remove or create from the DOM</p>
+	<button @click="isVisible = !isVisible">toggle</button>
+</div>
+<script>
+	new Vue({
+		el:'#app'
+		data:{
+			isVisible:true
+		}
+	});
+</script>
+
+-----------done
+
+data:{}的作用
+
+在 Vue 组件或实例中，data 是一个对象，它存储的变量会被 Vue 监听，当数据变化时，Vue 会自动更新页面
+在 Vue 组件 里，data 必须是函数，但在 new Vue({...}) 里，data 可以是对象
+Vue 通过劫持 data 对象的属性，让它们变成响应式数据。当数据变化时，Vue 自动更新视图
+
+-----------done
+
+  <div id="app">
+    <p v-if="gender === 1">性别：♂ 男</p>
+    <p v-else>性别：♀ 女</p>
+    <hr>
+    <p v-if="score >= 90">成绩评定A：奖励电脑一台</p>
+    <p v-else-if="score >= 70">成绩评定B：奖励周末郊游</p>
+    <p v-else-if="score >= 60">成绩评定C：奖励零食礼包</p>
+    <p v-else>成绩评定D：惩罚一周不能玩手机</p>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+
+    const app = new Vue({
+      el: '#app',
+      data: {
+        gender: 2,
+        score: 95
+      }
+    })
+  </script>
+
+v-if
+	只有条件为true,Vue才会渲染这个元素
+	不满足时,DOM直接移除
+
+	eg
+	<p v-if="isShow">这个文本会根据 isShow 的值显示或隐藏</p>
+	
+	data: {
+  		isShow: true
+	}
+
+	or
+
+	data: {
+  		isShow: false
+	}
+
+v-else-if
+	必须和v-if搭配使用,相当于if - else if
+
+	eg
+	<p v-if="score >= 90">优秀</p>
+	<p v-else-if="score >= 60">及格</p>
+	<p v-else>不及格</p>
+
+	data:{
+		score: 75
+	}
+
+v-else
+	当前两个都不满足时执行
+
+	eg
+	<p v-if="weather === 'sunny'">今天天气晴朗 ☀️</p>
+ 	<p v-else-if="weather === 'rainy'">今天天气下雨 ☔</p>
+	<p v-else>今天天气未知 ❓</p>
+
+	data:{
+		weather: 'cloudy'
+	}
+
+-----------done
+
+v-bind
+v-bind 是 Vue.js 中的一个指令，用于动态绑定 HTML 属性
+
+<div id="app">
+  <a v-bind:href="link">点我访问</a>
+  <button v-bind:disabled="isDisabled">提交</button>
+  <p v-bind:title="tooltip">鼠标悬停查看提示</p>
+</div>
+
+<script>
+const app = new Vue({
+  el: '#app',
+  data: {
+    link: 'https://www.vuejs.org',
+    isDisabled: true,
+    tooltip: '这是一个提示信息'
+  }
+});
+</script>
+
+===Write characters in simplified form
+
+<img :src="imageUrl">
+<a :href="link">点击我</a>
+<button :disabled="isDisabled">提交</button>
+
+===Binding class or style
+
+<p v-bind:class="{ active: isActive, 'text-danger': hasError }">动态 class</p>
+data: {
+  isActive: true,
+  hasError: false
+}
+
+-----------done
+
+data:{
+	newTasks: '',
+	tasks: []
+},
+methods:{
+	addtasks(){
+		
+	}
+}
+
+怎么用函数向tasks数组里面添加元素
+
+const app = new Vue({
+  el: '#app',
+  data: {
+    newTask: '',  // 存储用户输入的任务
+    tasks: []     // 任务列表
+  },
+  methods: {
+    addTask() {
+      if (this.newTask.trim() === '') {
+        alert('请输入任务内容！');
+        return;
+      }
+      this.tasks.push({ id: this.tasks.length + 1, name: this.newTask }); // 添加任务
+      this.newTask = '';  // 清空输入框
+    }
+  }
+});
+
+===解析
+
+this.tasks.push({id: this.tasks/length + 1, name: this.newTask})
+
+这行代码的作用是向tasks数组添加一个新的对象
+id: 唯一标识符(这里用tasks.length + 1)		任务的 ID，自动递增
+name: 用户输入的任务内容(来自this.newTask)	任务名称，用户输入的内容
+
+this.tasks.push(...)：向 tasks 数组添加数据
+
+this.tasks.length 获取当前任务列表的长度
+
++1 让 ID 变成从 1 开始递增的值
+
+eg
+tasks = []
+this.tasks.push({ id: 1, name: "学 Vue" })  // tasks.length = 1
+this.tasks.push({ id: 2, name: "写代码" })  // tasks.length = 2
+
+name: this.newTask
+
+存储用户输入的任务内容，比如 "学习 Vue" 或 "写代码"
+
+
+this.newTask.trim() === ''
+
+这段代码 检查用户输入是否为空，如果为空，则弹出提示，不添加任务
+
+trim()：去除字符串首尾的空格
+eg
+'  学 Vue  '.trim(); // 结果是 '学 Vue'
+'   '.trim(); // 结果是 ''
+
+可以使用vue.js devtools去查看错误
+在google浏览器里面扩展下载
+想要查看变量需要看创建一个方法查看
+eg
+	v-model="one"
+
+	data:{
+		one: ''
+	},
+	methods:{
+		showItem(){
+			console.log(this.one)
+		}
+	}
+
+	再打开启动文件 进浏览器 查看元素-控制台查看
+
+-----------done
+
+v-for
+是遍历数组，对象，数字
+
+<ul>
+  <li v-for="(item, index) in fruits" :key="index">
+    {{ index }} - {{ item }}
+  </li>
+</ul>
+
+===iterate over the array
+
+<script>
+new Vue({
+  el: "#app",
+  data: {
+    fruits: ["🍎 苹果", "🍌 香蕉", "🍉 西瓜"]
+  }
+});
+</script>
+
+ltem: current item(fruits[index])
+index: current index
+:key="index" nuique identification,avoiding Vue misjudging component updates
+
+result
+0-apple
+1-banana
+2-watermelon
+
+===iterate over the object
+
+<ul>
+  <li v-for="(value, key) in userInfo" :key="key">
+    {{ key }}: {{ value }}
+  </li>
+</ul>
+
+<script>
+new Vue({
+  el: "#app",
+  data: {
+    userInfo: {
+      name: "Tony",
+      age: 18,
+      hobby: "Coding"
+    }
+  }
+});
+</script>
+
+result
+name: Tony
+age: 18
+hobby: Coding
+
+key: The property name of the object(name)
+value: The value of the property(tony)
+
+===Looping a fixed number of times
+
+<ul>
+  <li v-for="n in 5" :key="n">Item {{ n }}</li>
+</ul>
+
+Output
+Item 1
+Item 2
+Item 3
+Item 4
+Item 5
+
+
+

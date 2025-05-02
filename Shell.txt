@@ -1,0 +1,303 @@
+.sh是shell脚本
+
+创建sh文件
+touch myscript.sh
+vim myscript.sh
+
+赋予执行权力
+chmod +x myscript.sh
+#可以让脚本执行
+
+运行sh脚本
+./myscript.sh
+#需要有执行权限
+bash myscript.sh
+/bin/bash test.sh
+#不需要执行权限
+
+常见的 Shell 解释器
+
+不同系统可能使用不同的 Shell 解释器，常见的有：
+	•	bash（Bourne Again Shell）最常见
+	•	sh（Bourne Shell）基础 Shell
+	•	zsh（Z Shell）更强大，适合开发者
+	•	csh（C Shell）
+	•	ksh（Korn Shell）
+
+命令查看当前使用的 Shell
+echo $SHELL
+
+脚本开头的 sha-bang ( #! ) [1] 告诉系统此文件是一组将输入到指定命令解释器的命令
+#! 是一个约定的标记，它告诉系统这个脚本需要什么解释器来执行，即使用哪一种 Shell
+#!/bin/sh 
+
+一定要写成 ./test.sh，而不是 test.sh，运行其它二进制的程序也一样，直接写 test.sh，linux 系统会去 PATH 里寻找有没有叫 test.sh 的，而只有 /bin, /sbin, /usr/bin，/usr/sbin 等在 PATH 里，你的当前目录通常不在 PATH 里，所以写成 test.sh 是会找不到命令的，要用 ./test.sh 告诉系统说，就在当前目录找
+./test.sh
+
+===============================
+教程
+
+定义变量时，变量名不加美元符号
+your_name="noob"
+
+变量名的命名须遵循如下规则：
+
+1 变量名和等号之间不能有空格
+2 只包含字母、数字和下划线： 变量名可以包含字母（大小写敏感）、数字和下划线 _，不能包含其他特殊字符。
+3 不能以数字开头： 变量名不能以数字开头，但可以包含数字。
+4 避免使用 Shell 关键字： 不要使用Shell的关键字（例如 if、then、else、fi、for、while 等）作为变量名，以免引起混淆。
+5 使用大写字母表示常量： 习惯上，常量的变量名通常使用大写字母，例如 PI=3.14。
+6 避免使用特殊符号： 尽量避免在变量名中使用特殊符号，因为它们可能与 Shell 的语法产生冲突。
+7 避免使用空格： 变量名中不应该包含空格，因为空格通常用于分隔命令和参数。
+
+===================================start
+
+解析语句
+for file in $(ls /etc); do
+    echo "$file"
+done
+
+这个是 Shell 脚本的 for 循环，用于遍历 /etc/ 目录下的所有文件和文件夹，并逐行打印它们的名称
+
+$() 在 Shell 脚本中用于 命令替换（Command Substitution），它的作用是 执行括号内的命令，并用它的输出替换 $()
+$()就是在命令行输入括号内的东西
+eg:
+	echo "今天的日期是：$(date)"
+   	echo "The day of today's day is %(date)"
+
+do 表示 for 循环的 主体部分 开始
+
+echo "$file" 作用是输出当前循环到的文件名
+
+done 结束 for 循环的主体部分
+
+如果你想在 一行内执行多个命令，就需要用 ; 分隔它们
+echo "Hello"; echo "World"
+“先执行前一个命令，再执行后一个命令”，不管前面成功与否
+
+在 for、if 等语句中，如果 do、then 和前面的命令 写在同一行，必须用 ; 分隔
+for file in /etc/*; do
+    echo "$file"
+done
+这里 ; 不能省略，否则 Shell 无法识别 do
+for file in /etc/*
+do
+    echo "$file"
+done
+这里do换行了就不需要加;
+
+
+if [ -f myfile ]; then
+    echo "文件存在"
+fi
+then 和 if 同行时，前面必须有 ;。
+if [ -f myfile ]
+then
+    echo "文件存在"
+fi
+如果 then 换行，就不需要 ;
+
+;和&&和||的区别
+mkdir mydir; cd mydir   # 无论 mkdir 成功与否，都会 cd
+mkdir mydir && cd mydir # 只有 mkdir 成功，才会 cd
+mkdir mydir || echo "创建失败"  # 只有 mkdir 失败，才会执行 echo
+
+=================================================================done
+
+使用一个定义过的变量，只要在变量名前面加美元符号即可
+your_name="good night"
+echo $your_name
+echo ${your_name}
+
+变量名外面的花括号是可选的，加不加都行，加花括号是为了帮助解释器识别变量的边界，比如下面这种情况
+for skill in Ada Coffe Action Java; do
+    echo "I am good at ${skill}Script"
+done
+
+已定义的变量，可以被重新定义
+your_name="tom"
+echo $your_name
+your_name="alibaba"
+echo $your_name
+
+使用 readonly 命令可以将变量定义为只读变量，只读变量的值不能被改变
+#!/bin/bash
+
+myUrl="https://www.google.com"
+readonly myUrl
+myUrl="https://www.runoob.com"
+
+运行脚本的结果
+/bin/sh: NAME: This variable is read only.
+
+使用 unset 命令可以删除变量
+unset variable_name
+变量被删除后不能再次使用。unset 命令不能删除只读变量
+myUrl="https://www.runoob.com"
+unset myUrl
+echo $myUrl
+
+Shell 支持不同类型的变量，其中一些主要的类型包括：
+字符串变量： 在 Shell中，变量通常被视为字符串。
+你可以使用单引号 ' 或双引号 " 来定义字符串
+my_string='Hello, World!'
+或者
+my_string="Hello, World!"
+
+整数变量： 在一些Shell中，你可以使用 declare 或 typeset 命令来声明整数变量。
+这样的变量只包含整数值
+declare -i my_integer=42
+
+这样的声明告诉 Shell 将 my_integer 视为整数，如果尝试将非整数值赋给它，Shell会尝试将其转换为整数
+数组变量： Shell 也支持数组，允许你在一个变量中存储多个值。
+数组可以是整数索引数组或关联数组，以下是一个简单的整数索引数组的例子
+my_array=(1 2 3 4 5)
+
+-------------------------
+
+#!/bin/bash
+
+# 确保脚本以 root 身份运行
+if [ "$EUID" -ne 0 ]; then
+  echo "Switching to root..."
+  exec sudo bash "$0" "$@"  # 重新执行本脚本，并以 root 身份运行
+  exit  # 退出当前用户的进程
+fi
+
+# 现在已经是 root，可以继续执行
+echo "Now running as root"
+whoami  # show the Username who you are using it
+
+--------------------------
+
+for Loop
+
+for 变量 in 列表; do
+    # 这里是循环体
+done
+
+eg:
+#!/bin/bash
+
+for item in apple banana cherry; do
+    echo "I like $item"
+done
+
+Output:
+I like apple
+I like banana
+I like cherry
+
+===or
+
+for (( 初始值; 条件; 变化 )); do
+    # 这里是循环体
+done
+
+#!/bin/bash
+
+for (( i=1; i<=5; i++ )); do
+    echo "Count: $i"
+done
+
+===
+
+#!/bin/bash
+
+for line in $(cat myfile.txt); do
+    echo "Line: $line"
+done
+
+#Loop through the file contents
+
+#recommend to use while achieve it
+
+while IFS= read -r line; do
+    echo "Line: $line"
+done < myfile.txt
+
+#infinite loop
+
+#!/bin/bash
+
+for (( ;; )); do
+    echo "Running..."
+    sleep 1  # 每秒执行一次
+done
+
+-----------------------------
+
+Array
+
+A=("one", "two", "Three")
+
+#use for to loop the array
+
+for A in "${A[@]}";do
+	echo "I like $A"
+done
+
+#${A[@]}: Represents the entire array
+
+#Accessing a single element of an array
+
+echo "${A[1]}"
+echo "${A[0]}"
+
+#get the length of the array
+
+echo "length of array : ${#A[@]}"
+
+#use for and index to access
+
+number=(1,2,3,4,5)
+
+for i in "${!number[@]}";do
+	echo "Index : $i, Value : ${number[$i]}"
+done
+
+Output:
+Index: 0, Value: 10
+Index: 1, Value: 20
+Index: 2, Value: 30
+Index: 3, Value: 40
+Index: 4, Value: 50
+
+${!number[@]}: get all the index
+
+#array combined with for (()) numerical loop
+
+#!/bin/bash
+
+arr=("A" "B" "C")
+
+for (( i=0; i<${#arr[@]}; i++ )); do
+    echo "Element $i: ${arr[$i]}"
+done
+
+Output
+Element 0: A
+Element 1: B
+Element 2: C
+
+#add exchange delete array elements
+
+my_array=("one" "two")
+my_array+=("three")       # 追加元素
+my_array[1]="TWO"         # 修改元素
+unset my_array[0]         # 删除元素
+
+ -----------------------------------------------
+|创建数组		arr=("a" "b" "c")				|
+|访问单个元素	${arr[0]}						|
+|获取数组长度	${#arr[@]}						|
+|遍历数组		for i in "${arr[@]}"; do ...	|
+|遍历索引		for i in "${!arr[@]}"; do ...	|
+|追加元素		arr+=("d")						|
+|删除元素		unset arr[1]					|
+ -----------------------------------------------
+
+
+
+
+

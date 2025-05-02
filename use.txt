@@ -1,0 +1,84 @@
+换源
+git -C "$(brew --repo)" remote set-url 
+
+---
+
+补全镜像源配置文件
+在 ~/.zshrc 中添加 API 镜像源配置，覆盖所有 Homebrew 资源路径
+# 编辑配置文件
+vim ~/.zshrc
+
+# 添加以下内容
+export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
+export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
+export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
+
+# 保存后生效
+source ~/.zshrc
+
+
+1. HOMEBREW_API_DOMAIN
+作用：指定 Homebrew API 的镜像地址。
+
+默认值：https://formulae.brew.sh/api
+
+你的配置：https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api
+
+解释：
+
+Homebrew 使用 API 来获取软件包（formula）的元数据（如版本、依赖关系等）。
+
+通过设置这个变量，Homebrew 会从清华镜像的 API 地址获取数据，而不是官方的 formulae.brew.sh。
+
+
+2. HOMEBREW_BOTTLE_DOMAIN
+作用：指定 Homebrew 预编译二进制包（bottle）的镜像地址。
+
+默认值：https://ghcr.io/v2/homebrew/core（GitHub Container Registry）
+
+你的配置：https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+
+解释：
+
+Homebrew 的 bottle 是预编译的二进制包，安装时可以直接下载，无需从源码编译。
+
+通过设置这个变量，Homebrew 会从清华镜像下载预编译包，而不是 GitHub。
+
+
+3. HOMEBREW_BREW_GIT_REMOTE
+作用：指定 Homebrew 核心仓库（brew.git）的 Git 远程地址。
+
+默认值：https://github.com/Homebrew/brew.git
+
+你的配置：https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
+
+解释：
+
+Homebrew 的核心代码（如 brew 命令）存储在这个仓库中。
+
+通过设置这个变量，Homebrew 会从清华镜像拉取核心代码，而不是 GitHub。
+
+4. HOMEBREW_CORE_GIT_REMOTE
+作用：指定 Homebrew Core 仓库（homebrew-core.git）的 Git 远程地址。
+
+默认值：https://github.com/Homebrew/homebrew-core.git
+
+你的配置：https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
+
+解释：
+
+Homebrew Core 仓库包含所有官方支持的软件包（formula）。
+
+通过设置这个变量，Homebrew 会从清华镜像拉取软件包信息，而不是 GitHub。
+
+
+Homebrew工作流程
+Homebrew 首先从 HOMEBREW_API_DOMAIN 获取软件包的元数据（如版本、依赖关系）。
+然后根据元数据从 HOMEBREW_BOTTLE_DOMAIN 下载预编译的二进制包（bottle）。
+如果没有预编译包，Homebrew 会根据 Git 仓库中的安装脚本从源码编译。  详细解释意思
+
+
+
+---
+

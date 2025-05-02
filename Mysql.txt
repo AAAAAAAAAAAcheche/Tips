@@ -1,0 +1,4 @@
+查看mysql的版本文件
+select version();
+
+

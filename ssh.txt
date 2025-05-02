@@ -1,0 +1,38 @@
+下载ssh服务
+apt install ssh
+-----------------------
+# 启动 SSH 服务(macos)
+sudo launchctl load -w /System/Library/LaunchDaemons/ssh.plist
+# 启动 SSH 服务(macos)
+sudo systemsetup -setremotelogin on
+--------------------------------
+检查 OpenSSH 安装情况(win启动)
+	1.	打开 PowerShell（管理员模式）
+Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH*'
+
+# 启动 SSH 服务(win)
+Start-Service sshd
+--------------------------------
+# 检查 SSH 服务状态
+sudo systemsetup -getremotelogin
+
+使用前要启动服务
+systemctl start sshd
+service ssh start
+
+查看防火墙状态
+ufw status
+
+防止火墙阻止端口22 使用命令允许SSH连接
+ufw allow ssh
+
+SSH 配置问题：目标主机的 SSH 配置文件（通常是 /etc/ssh/sshd_config）可能配置了某些安全选项，如禁止了某些 IP 地址的连接。可以检查这个文件，确保没有配置错误。
+
+端口问题：确保目标主机的 SSH 服务确实运行在端口 22。有时，SSH 服务会配置为使用不同的端口。你可以在目标主机上查看 /etc/ssh/sshd_config 文件中的 Port 配置，确认端口设置。
+
+传输文件
+rsync [option] sourse taget-url
+eg
+rsync -avz /path/to/local/directory/ username@remote_host:/path/to/remote/directory/
+
+

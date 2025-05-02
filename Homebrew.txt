@@ -1,0 +1,278 @@
+下载Homebrew
+先下载安装脚本
+curl -o install.sh https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+
+安装脚本
+bash install.sh
+
+查找文件路径 比如你下载了gcc想查看它的安装路径
+brew --prefix gcc
+
+下载gcc
+brew install gcc
+
+Download 7z
+brew install p7zip
+
+7z x filename.rar -o target diectory
+
+---
+
+换源(这个换的是远程仓库的源 跟brew update有关)
+git -C "$(brew --repo)" remote set-url 
+
+---
+
+补全镜像源配置文件
+在 ~/.zshrc 中添加 API 镜像源配置，覆盖所有 Homebrew 资源路径
+# 编辑配置文件
+vim ~/.zshrc
+
+# 添加以下内容
+export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
+export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
+export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
+
+# 保存后生效
+source ~/.zshrc
+
+
+1. HOMEBREW_API_DOMAIN
+作用：指定 Homebrew API 的镜像地址。
+
+默认值：https://formulae.brew.sh/api
+
+你的配置：https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api
+
+解释：
+
+Homebrew 使用 API 来获取软件包（formula）的元数据（如版本、依赖关系等）。
+
+通过设置这个变量，Homebrew 会从清华镜像的 API 地址获取数据，而不是官方的 formulae.brew.sh。
+
+
+2. HOMEBREW_BOTTLE_DOMAIN
+作用：指定 Homebrew 预编译二进制包（bottle）的镜像地址。
+
+默认值：https://ghcr.io/v2/homebrew/core（GitHub Container Registry）
+
+你的配置：https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+
+解释：
+
+Homebrew 的 bottle 是预编译的二进制包，安装时可以直接下载，无需从源码编译。
+
+通过设置这个变量，Homebrew 会从清华镜像下载预编译包，而不是 GitHub。
+
+
+3. HOMEBREW_BREW_GIT_REMOTE
+作用：指定 Homebrew 核心仓库（brew.git）的 Git 远程地址。
+
+默认值：https://github.com/Homebrew/brew.git
+
+你的配置：https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
+
+解释：
+
+Homebrew 的核心代码（如 brew 命令）存储在这个仓库中。
+
+通过设置这个变量，Homebrew 会从清华镜像拉取核心代码，而不是 GitHub。
+
+4. HOMEBREW_CORE_GIT_REMOTE
+作用：指定 Homebrew Core 仓库（homebrew-core.git）的 Git 远程地址。
+
+默认值：https://github.com/Homebrew/homebrew-core.git
+
+你的配置：https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
+
+解释：
+
+Homebrew Core 仓库包含所有官方支持的软件包（formula）。
+
+通过设置这个变量，Homebrew 会从清华镜像拉取软件包信息，而不是 GitHub。
+
+
+Homebrew工作流程
+Homebrew 首先从 HOMEBREW_API_DOMAIN 获取软件包的元数据（如版本、依赖关系）。
+然后根据元数据从 HOMEBREW_BOTTLE_DOMAIN 下载预编译的二进制包（bottle）。
+如果没有预编译包，Homebrew 会根据 Git 仓库中的安装脚本从源码编译。  详细解释意思
+
+1. 从 HOMEBREW_API_DOMAIN 获取元数据
+
+*	什么是元数据？
+
+元数据是描述软件包的信息，包括：
+
+软件包的名称、版本、依赖关系。
+
+安装脚本的路径。
+
+是否有预编译的二进制包（bottle）。
+
+这些数据以 JSON 格式存储，例如：
+
+{
+  "name": "docker",
+  "version": "20.10.7",
+  "dependencies": ["bash", "git"],
+  "bottle": {
+    "stable": {
+      "url": "https://homebrew.bintray.com/bottles/docker-20.10.7.catalina.bottle.tar.gz",
+      "sha256": "abc123..."
+    }
+  }
+}
+
+*	Homebrew 如何获取元数据？
+
+当你运行 brew install docker 时，Homebrew 会首先从 HOMEBREW_API_DOMAIN 下载 formula.jws.json 文件。
+
+这个文件包含了所有软件包的元数据，Homebrew 会根据你指定的软件包名称（如 docker）查找对应的元数据。
+
+*	为什么需要元数据？
+
+元数据告诉 Homebrew：
+
+软件包的版本是什么。
+
+它依赖哪些其他软件包。
+
+是否有预编译的二进制包（bottle）可以直接下载。
+
+2. 从 HOMEBREW_BOTTLE_DOMAIN 下载预编译二进制包（bottle）
+*	什么是预编译二进制包（bottle）？
+
+预编译二进制包是 Homebrew 官方为常用软件包提前编译好的二进制文件。
+
+它们被打包成 .tar.gz 格式，可以直接下载并解压安装，无需从源码编译。
+
+例如，docker 的预编译包可能是一个名为 docker-20.10.7.catalina.bottle.tar.gz 的文件。
+
+*	Homebrew 如何下载预编译包？
+
+如果元数据中指定了 bottle 字段，Homebrew 会从 HOMEBREW_BOTTLE_DOMAIN 下载对应的预编译包。
+
+下载完成后，Homebrew 会解压包并将其安装到 /opt/homebrew/Cellar（或 /usr/local/Cellar）目录中。
+
+*	为什么需要预编译包？
+
+预编译包可以显著加快安装速度，因为：
+
+无需从源码编译，节省了大量时间。
+
+避免了编译过程中可能出现的依赖问题。
+
+3. 如果没有预编译包，从源码编译
+*	什么情况下需要从源码编译？
+
+如果元数据中没有 bottle 字段，或者预编译包不可用（例如，你的操作系统版本不匹配），Homebrew 会回退到从源码编译。
+
+例如，某些小众软件包或特定版本的软件可能没有预编译包。
+
+*	Homebrew 如何从源码编译？
+
+下载源码：
+
+Homebrew 会根据元数据中的 url 字段下载软件包的源码（通常是 .tar.gz 或 .zip 文件）。
+
+解压源码：
+
+下载完成后，Homebrew 会将源码解压到一个临时目录。
+
+执行安装脚本：
+
+Homebrew 会运行 Git 仓库中的安装脚本（通常是 Ruby 文件，如 docker.rb）。
+
+这个脚本定义了如何配置、编译和安装软件包。
+
+安装到 Cellar：
+
+编译完成后，Homebrew 会将生成的二进制文件安装到 /opt/homebrew/Cellar（或 /usr/local/Cellar）目录中。
+
+*	为什么需要从源码编译？
+
+从源码编译可以确保软件包在你的系统上完全兼容。
+
+对于没有预编译包的软件，这是唯一的安装方式。
+
+完整流程示例
+假设你运行 brew install docker，Homebrew 的工作流程如下：
+
+获取元数据：
+
+Homebrew 从 HOMEBREW_API_DOMAIN 下载 formula.jws.json。
+
+查找 docker 的元数据，发现它有预编译包。
+
+下载预编译包：
+
+Homebrew 从 HOMEBREW_BOTTLE_DOMAIN 下载 docker-20.10.7.catalina.bottle.tar.gz。
+
+解压包并将文件安装到 /opt/homebrew/Cellar/docker/20.10.7。
+
+完成安装：
+
+Homebrew 创建符号链接（symlink），将 docker 的可执行文件链接到 /opt/homebrew/bin。
+
+安装完成，你可以运行 docker 命令。
+
+如果没有预编译包
+假设你运行 brew install some-rare-package，Homebrew 的工作流程如下：
+
+获取元数据：
+
+Homebrew 从 HOMEBREW_API_DOMAIN 下载 formula.jws.json。
+
+查找 some-rare-package 的元数据，发现它没有预编译包。
+
+下载源码：
+
+Homebrew 根据元数据中的 url 字段下载 some-rare-package-1.0.0.tar.gz。
+
+从源码编译：
+
+Homebrew 解压源码并运行 Git 仓库中的安装脚本（some-rare-package.rb）。
+
+编译完成后，将生成的二进制文件安装到 /opt/homebrew/Cellar/some-rare-package/1.0.0。
+
+完成安装：
+
+Homebrew 创建符号链接，将 some-rare-package 的可执行文件链接到 /opt/homebrew/bin。
+
+安装完成，你可以运行 some-rare-package 命令。
+
+总结
+API 元数据：告诉 Homebrew 软件包的基本信息和安装方式。
+
+预编译包（bottle）：直接下载并安装，速度快，适合常用软件。
+
+源码编译：当没有预编译包时，从源码编译并安装，适合小众软件或特定需求。
+
+
+
+这将列出所有通过 Homebrew 安装的公式（软件包）
+brew list --formula
+--formula 是 Homebrew 的一个选项，用于明确指定操作对象是公式（命令行工具或库），而不是 Cask（macOS 应用程序）。
+
+
+如果您只想列出通过 Homebrew 安装的 casks（通常是图形界面应用程序），可以使用以下命令
+brew list --cask
+
+brew link --overwrite docker
+brew link 是 Homebrew 的一个命令，用于将已安装的软件包（formula）的可执行文件、库文件等链接到 Homebrew 的标准路径中（通常是 /usr/local/bin 或 /opt/homebrew/bin），以便您可以在终端中直接运行这些命令
+例如，安装 Docker 后，Homebrew 通常会自动将其链接到标准路径中。如果没有自动链接，或者链接被中断，您可以使用 brew link 手动完成这一过程
+--overwrite 是一个可选参数，用于指示 Homebrew 在链接时覆盖已存在的文件或符号链接。
+
+为什么需要 --overwrite？
+如果目标路径中已经存在同名的文件或符号链接（可能是由其他软件安装的），Homebrew 默认会拒绝链接以避免冲突。使用 --overwrite 可以强制覆盖这些文件。
+使用场景：
+当您重新安装 Docker 或修复链接时，可能会遇到冲突。
+当您希望确保 Homebrew 管理的版本优先于系统或其他工具安装的版本
+
+docker 是您要链接的软件包名称。在这个命令中，它表示 Docker 的可执行文件和相关文件。
+
+
+
+---
+

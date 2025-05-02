@@ -1,0 +1,18 @@
+使用homebrew下载gcc
+可以先更新一下brew
+brew update
+brew install gcc
+
+查看版本
+gcc --version
+
+假设你有一个名为 program.c 的 C 语言源代码文件，你可以通过以下命令编译它
+-o program 中-o表示指定输出的文件名称
+gcc program.c -o program
+完成后输入
+./program就可以运行了
+
+如果你要编译 C++ 文件，可以使用 g++（GCC 的 C++ 编译器），假设你有一个 program.cpp 文件
+g++ program.cpp -o program
+./program
+

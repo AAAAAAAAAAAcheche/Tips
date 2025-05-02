@@ -1,0 +1,13 @@
+安装wsl（wsl是windows里面的linux子系统）
+wsl --install
+
+不行可以手动安装wsl
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+
+安装wsl核心
+wsl --update
+
+
+
+

@@ -1,0 +1,160 @@
+Debian 12
+
+查看Debian的版本
+lsb_release -a
+
+可以查看/etc/os-release文件来确认版本
+
+查看网络配置
+ip a
+(可以下载apt install net-tools就可以使用ifconfig)
+
+将原来的源备份/etc/apt/sources.list
+然后输入新的源
+deb http://mirrors.aliyun.com/debian/ bookworm main contrib non-free non-free-firmware
+deb http://mirrors.aliyun.com/debian/ bookworm-updates main contrib non-free non-free-firmware
+deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
+deb http://mirrors.aliyun.com/debian/ bookworm-backports main contrib non-free non-free-firmware
+保存就可以
+然后apt update刷新就可以了
+
+cat /etc/apt/sources.list查看源
+================
+更改网络配置
+Debian 12 默认使用 systemd-networkd 进行网络管理，你可以按照以下方式更改网络配置
+systemctl is-active systemd-networkd
+
+如果它未运行，可以启用
+sudo systemctl enable systemd-networkd --now
+
+如果你的网络使用 DHCP，可以创建文件
+sudo nano /etc/systemd/network/eth0.network
+添加
+[Match]
+Name=eth0
+
+[Network]
+DHCP=yes
+然后重启 systemd-networkd 使其生效
+sudo systemctl restart systemd-networkd
+
+如果你需要设置 静态 IP，编辑 /etc/systemd/network/eth0.network
+sudo nano /etc/systemd/network/eth0.network
+[Match]
+Name=eth0
+
+[Network]
+Address=192.168.1.100/24
+Gateway=192.168.1.1
+DNS=8.8.8.8 8.8.4.4
+然后重启 systemd-networkd
+sudo systemctl restart systemd-networkd
+就完成了
+
+如果 DNS 无法解析，你可以检查 /etc/resolv.conf
+cat /etc/resolv.conf
+
+如果没有正确的 DNS 地址，可以手动修改
+sudo nano /etc/resolv.conf
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+
+如果 systemd-resolved 在管理 resolv.conf，你可能需要改为使用 systemd-resolved
+sudo systemctl enable systemd-resolved --now
+sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+
+查看 IP 地址
+ip addr show
+
+ping -c 4 8.8.8.8
+ping -c 4 google.com
+========================done
+
+========================start
+
+使用NetworkManager管理网络以及配置
+
+先查看是什么在管理网络
+
+systemctl is-active NetworkManager
+如果出现inactive则是没有启动
+systemctl enable NetworkManager --now
+启动NetworkManager
+
+启动后输入nmtui
+启动图形界面
+
+或者选择命令行配置	(我的网络是enp0s5)
+
+sudo nmcli con mod enp0s5 ipv4.addresses 192.168.1.100/24
+sudo nmcli con mod enp0s5 ipv4.gateway 192.168.1.1
+sudo nmcli con mod enp0s5 ipv4.dns "8.8.8.8 8.8.4.4"
+sudo nmcli con mod enp0s5 ipv4.method manual
+sudo nmcli con up enp0s5
+
+这些命令是什么意思
+
+nmcli 是 NetworkManager Command Line Interface（NetworkManager 命令行接口）的简称
+
+con 是 connection（连接）的缩写，表示管理网络连接（NetworkManager 维护的连接）
+你可以用 nmcli con show 列出所有当前连接：
+nmcli con show
+字段名的含义分别是
+NAME	连接的名称 可以是有线网卡
+UUID	连接的唯一标识符(通用唯一标识码)用于区分不同的连接 即使有相同的名字
+TYPE	连接的类型(ethernet) wifi(无限网络)vpn(虚拟专用网)bridge(桥接)
+DEVICE	
+
+mod 是 modify（修改）的缩写，表示修改指定的网络连接
+nmcli con mod <连接名称> <参数> <值>
+
+sudo nmcli con mod enp0s5 ipv4.addresses 192.168.1.100/24
+nmcli con mod enp0s5：修改 enp0s5 这个连接的配置
+ipv4.addresses 192.168.1.100/24：设置静态 IP 为 192.168.1.100，子网掩码 /24（即 255.255.255.0）
+
+sudo nmcli con mod enp0s5 ipv4.gateway 192.168.1.1
+ipv4.gateway 192.168.1.1：设置默认网关为 192.168.1.1，即数据默认通过这个网关路由到外网
+
+sudo nmcli con mod enp0s5 ipv4.dns "8.8.8.8 8.8.4.4"
+ipv4.dns "8.8.8.8 8.8.4.4"：配置 DNS 服务器，8.8.8.8 和 8.8.4.4 是 Google 的公共 DNS 服务器
+
+sudo nmcli con mod enp0s5 ipv4.method manual
+ipv4.method manual：将 enp0s5 设为 手动（静态）IP，不使用 DHCP 自动分配 IP
+
+sudo nmcli con up enp0s5
+con up enp0s5：使 enp0s5 立即应用新配置，相当于重启该网络连接
+
+这些命令的作用是让 enp0s5 使用静态 IP 而不是 DHCP 自动获取
+
+ip addr show enp0s5   # 查看IP地址
+ip route show         # 查看网关
+nmcli con show enp0s5 # 查看NetworkManager中的配置
+
+创建一个桥接模式
+sudo nmcli con add type bridge ifname br0
+这会创建一个名为 br0 的桥接接口
+
+绑定宿主机的物理网卡（如 enp0s5）
+sudo nmcli con add type bridge-slave ifname enp0s5 master br0
+这里的 enp0s5 是你的物理网卡名称，如果不确定，可以用 ip link show 查看
+
+如果你想让宿主机使用固定 IP（例如 192.168.1.100）
+sudo nmcli con mod br0 ipv4.addresses 192.168.1.100/24
+sudo nmcli con mod br0 ipv4.gateway 192.168.1.1
+sudo nmcli con mod br0 ipv4.dns "8.8.8.8 8.8.4.4"
+sudo nmcli con mod br0 ipv4.method manual
+
+如果想用 DHCP 自动获取 IP，可以运行
+sudo nmcli con mod br0 ipv4.method auto
+
+启动桥接
+sudo nmcli con up br0
+
+======================
+
+怎么查找宿主机的无线网址(mac)
+ipconfig getifaddr en0
+
+
+
+
