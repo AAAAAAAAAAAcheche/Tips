@@ -2315,18 +2315,305 @@ public class demo4 {
 
 ________________________
 
+		可变参数
+
+package com.gg.array;
+
+/**
+ * 可变参数 int...A
+ * 只能当作方法的形式参数
+ */
+
+import java.util.Scanner;
+
+public class demo5 {
+    public static void main(String[] args) {
+        add(10, 99);
+        add(1, 4, 123, 1);
+        int[] a = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        add(a);
+    }
+    public static void add(int...A){ // 定义一个可变参数A
+        // 方法内部把可变参数当数组来处理
+        int sum = 0;
+        for(int i : A){
+            sum += i;
+        }
+        System.out.println(sum);
+    }
+    public static void add2(int a, int...b){ // 如果想要可变参数跟 普通参数一起作为形参的话 可变参数要在后面
+
+    }
+}
+
+__________________________
+
+		List类
 
 
+}ckage com.gg.array;
+
+/**
+ * ArrayList是List的实现类
+ *
+ * List 是 Collection的子类
+ * 扩展的方法都跟索引相关
+ *
+ * List
+ * 删除 clear remove removeAll
+ * 添加 add addAll
+ * 修改 replaceAll retainAll set sort toArray
+ * 查看 get hashCode iterator listIterator size subList
+ * 判断 contains containsAll equals indexOf isEmpty lastIndexOf
+ */
+
+import java.util.*;
+
+public class demo7 {
+    public static void main(String[] args) {
+        // 三种实现方法 建议是前两种方法，扩展性好
+        // 扩展性eg: Collection ls = new LinkedList();
+        // 前面两种是 接口=实现类
+        Collection ls = new ArrayList();
+        List ls2 = new ArrayList();
+        // 创建实现类对象
+        ArrayList ls3 = new ArrayList();
+        /**
+         * Arrays.copyOf(originalArray, newLength);
+         * 	•	originalArray: 原数组
+         * 	•	newLength: 目标数组的长度（可以更大或更小）
+         */
+        // 源码
+        // 默认容长度为10 0-9
+        // 如果超过10 则每次+5 (newCapacity = oldCapacity + (oldCapacity >> 1)) // 右移=除2
+        // 添加成功返回true
+        System.out.println(ls3.add("sdf"));
+
+        List list = new ArrayList();
+        /**
+         * 这是 原始类型（raw type） 的写法，等于你没有告诉编译器这个 list 里面存的是什么类型的元素，所以：
+         * 	•	编译器默认它里面存的是 Object。
+         * 	•	所以你在增强 for 循环里，只能写 Object i。
+         * 	•	不能写 int i 或 Integer i，否则会编译报错或类型转换异常。
+         *
+         * 	List<String> list = new ArrayList<>();
+         * list.add("a");
+         * list.add("b");
+         *
+         * for (String i : list) {
+         *     System.out.println(i + " ");
+         * }
+         * 这样你就可以用 String i 来接收每一项，不再是 Object。
+         */
+        list.add("a"); // 添加
+        list.add("b");
+        list.add("c");
+        list.add("d");
+        list.add("e");
+        list.add("f");
+        System.out.println(list);
+        a();
+        list.add(1, "sd"); // 插入
+        System.out.println(list);
+        a();
+        list.set(1, 123); // 替换
+        System.out.println(list);
+        a();
+        list.remove(1); // 删除 在集合中存入的是Integer类型的数据的时候，调用remove的方法是 remove(int index)
+        System.out.println(list);
+//        String s = "b";
+//        list.remove(s);
+        list.remove("b"); // remove(E o)
+        System.out.println(list);
+        a();
+        Object o = list.get(0);
+        System.out.println(o);
+        a();
+        // 遍历循环
+        // 方法1 for循环
+        for(int i = 0; i < list.size(); i ++){
+//            Object b = list.get(i);
+//            System.out.print(b + " ");
+            System.out.println(list.get(i));
+        }
+        a();
+        // 方法2 for增强循环
+        /**
+         * 因为你用的是原始类型的 List（List list = ...，Java 编译器只能推断它里面装的是 Object
+         * 为什么用 Object，不用 int 或 Integer？
+         */
+        for(Object i : list){
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        a();
+        // 方法3 迭代器
+        Iterator it = list.iterator();
+        while(it.hasNext()){
+            System.out.print(it.next() + " ");
+        }
+        System.out.println();
+        a();
+    }
+    public static void a(){
+        System.out.println("---------------");
+    }
+}
+
+______________________
 
 
+		List
 
 
+ckage com.gg.array;
 
+/**
+ * ArrayList是List的实现类
+ *
+ * List 是 Collection的子类
+ * 扩展的方法都跟索引相关
+ *
+ * List
+ * 删除 clear remove removeAll
+ * 添加 add addAll
+ * 修改 replaceAll retainAll set sort toArray
+ * 查看 get hashCode iterator listIterator size subList
+ * 判断 contains containsAll equals indexOf isEmpty lastIndexOf
+ */
 
+import java.util.*;
 
+public class demo7 {
+    public static void main(String[] args) {
+        // 三种实现方法 建议是前两种方法，扩展性好
+        // 扩展性eg: Collection ls = new LinkedList();
+        // 前面两种是 接口=实现类
+        Collection ls = new ArrayList();
+        List ls2 = new ArrayList();
+        // 创建实现类对象
+        ArrayList ls3 = new ArrayList();
+        /**
+         * Arrays.copyOf(originalArray, newLength);
+         * 	•	originalArray: 原数组
+         * 	•	newLength: 目标数组的长度（可以更大或更小）
+         */
+        // 源码
+        // 默认容长度为10 0-9
+        // 如果超过10 则每次+5 (newCapacity = oldCapacity + (oldCapacity >> 1)) // 右移=除2
+        // 添加成功返回true
+        System.out.println(ls3.add("sdf"));
 
+        List list = new ArrayList();
+        /**
+         * 这是 原始类型（raw type） 的写法，等于你没有告诉编译器这个 list 里面存的是什么类型的元素，所以：
+         * 	•	编译器默认它里面存的是 Object。
+         * 	•	所以你在增强 for 循环里，只能写 Object i。
+         * 	•	不能写 int i 或 Integer i，否则会编译报错或类型转换异常。
+         *
+         * 	List<String> list = new ArrayList<>();
+         * list.add("a");
+         * list.add("b");
+         *
+         * for (String i : list) {
+         *     System.out.println(i + " ");
+         * }
+         * 这样你就可以用 String i 来接收每一项，不再是 Object。
+         */
+        list.add("a"); // 添加
+        list.add("b");
+        list.add("c");
+        list.add("d");
+        list.add("e");
+        list.add("f");
+        System.out.println(list);
+        a();
+        list.add(1, "sd"); // 插入
+        System.out.println(list);
+        a();
+        list.set(1, 123); // 替换
+        System.out.println(list);
+        a();
+        list.remove(1); // 删除 在集合中存入的是Integer类型的数据的时候，调用remove的方法是 remove(int index)
+        System.out.println(list);
+//        String s = "b";
+//        list.remove(s);
+        list.remove("b"); // remove(E o)
+        System.out.println(list);
+        a();
+        Object o = list.get(0);
+        System.out.println(o);
+        a();
+        // 遍历循环
+        // 方法1 for循环
+        for(int i = 0; i < list.size(); i ++){
+//            Object b = list.get(i);
+//            System.out.print(b + " ");
+            System.out.println(list.get(i));
+        }
+        a();
+        // 方法2 for增强循环
+        /**
+         * 因为你用的是原始类型的 List（List list = ...，Java 编译器只能推断它里面装的是 Object
+         * 为什么用 Object，不用 int 或 Integer？
+         */
+        for(Object i : list){
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        a();
+        // 方法3 迭代器
+        Iterator it = list.iterator();
+        while(it.hasNext()){
+            System.out.print(it.next() + " ");
+        }
+        System.out.println();
+        a();
+    }
+    public static void a(){
+        System.out.println("---------------");
+    }
+}
 
+______________________
 
+		Vector类
+
+package com.gg.array;
+
+/**
+ *              Collection接口
+ *           List接口
+ *   ArrayList    Vector
+ *     实现类      实现类
+ *
+ *
+ *          Vector(矢量)
+ * Vector和ArrayList的练习
+ * 底层逻辑都是数组扩容，但ArrayList是扩容1.5倍 Vector是2倍
+ * ArrayList线程不安全 效率高
+ * Vector线程安全 效率低
+ *
+ * 数组
+	存储单一类型数据
+ * 特点：数组可重复
+ * 优点：查询效率高
+ * 缺点：增加和删除元素效率低
+ *
+ *
+ */
+
+import java.util.Vector;
+
+public class demo8 {
+    public static void main(String[] args) {
+        Vector v = new Vector();
+        // 底层扩容两倍
+        v.add(10);
+    }
+}
+
+_______________________
 
 
 
