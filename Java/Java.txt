@@ -2615,8 +2615,622 @@ public class demo8 {
 
 _______________________
 
+		泛型
+
+}ckage com.gg.array;
+
+/**
+ * 泛型 Generic
+ * 泛型相当于标签
+ * 形式: <>
+ * 集合容器类在设计阶段/声明阶段不能确定这个容器到底实际存放的是什么类型的对象，所以在JDK1.5之前只能把元素类型设计为Object
+ * JDK1.5后使用泛型来解决。这个时候除了元素类型不确定，其他都是确定的
+ * 因此把元素类型设计成一个参数，这个类型参数就叫泛型
+ * Collection<E> List<E> ArrayList<E>就是类型参数，即泛型
+ *
+ * <> 钻石运算符
+ *
+ */
+
+import java.util.Collection;
+import java.util.ArrayList;
+
+public class demo9 {
+    public static void main(String[] args) {
+        // 不实用泛型
+        /**
+         * 不实用泛型的缺点
+         * 使用的时候基本上往集合中存入的都是相同类型的数据
+         * 便于管理，所以现在什么引用数据类型都可以存入集合，不方便
+         */
+        ArrayList list = new ArrayList();
+        list.add("a");
+        list.add("b");
+        list.add(12213);
+        list.add("d");
+        list.add("e");
+        list.add("f");
+        list.add("g");
+        for(Object i : list){
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        a();
+
+        // 使用泛型
+        /**
+         * 在编译时期就会对类型进行检测，不是相应类型的数据不能添加到集合中
+         */
+        ArrayList<Integer> list2 = new ArrayList();
+        Collection<String> list3 = new ArrayList();
+        list2.add(1);
+        list2.add(2);
+        list3.add("123");
+        // 这时候只能存储Integer类型的数据
+//        list3.add(13);
+//        list2.add("iajdlf");
+        for(Object i : list2){
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        a();
+
+        for(Integer i : list2){
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        a();
+
+        // 这里Collection泛型是String 使用增强只能用String i 来接收
+//        for(Integer i : list3){
+//            System.out.print(i + " ");
+//        }
+    }
+    public static void a(){
+        System.out.println("-------------------");
+    }
+}
+
+_______________________
+
+		自定义泛型
+
+}ckage com.gg.array;
+
+/**
+ * 自定义泛型
+ *
+ * demo10       为普通类
+ * demo10<A>    为泛型类 <>里面是一个参数类型
+ *              不知道是什么数据类型，但知道是引用数据类型
+ *
+ */
+
+public class demo10<E> {
+    int age;
+    String name;
+    E sex;
+    public void a(E k){
+
+    }
+    public void b(E[] a){
+
+    }
+}
+
+class A{
+    public static void main(String[] args) {
+        /**
+         * 实例化的时候不指定泛型
+         * 那么认为此泛型为Object类型
+         */
+        // 实例化的时候不指定泛型
+        demo10 d = new demo10();
+        d.a(213);
+        d.a("adf");
+        d.a(1.32);
+        d.b(new String[] {"123" , ",", "asdflij"});
+        // 实例化的时候指定泛型
+        demo10<Integer> d2 = new demo10<Integer>();
+        d2.a(123);
+        d2.a(12);
+        d2.age = 123;
+        d2.name = "sdlfj";
+        d2.b(new Integer[]{1,2,3});
+    }
+}
+class B extends demo10<String>{
+    // 父类指定泛型后 子类可以不指定泛型
+}
+class C<E> extends demo10<E>{
+    // 父类没有指定泛型后 子类也会变成一个泛型类
+}
+
+_____________________
+
+		泛型构造器
+
+}ckage com.gg.array;
+
+/**
+ * 泛型类可以定义多个参数类型
+ *
+ * 泛型类的构造器的写法
+ *
+ * 泛型类型不一样不可以直接赋值
+ *
+ * 泛型如果不指定 那么就会被擦除 反应对应的类型为Object类型
+ *
+ * static的优点是优先于对象存在
+ * 那么static就没办法修饰引用参数为泛型的方法或者属性
+ *
+ */
+
+import java.util.ArrayList;
+
+public class demo11<A, B, C> {
+    A age;
+    B name;
+    C sex;
+    public void a(A a, B b, C c) {
+
+    }
+    public demo11(A a, B b, C c){
+//        A[] i = new A[10]; // 不可以
+        A[] i = (A[]) new Object[10]; // 可以
+    }
+    public void b(){
+        ArrayList<String> list = new ArrayList<>();
+        ArrayList<Integer> list2 = new ArrayList<>();
+//        list = list2;
+    }
+}
+
+____________________-
+
+		自定义泛型结构
+
+}ckage com.gg.array;
+
+/**
+ * 自定义泛型结构
+ *
+ * 什么是泛型方法
+ * 方法的泛型的参数类型和当前的类的泛型无关
+ *
+ * 泛型方法可以被static修饰
+ */
+
+public class demo12<E> {
+    // 不是泛型方法（不是就不能被static修饰）
+    public void a(E e){
+        // 带泛型的方法 不一定是泛型方法
+    }
+    // 是泛型方法
+    // 泛型方法定义的时候要添加<T>
+    // 如果不添加就会把T当作一种数据类型，然而代码中没有T类型那么就会报错
+    public <T> void b(T t){
+    }
+    public static <T> void c(T t){
+    }
+}
+class AK{
+    public static void main(String[] args) {
+        // 钻石写法 Java 编译器会根据前面变量声明的泛型类型，自动推断构造器中的类型参数
+        demo12<String> d = new demo12<>();
+        d.a("a");
+        d.b("a");
+        d.b(123);
+        d.b(12.321);
+        d.b(true);
+    }
+}
 
 
+___________________
+
+		泛型参数的继承关系
+
+}ckage com.gg.array;
+
+/**
+ * 自定义泛型结构_泛型参数存在继承关系的情况
+ *
+ *
+ *
+ */
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class demo13 {
+    public static void main(String[] args) {
+        Object obj = new Object();
+        String str = new String();
+        obj = str; // 多态 父类引用子类对象
+
+        Object[] objArr = new Object[10];
+        String[] strArr = new String[10];
+        objArr = strArr;
+
+        // A和B是父子类关系 但是G<A>和G<B>不是继承关系 是并列关系
+        List<Object> list1 = new ArrayList<>();
+        List<String> list2 = new ArrayList<>();
+//        list1 = list2;  // 不行
+    }
+}
+_____________________
+
+		通配符
+
+package com.gg.array;
+
+/**
+ * 自定义泛型结构_通配符
+ *
+ * G<A>和G<B>是并列的关系
+ * G<?>是G<A>和G<B>的父类
+ *
+ */
+
+import java.util.List;
+import java.util.ArrayList;
+
+public class demo14 {
+//    public void A(List<Object> list){
+//
+//    }
+//    public void A(List<String> list){
+//
+//    }
+//    public void A(List<Integer> list){
+//
+//    }public void A(List<?> list){
+//
+//    }
+    public void A(List<?> list){
+        for(Object o : list){ // 这里就不适合用？ 可以用Object Object是所有类的父类
+            System.out.println(o);
+        }
+    }
+    public static void main(String[] args) {
+        List<Object> list1 = new ArrayList<>();
+        List<String> list2 = new ArrayList<>();
+        List<Integer> list3 = new ArrayList<>();
+
+        List<?> list = null;
+        list = list1;
+        list = list2;
+        list = list3;
+
+        demo14 d = new demo14();
+        d.A(new ArrayList<Integer>());
+        d.A(new ArrayList<String>());
+        d.A(new ArrayList<Object>());
+        d.A(new ArrayList<Double>());
+    }
+}
+
+____________________
+
+		泛型限制
+
+package com.gg.array;
+
+/**
+ * 泛型受限
+ */
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class demo15 {
+    public static void main(String[] args) {
+        List<Object> list = new ArrayList<>();
+        List<Person> list1 = new ArrayList<>();
+        List<Student> list2 = new ArrayList<>();
+        
+        List<? extends Person> list3 = new ArrayList<>();
+        list3 = list1;
+        list3 = list2;
+//        list3 = list; // 因为它上限是Person 所有person 和person的子类可以
+        
+        List<? super Person> list4 = new ArrayList<>();
+        list4 = list1;
+//        list4 = list2; // 因为它下限是Person Object是所有类的父类 所以可以 Person也可以 Student是Person的子类在Person之下 不行
+        list4 = list;
+    }
+}
+
+class Student extends Person{
+    
+}
+
+class Person{
+    
+}
+
+______________________
+
+		LinkedList实现类
+
+package com.gg.array;
+
+/**
+ * LinkedList实现类
+ *
+ * 增加 addFirst(E e) addLast(E e)
+ *      offer(E e) offerFirst(E e) offerLast(E e)
+ * 删除 poll() pollFirst() polllast()
+ *      removeFirst() removeLast()
+ * 修改
+ * 查看 element() gitFirst() getLast()
+ *      indexOf(Object o) lastIndexOf(Object o)
+ *      peek() peekFirst() peekLast()
+ * 判断
+ *
+ *
+ */
+
+import java.util.*;
+
+public class demo16 {
+    public static void main(String[] args) {
+
+        LinkedList<String> list = new LinkedList<>();
+
+        list.add("aaaaaa");
+        // LinkedList可以添加重复数据
+        list.add("bbbbb");
+        list.add("bbbbb");
+        list.add("ccccc");
+        list.add("dddddd");
+        list.add("eeeeee");
+        list.add("ffffff");
+        System.out.println(list);
+        a();
+
+        list.addFirst("jj");
+        list.addLast("hh");
+        System.out.println(list);
+        a();
+
+        list.offer("kk"); // 添加元素在尾端
+        list.offerFirst("gg"); // 添加元素在头部
+        list.offerLast("oo"); // 添加元素在尾部
+        System.out.println(list);
+        a();
+
+        list.poll(); // 删除第一个元素
+        list.pollLast(); // 删除最后一个元素
+        list.pollFirst(); // 删除第一个元素
+        System.out.println(list);
+        a();
+
+        list.removeFirst();
+        list.removeLast();
+        System.out.println(list);
+        a();
+
+        list.clear();
+        System.out.println(list);
+        System.out.println(list.pollLast());
+        System.out.println(list.pollFirst());
+        a();
+
+        //遍历循环
+        // 普通for loop
+        list.addAll(Arrays.asList("aaa", "bbb", "ccc"));
+        for (int i = 0; i < list.size(); i++) {
+            System.out.print(list.get(i) + ", ");
+        }
+        System.out.println();
+        // 增强for循环
+        for(String i : list){
+            System.out.print(i + ", ");
+        }
+        System.out.println();
+        // 迭代器
+        // 写法1
+        Iterator<String> iterator = list.iterator();
+        while(iterator.hasNext()){
+            System.out.print(iterator.next() + ", ");
+        }
+        System.out.println();
+        // 写法2 节省内存
+        for(Iterator<String> iterator1 = list.iterator(); iterator1.hasNext();){
+            System.out.print(iterator1.next() + ", ");
+        }
+        System.out.println();
+        a();
+    }
+    public static void a(){
+        System.out.println("-------------------");
+    }
+}
+
+___________________
+
+		LinkedList简要的底层原理
+
+
+}ckage com.gg.array;
+
+/**
+ * LinkedList底层原理
+ *
+ *
+ * 增加 addFirst(E e) addLast(E e)
+ *      offer(E e) offerFirst(E e) offerLast(E e)
+ * 删除 poll() pollFirst() polllast()
+ *      removeFirst() removeLast()
+ * 修改
+ * 查看 element() gitFirst() getLast()
+ *      indexOf(Object o) lastIndexOf(Object o)
+ *      peek() peekFirst() peekLast()
+ * 判断
+ *
+ * 特性        ArrayList                      LinkedList                        List 接口
+ * 底层结构      动态数组                        双向链表                       抽象接口，不实现细节
+ * 随机访问效率   高（O(1)）                      低（O(n)）                           无
+ * 插入/删除效率  慢（中间位置插入/删除效率低）     快（O(1)）适合频繁插入/删除               无
+ * 占用内存      较少（只保存元素）               多（保存元素 + 指针）                    无
+ * 线程安全      否（需要手动加锁）               否（需要手加锁）                       无
+ * 是否有索引    有，可通过索引随机访问            有，但访问效率低                         有
+ * 遍历性能      更快（顺序访问 + CPU 缓存友好）   稍慢                                   无
+ * 使用场景      读多写少（查找多）               写多读少（插入/删除多）            作为统一接口，屏蔽细节
+ *
+ * ArrayList数据结构
+ * 物理结构：紧密结构
+ * 逻辑结构：线性表(数组)
+ *
+ * LinkedList数据结构 双向列表
+ * 物理结构：跳转结构（链式结构）
+ * 逻辑结构：线性表（链表）
+ *      放入三个属性 "aa" "bb" "cc"
+ *
+ *      放入第一个元素 "aa"
+ *                  0x11
+ *      前一个地址  当前存入的元素  后一个地址  (整个对象才是链表中的一个节点)
+ *         null        aa         null(0x22)
+ *
+ *      放入第二个元素 "bb"
+ *                  0x22
+ *      前一个地址       当前存入的元素  后一地址  (整个对象才是链表中的一个节点)
+ *         null(0x11)        bb         null(0x33)
+ *
+ *      放入第二个元素 "bb"
+ *                  0x33
+ *      前一个地址       当前存入的元素  后一个地址  (整个对象才是链表中的一个节点)
+ *         null(0x22)        cc         null
+ */
+
+public class demo17 {
+}
+
+__________________
+
+		LinkedList源码
+
+
+}ckage com.gg.array;
+
+/**
+ * LinkedList源码
+ *
+ *
+ *
+ */
+
+//节点类
+public class demo18 {
+    // 链中一定有一个首节点
+    // 链中一定有一个尾节点
+    Node first;
+    Node last;
+    // 计数器
+    int count = 0;
+    // 提供一个构造器
+    public demo18(){}
+    // 添加元素方法
+    public void add(Object o){
+        if(first == null){ // 证明你添加的元素是第一个节点
+            Node n = new Node();
+            n.setPre(null);
+            n.setObj(o);
+            n.setNext(null);
+            first = n;
+            last = n;
+        }else{
+            Node n = new Node();
+            n.setPre(last);
+            n.setObj(o);
+            n.setNext(null);
+            // last first 是链表的扩展应用 让程序更快的找到头尾 方便查找
+            // first.pre = null first.obj = o first.next = o2
+            // last.pre = o2 last.obj = o3 last.next = null
+            // 旧的last是o2 我们要让旧的last指向新的o3 这样就变成新的last
+            // 这里的last 其实是上一个数 last.setNext(n)是设置了上一个数的next 这样形成双链表 o2可以链接到o3形成双向链表
+            last.setNext(n);
+            last = n;
+        }
+        // 链中元素+1
+        count ++;
+    }
+
+    // 得到集合中元素的数量
+    public int getSize(){
+        return count;
+    }
+
+    // 通过index得到元素
+    public Object get(int index){
+        // 获取链表的头元素
+        Node n = first;
+        for(int i = 0; i < index; i++){
+            n = n.getNext();
+        }
+//        int i = 0;
+//        while(i < index){
+//            n = n.getNext();
+//            i ++;
+//        }
+        return n.getObj();
+    }
+}
+
+class Node{
+    // 三个属性
+    // 上一个元素的地址
+    private Node pre;
+    // 当前存入的元素
+    private Object obj;
+    // 下一个元素地址
+    private Node next;
+
+    // set get 方法
+    public void setPre(Node pre) {
+        this.pre = pre;
+    }
+    public void setObj(Object obj) {
+        this.obj = obj;
+    }
+    public void setNext(Node next) {
+        this.next = next;
+    }
+    public Node getPre() {
+        return pre;
+    }
+    public Object getObj() {
+        return obj;
+    }
+    public Node getNext() {
+        return next;
+    }
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "pre=" + pre +
+                ", obj=" + obj +
+                ", next=" + next +
+                '}';
+    }
+}
+
+class test{
+    public static void main(String[] args) {
+        // 创建一个集合对象
+        demo18 dm = new demo18();
+        dm.add("aa");
+        dm.add("bb");
+        dm.add("cc");
+        System.out.println(dm.getSize());
+        System.out.println(dm.get(2));
+    }
+}
+
+____________________
 
 
 
