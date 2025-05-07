@@ -3232,6 +3232,139 @@ class test{
 
 ____________________
 
+		iterator() Iterator Iterable 的关系
+
+
+}ckage com.gg.array;
+
+/**
+ * iterator() Iterator Iterable 的关系
+ *
+ * ArrayList <--(implements)-- List接口 <--(extends)--
+ * Collection接口 <--(extends)-- Iterable接口 <--(抽象方法)-- iterator()
+ * 抽象方法要在具体的实现类中实现
+ *
+ */
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Collection;
+
+public class demo19 {
+    public static void main(String[] args) {
+        Collection<String> list = new ArrayList<>();
+        list.add("a");
+        list.add("b");
+        list.add("c");
+        list.add("d");
+        Iterator<String> it = list.iterator();
+        while (it.hasNext()) {
+            System.out.print(it.next() + ", ");
+        }
+        System.out.println();
+    }
+}
+________________________
+
+		ListIterator迭代器
+
+
+	dckage com.gg.array;
+
+/**
+ * ListIterator迭代器
+ *
+ *
+ *
+ */
+
+import java.util.*;
+
+public class demo20 {
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>();
+        list.addAll(Arrays.asList("aaa", "bbb", "ccc", "ddd", "eee"));
+        // 在ccc之后添加字符串kk
+        // 这样会发生错误 ConcurrentModificationException 并发修改异常
+        // 迭代器和List同时对集合进行操作不可取
+//        Iterator<String> it = list.iterator();
+//        while(it.hasNext()){
+//            if("ccc".equals(it.next())){
+//                list.add("kk");
+//            }
+//            System.out.print(it.next() + ", ");
+//        }
+//        System.out.println();
+        // 迭代和添加操作都是listIterator来完成的
+        ListIterator<String> it = list.listIterator();
+        while(it.hasNext()){
+            if("ccc".equals(it.next())){
+                it.add("kk");
+            }
+        }
+        System.out.println(list);
+    }
+    public static void a(){
+        System.out.println("-------------------");
+    }
+}
+
+____________________
+
+		ListIterator迭代器
+		
+dckage com.gg.array;
+
+/**
+ * ListIterator迭代器
+ *
+ *
+ *
+ */
+
+import java.util.*;
+
+public class demo20 {
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>();
+        list.addAll(Arrays.asList("aaa", "bbb", "ccc", "ddd", "eee"));
+        // 在ccc之后添加字符串kk
+        // 这样会发生错误 ConcurrentModificationException 并发修改异常
+        // 迭代器和List同时对集合进行操作不可取
+//        Iterator<String> it = list.iterator();
+//        while(it.hasNext()){
+//            if("ccc".equals(it.next())){
+//                list.add("kk");
+//            }
+//            System.out.print(it.next() + ", ");
+//        }
+//        System.out.println();
+        // 迭代和添加操作都是listIterator来完成的
+        ListIterator<String> it = list.listIterator();
+        while(it.hasNext()){
+            if("ccc".equals(it.next())){
+                it.add("kk");
+            }
+        }
+        // 查看是否有下一个元素
+        System.out.println(it.hasNext());
+        // 查看是否有上一个元素
+        System.out.println(it.hasPrevious());
+        // 倒着遍历
+        while(it.hasPrevious()){
+            System.out.print(it.previous() + ", ");
+        }
+        System.out.println();
+        System.out.println(list);
+    }
+    public static void a(){
+        System.out.println("-------------------");
+    }
+}
+	
+______________________
+
+		Set接口
 
 
 

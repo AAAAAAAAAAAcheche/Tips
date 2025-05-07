@@ -1,3 +1,17 @@
+
+安装centos7
+
+windows cmd输入
+
+diskpart
+list disk          # 确认U盘对应的磁盘编号（如Disk 1）
+select disk 1      # 选择U盘
+clean             # 清除所有分区
+create partition primary  # 创建新分区
+format fs=fat32 quick    # 格式化为FAT32
+
+___________________
+
 换源
 
 cd /etc/yum.repos.d
